@@ -14,7 +14,12 @@ void write(uint16_t address, uint8_t byte)
 
 int main()
 {
+	memory[0xfffe] = 0xc0;	// reset vector $c000
+	memory[0xffff] = 0x00;
+
 	mc6809 cpu(read, write);
+	cpu.reset();
+	cpu.status();
 	cpu.run(0);
 	return 0;
 }

@@ -12,23 +12,38 @@
 #define	F_FLAG	0x40	// firq
 #define	E_FLAG	0x80	// entire state on stack
 
+#define	VECTOR_EMPTY	0xfff0
+#define	VECTOR_SWI3	0xfff2
+#define	VECTOR_SWI2	0xfff4
+#define	VECTOR_FIRQ	0xfff6
+#define	VECTOR_IRQ	0xfff8
+#define	VECTOR_SWI	0xfffa
+#define	VECTOR_NMI	0xfffc
+#define	VECTOR_RESET	0xfffe
+
 class memory;
 
 class mc6809 {
 private:
-	uint8_t &A;	// accumulator A, msb of D
-	uint8_t &B;	// accumulator B, lsb of D
-	uint16_t D;	// 16bit accumulator D
-	uint8_t	DP;	// direct page register
-	uint8_t CC;	// condition code register
+	uint16_t xr;	// x index register
+	uint16_t yr;	// y index register
+	uint16_t us;	// user stack pointer
+	uint16_t sp;	// hardware stack pointer
+	uint16_t pcr;	// program counter
+	uint8_t &a;	// accumulator a, msb of d
+	uint8_t &b;	// accumulator b, lsb of d
+	uint16_t dr;	// 16bit accumulator d
+	uint8_t	 dpr;	// direct page register
+	uint8_t  ccr;	// condition code register
 
-	uint16_t X;	// x index register
-	uint16_t Y;	// y index register
-	uint16_t U;	// user stack pointer
-	uint16_t S;	// hardware stack pointer
-	uint16_t PC;	// program counter
+	bool nmi_blocked;
 
-	bool nmi_allowed;
+	bool *nmi_line;
+	bool old_nmi_line;
+	bool *firq_line;
+	bool old_firq_line;
+	bool *irq_line;
+	bool old_irq_line;
 
 	// read write callbacks
 	typedef uint8_t (*bus_read)(uint16_t);
@@ -43,6 +58,7 @@ public:
 	void sta();
 	typedef void (mc6809::*execute_opcode)(void);
 	execute_opcode opcodes[2];
+	void status();
 };
 
 #endif
