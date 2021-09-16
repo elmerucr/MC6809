@@ -21,5 +21,6 @@ int main()
 	cpu.reset();
 	cpu.status();
 	cpu.run(0);
+	cpu.status();
 	return 0;
 }

@@ -12,7 +12,7 @@
 #define	F_FLAG	0x40	// firq
 #define	E_FLAG	0x80	// entire state on stack
 
-#define	VECTOR_EMPTY	0xfff0
+#define	VECTOR_ILL_OPC	0xfff0	// this one is added for convenience
 #define	VECTOR_SWI3	0xfff2
 #define	VECTOR_SWI2	0xfff4
 #define	VECTOR_FIRQ	0xfff6
@@ -29,10 +29,10 @@ private:
 	uint16_t yr;	// y index register
 	uint16_t us;	// user stack pointer
 	uint16_t sp;	// hardware stack pointer
-	uint16_t pcr;	// program counter
+	uint16_t pc;	// program counter
 	uint8_t &a;	// accumulator a, msb of d
 	uint8_t &b;	// accumulator b, lsb of d
-	uint16_t dr;	// 16bit accumulator d
+	uint16_t d;	// 16bit accumulator d
 	uint8_t	 dpr;	// direct page register
 	uint8_t  ccr;	// condition code register
 
@@ -54,11 +54,49 @@ public:
 	mc6809(bus_read r, bus_write w);
 	void reset();
 	bool run(uint16_t cycles);
+
+	void ill();
 	void lda();
+	void neg();
 	void sta();
-	typedef void (mc6809::*execute_opcode)(void);
-	execute_opcode opcodes[2];
+
+	typedef void (mc6809::*execute_instruction)(void);
 	void status();
+private:
+	execute_instruction opcodes[256] = {
+		&mc6809::neg, &mc6809::ill, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x00-0x07
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x08-0x0f
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x10-0x17
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x18-0x1f
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x20
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x30
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x40
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x50
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::neg, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x60
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::neg, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,	// 0x70
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,
+		&mc6809::lda, &mc6809::sta, &mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta,&mc6809::lda, &mc6809::sta
+	};
 };
 
 #endif
