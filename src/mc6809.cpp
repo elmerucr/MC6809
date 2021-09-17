@@ -41,33 +41,312 @@ void mc6809::reset()
 bool mc6809::run(uint16_t cycles)
 {
 	uint8_t opcode;
+	uint16_t effective_address;
 
-	// fetch
+	// fetch opcode
 	opcode = (*read_8)(pc++);
 
-	// bogus
-	(this->*opcodes[opcode])();
+	effective_address = (this->*addressing_modes[opcode])();
+	(this->*opcodes[opcode])(effective_address);
 	return false;
 }
 
-void mc6809::ill()
+/*
+ * Addressing modes
+ */
+
+uint16_t mc6809::inh()
+{
+	return 0;
+}
+
+uint16_t mc6809::imm()
+{
+	return pc++;
+}
+
+/*
+ * instructions
+ */
+
+void mc6809::abx(uint16_t ea)
 {
 	//
 }
 
-void mc6809::lda()
+void mc6809::andcc(uint16_t ea)
+{
+	//
+}
+
+void mc6809::asl(uint16_t ea)
+{
+	//
+}
+
+void mc6809::asr(uint16_t ea)
+{
+	//
+}
+
+void mc6809::beq(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bge(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bgt(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bhi(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bhs(uint16_t ea)
+{
+	//
+}
+
+void mc6809::ble(uint16_t ea)
+{
+	//
+}
+
+void mc6809::blo(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bls(uint16_t ea)
+{
+	//
+}
+
+void mc6809::blt(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bmi(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bne(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bpl(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bra(uint16_t ea)
+{
+	//
+}
+
+void mc6809::brn(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bvc(uint16_t ea)
+{
+	//
+}
+
+void mc6809::bvs(uint16_t ea)
+{
+	//
+}
+
+void mc6809::clr(uint16_t ea)
+{
+	//
+}
+
+void mc6809::com(uint16_t ea)
+{
+	//
+}
+
+void mc6809::cwai(uint16_t ea)
+{
+	//
+}
+
+void mc6809::daa(uint16_t ea)
+{
+	//
+}
+
+void mc6809::dec(uint16_t ea)
+{
+	//
+}
+
+void mc6809::exg(uint16_t ea)
+{
+	//
+}
+
+void mc6809::ill(uint16_t ea)
+{
+	// push all registers, load vector illegal opcode ....
+}
+
+void mc6809::inc(uint16_t ea)
+{
+	//
+}
+
+void mc6809::jmp(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbra(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbsr(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lda(uint16_t ea)
 {
 	printf("lda()\n");
 }
 
-void mc6809::neg()
+void mc6809::leax(uint16_t ea)
 {
-	// jaja
+	//
 }
 
-void mc6809::sta()
+void mc6809::leay(uint16_t ea)
+{
+	//
+}
+
+void mc6809::leas(uint16_t ea)
+{
+	//
+}
+
+void mc6809::leau(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lsr(uint16_t ea)
+{
+	//
+}
+
+void mc6809::mul(uint16_t ea)
+{
+	//
+}
+
+void mc6809::neg(uint16_t ea)
+{
+	//
+}
+
+void mc6809::nop(uint16_t ea)
+{
+	//
+}
+
+void mc6809::orcc(uint16_t ea)
+{
+	//
+}
+
+void mc6809::page2(uint16_t ea)
+{
+	//
+}
+
+void mc6809::page3(uint16_t ea)
+{
+	//
+}
+
+void mc6809::pshs(uint16_t ea)
+{
+	//
+}
+
+void mc6809::pshu(uint16_t ea)
+{
+	//
+}
+
+void mc6809::puls(uint16_t ea)
+{
+	//
+}
+
+void mc6809::pulu(uint16_t ea)
+{
+	//
+}
+
+void mc6809::rol(uint16_t ea)
+{
+	//
+}
+
+void mc6809::ror(uint16_t ea)
+{
+	//
+}
+
+void mc6809::rts(uint16_t ea)
+{
+	//
+}
+
+void mc6809::sex(uint16_t ea)
+{
+	//
+}
+
+void mc6809::sta(uint16_t ea)
 {
 	printf("sta()\n");
+}
+
+void mc6809::swi(uint16_t ea)
+{
+	//
+}
+
+void mc6809::sync(uint16_t ea)
+{
+	//
+}
+
+void mc6809::tfr(uint16_t ea)
+{
+	//
+}
+
+void mc6809::tst(uint16_t ea)
+{
+	//
 }
 
 void mc6809::status()
