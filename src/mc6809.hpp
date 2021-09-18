@@ -1,3 +1,9 @@
+/*
+ * mc6809.hpp  -  part of MC6809
+ *
+ * (c)2021 elmerucr
+ */
+
 #ifndef MC6809_HPP
 #define MC6809_HPP
 
