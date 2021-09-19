@@ -79,7 +79,11 @@ public:
 	void addd(uint16_t ea);
 	void andcc(uint16_t ea);
 	void asl(uint16_t ea);
+	void asla(uint16_t ea);
+	void aslb(uint16_t ea);
 	void asr(uint16_t ea);
+	void asra(uint16_t ea);
+	void asrb(uint16_t ea);
 	void beq(uint16_t ea);
 	void bge(uint16_t ea);
 	void bgt(uint16_t ea);
@@ -100,21 +104,30 @@ public:
 	void bvc(uint16_t ea);
 	void bvs(uint16_t ea);
 	void clr(uint16_t ea);
+	void clra(uint16_t ea);
+	void clrb(uint16_t ea);
 	void cmpa(uint16_t ea);
 	void cmpb(uint16_t ea);
 	void cmpx(uint16_t ea);
 	void com(uint16_t ea);
+	void coma(uint16_t ea);
+	void comb(uint16_t ea);
 	void cwai(uint16_t ea);
 	void daa(uint16_t ea);
 	void dec(uint16_t ea);
+	void deca(uint16_t ea);
+	void decb(uint16_t ea);
 	void eora(uint16_t ea);
 	void eorb(uint16_t ea);
 	void exg(uint16_t ea);
 	void ill(uint16_t ea);		// illegal opcode
 	void inc(uint16_t ea);
+	void inca(uint16_t ea);
+	void incb(uint16_t ea);
 	void jmp(uint16_t ea);
 	void jsr(uint16_t ea);
 	void lbra(uint16_t ea);
+	void lbrn(uint16_t ea);
 	void lbsr(uint16_t ea);
 	void lda(uint16_t ea);
 	void ldb(uint16_t ea);
@@ -125,9 +138,14 @@ public:
 	void leay(uint16_t);
 	void leas(uint16_t);
 	void leau(uint16_t);
+	// void lsl(uint16_t ea);	// covered by asl instruction
 	void lsr(uint16_t ea);
+	void lsra(uint16_t ea);
+	void lsrb(uint16_t ea);
 	void mul(uint16_t ea);
 	void neg(uint16_t ea);
+	void nega(uint16_t ea);
+	void negb(uint16_t ea);
 	void nop(uint16_t ea);
 	void ora(uint16_t ea);
 	void orb(uint16_t ea);
@@ -139,7 +157,11 @@ public:
 	void puls(uint16_t ea);
 	void pulu(uint16_t ea);
 	void rol(uint16_t ea);
+	void rola(uint16_t ea);
+	void rolb(uint16_t ea);
 	void ror(uint16_t ea);
+	void rora(uint16_t ea);
+	void rorb(uint16_t ea);
 	void rts(uint16_t ea);
 	void sbca(uint16_t ea);
 	void sbcb(uint16_t ea);
@@ -153,9 +175,13 @@ public:
 	void subb(uint16_t ea);
 	void subd(uint16_t ea);
 	void swi(uint16_t ea);
+	void swi2(uint16_t ea);
+	void swi3(uint16_t ea);
 	void sync(uint16_t ea);
 	void tfr(uint16_t ea);
 	void tst(uint16_t ea);
+	void tsta(uint16_t ea);
+	void tstb(uint16_t ea);
 
 	typedef uint16_t (mc6809::*addressing_mode)();
 	typedef void (mc6809::*execute_instruction)(uint16_t);
@@ -206,10 +232,10 @@ private:
 		&mc6809::bvc,	&mc6809::bvs,	&mc6809::bpl,	&mc6809::bmi,	&mc6809::bge,	&mc6809::blt,	&mc6809::bgt,	&mc6809::ble,
 		&mc6809::leax,	&mc6809::leay,	&mc6809::leas,	&mc6809::leau,	&mc6809::pshs,	&mc6809::puls,	&mc6809::pshu,	&mc6809::pulu,	// 0x30
 		&mc6809::ill,	&mc6809::rts,	&mc6809::abx,	&mc6809::rts,	&mc6809::cwai,	&mc6809::mul,	&mc6809::ill,	&mc6809::swi,
-		&mc6809::neg,	&mc6809::ill,	&mc6809::ill,	&mc6809::com,	&mc6809::lsr,	&mc6809::ill,	&mc6809::ror,	&mc6809::asr,	// 0x40
-		&mc6809::asl,	&mc6809::rol,	&mc6809::dec,	&mc6809::ill,	&mc6809::inc,	&mc6809::tst,	&mc6809::ill,	&mc6809::clr,
-		&mc6809::neg,	&mc6809::ill,	&mc6809::ill,	&mc6809::com,	&mc6809::lsr,	&mc6809::ill,	&mc6809::ror,	&mc6809::asr,	// 0x50
-		&mc6809::asl,	&mc6809::rol,	&mc6809::dec,	&mc6809::ill,	&mc6809::inc,	&mc6809::tst,	&mc6809::ill,	&mc6809::clr,
+		&mc6809::nega,	&mc6809::ill,	&mc6809::ill,	&mc6809::coma,	&mc6809::lsra,	&mc6809::ill,	&mc6809::rora,	&mc6809::asra,	// 0x40
+		&mc6809::asla,	&mc6809::rola,	&mc6809::deca,	&mc6809::ill,	&mc6809::inca,	&mc6809::tsta,	&mc6809::ill,	&mc6809::clra,
+		&mc6809::negb,	&mc6809::ill,	&mc6809::ill,	&mc6809::comb,	&mc6809::lsrb,	&mc6809::ill,	&mc6809::rorb,	&mc6809::asrb,	// 0x50
+		&mc6809::aslb,	&mc6809::rolb,	&mc6809::decb,	&mc6809::ill,	&mc6809::incb,	&mc6809::tstb,	&mc6809::ill,	&mc6809::clrb,
 		&mc6809::neg,	&mc6809::ill,	&mc6809::ill,	&mc6809::com,	&mc6809::lsr,	&mc6809::ill,	&mc6809::ror,	&mc6809::asr,	// 0x60
 		&mc6809::asl,	&mc6809::rol,	&mc6809::dec,	&mc6809::ill,	&mc6809::inc,	&mc6809::tst,	&mc6809::jmp,	&mc6809::clr,
 		&mc6809::neg,	&mc6809::ill,	&mc6809::ill,	&mc6809::com,	&mc6809::lsr,	&mc6809::ill,	&mc6809::ror,	&mc6809::asr,	// 0x70
@@ -272,10 +298,10 @@ private:
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x10
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x20
+		&mc6809::ill,	&mc6809::lbrn,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x20
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x30
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::swi2,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x40
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x50
@@ -345,7 +371,7 @@ private:
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x20
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x30
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::swi3,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x40
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x50

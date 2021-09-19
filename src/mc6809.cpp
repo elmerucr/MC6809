@@ -138,7 +138,27 @@ void mc6809::asl(uint16_t ea)
 	//
 }
 
+void mc6809::asla(uint16_t ea)
+{
+	//
+}
+
+void mc6809::aslb(uint16_t ea)
+{
+	//
+}
+
 void mc6809::asr(uint16_t ea)
+{
+	//
+}
+
+void mc6809::asra(uint16_t ea)
+{
+	//
+}
+
+void mc6809::asrb(uint16_t ea)
 {
 	//
 }
@@ -243,6 +263,16 @@ void mc6809::clr(uint16_t ea)
 	//
 }
 
+void mc6809::clra(uint16_t ea)
+{
+	//
+}
+
+void mc6809::clrb(uint16_t ea)
+{
+	//
+}
+
 void mc6809::cmpa(uint16_t ea)
 {
 	//
@@ -263,6 +293,16 @@ void mc6809::com(uint16_t ea)
 	//
 }
 
+void mc6809::coma(uint16_t ea)
+{
+	//
+}
+
+void mc6809::comb(uint16_t ea)
+{
+	//
+}
+
 void mc6809::cwai(uint16_t ea)
 {
 	//
@@ -274,6 +314,16 @@ void mc6809::daa(uint16_t ea)
 }
 
 void mc6809::dec(uint16_t ea)
+{
+	//
+}
+
+void mc6809::deca(uint16_t ea)
+{
+	//
+}
+
+void mc6809::decb(uint16_t ea)
 {
 	//
 }
@@ -304,6 +354,16 @@ void mc6809::inc(uint16_t ea)
 	//
 }
 
+void mc6809::inca(uint16_t ea)
+{
+	//
+}
+
+void mc6809::incb(uint16_t ea)
+{
+	//
+}
+
 void mc6809::jmp(uint16_t ea)
 {
 	//
@@ -315,6 +375,11 @@ void mc6809::jsr(uint16_t ea)
 }
 
 void mc6809::lbra(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbrn(uint16_t ea)
 {
 	//
 }
@@ -374,12 +439,32 @@ void mc6809::lsr(uint16_t ea)
 	//
 }
 
+void mc6809::lsra(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lsrb(uint16_t ea)
+{
+	//
+}
+
 void mc6809::mul(uint16_t ea)
 {
 	//
 }
 
 void mc6809::neg(uint16_t ea)
+{
+	//
+}
+
+void mc6809::nega(uint16_t ea)
+{
+	//
+}
+
+void mc6809::negb(uint16_t ea)
 {
 	//
 }
@@ -439,7 +524,27 @@ void mc6809::rol(uint16_t ea)
 	//
 }
 
+void mc6809::rola(uint16_t ea)
+{
+	//
+}
+
+void mc6809::rolb(uint16_t ea)
+{
+	//
+}
+
 void mc6809::ror(uint16_t ea)
+{
+	//
+}
+
+void mc6809::rora(uint16_t ea)
+{
+	//
+}
+
+void mc6809::rorb(uint16_t ea)
 {
 	//
 }
@@ -509,6 +614,16 @@ void mc6809::swi(uint16_t ea)
 	//
 }
 
+void mc6809::swi2(uint16_t ea)
+{
+	//
+}
+
+void mc6809::swi3(uint16_t ea)
+{
+	//
+}
+
 void mc6809::sync(uint16_t ea)
 {
 	//
@@ -520,6 +635,16 @@ void mc6809::tfr(uint16_t ea)
 }
 
 void mc6809::tst(uint16_t ea)
+{
+	//
+}
+
+void mc6809::tsta(uint16_t ea)
+{
+	//
+}
+
+void mc6809::tstb(uint16_t ea)
 {
 	//
 }
