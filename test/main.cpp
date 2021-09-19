@@ -1,3 +1,9 @@
+/*
+ * main.cpp  -  part of MC6809
+ *
+ * (c)2021 elmerucr
+ */
+
 #include "mc6809.hpp"
 
 uint8_t memory[65536];
