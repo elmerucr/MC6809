@@ -16,7 +16,7 @@ mc6809::mc6809(bus_read r, bus_write w) : ac(*(((uint8_t *)&dr)+1)), br(*((uint8
 	read_8 = (bus_read)r;
 	write_8 = (bus_write)w;
 
-	ccr = 0b00000000;
+	cc = 0b00000000;
 
 	/*
 	 * When NFI pins are not yet assigned, there needs to be a
@@ -40,7 +40,7 @@ void mc6809::reset()
 	/*
 	 * firq and irq masked after reset
 	 */
-	ccr |= (I_FLAG | F_FLAG);
+	cc |= (I_FLAG | F_FLAG);
 
 	/*
 	 * After reset, nmi is fully disabled. Only after a first write
@@ -71,16 +71,17 @@ bool mc6809::run(uint16_t cycles)
 /*
  * Addressing modes
  */
-uint16_t mc6809::am_dir()
+uint16_t mc6809::am_dr()
 {
 	return (dp << 8) | read_8(pc++);
 }
-uint16_t mc6809::am_inh()
+
+uint16_t mc6809::am_ih()
 {
 	return 0;
 }
 
-uint16_t mc6809::am_imm()
+uint16_t mc6809::am_im()
 {
 	return pc++;
 }
@@ -374,6 +375,56 @@ void mc6809::jsr(uint16_t ea)
 	//
 }
 
+void mc6809::lbeq(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbge(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbgt(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbhi(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lble(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbls(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lblt(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbmi(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbne(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbpl(uint16_t ea)
+{
+	//
+}
+
 void mc6809::lbra(uint16_t ea)
 {
 	//
@@ -385,6 +436,16 @@ void mc6809::lbrn(uint16_t ea)
 }
 
 void mc6809::lbsr(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbvc(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbvs(uint16_t ea)
 {
 	//
 }
@@ -650,8 +711,8 @@ void mc6809::tstb(uint16_t ea)
 }
 
 /*
- *  pc  dp ac br  xr   yr   us   sp  efhinzvc
- * c000 00 01:ae 0000 d0d0 0000 0ffc -*-*----
+ *  pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I
+ * c000 00 01:ae 0000 d0d0 0000 0ffc -*-*---- 11 1 1
  */
 void mc6809::status()
 {
@@ -659,14 +720,14 @@ void mc6809::status()
 	printf("%04x %02x %02x:%02x ", pc, dp, ac, br);
 	printf("%04x %04x %04x %04x ", xr, yr, us, sp);
 	printf("%c%c%c%c%c%c%c%c ",
-		ccr & E_FLAG ? '*' : '-',
-		ccr & F_FLAG ? '*' : '-',
-		ccr & H_FLAG ? '*' : '-',
-		ccr & I_FLAG ? '*' : '-',
-		ccr & N_FLAG ? '*' : '-',
-		ccr & Z_FLAG ? '*' : '-',
-		ccr & V_FLAG ? '*' : '-',
-		ccr & C_FLAG ? '*' : '-');
+		cc & E_FLAG ? '*' : '-',
+		cc & F_FLAG ? '*' : '-',
+		cc & H_FLAG ? '*' : '-',
+		cc & I_FLAG ? '*' : '-',
+		cc & N_FLAG ? '*' : '-',
+		cc & Z_FLAG ? '*' : '-',
+		cc & V_FLAG ? '*' : '-',
+		cc & C_FLAG ? '*' : '-');
 	printf("%c%c %c %c\n",
 		old_nmi_line ? '1' : '0',
 		*nmi_line ? '1' : '0',
