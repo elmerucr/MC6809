@@ -284,7 +284,27 @@ void mc6809::cmpb(uint16_t ea)
 	//
 }
 
+void mc6809::cmpd(uint16_t ea)
+{
+	//
+}
+
+void mc6809::cmpu(uint16_t ea)
+{
+	//
+}
+
+void mc6809::cmps(uint16_t ea)
+{
+	//
+}
+
 void mc6809::cmpx(uint16_t ea)
+{
+	//
+}
+
+void mc6809::cmpy(uint16_t ea)
 {
 	//
 }
@@ -375,6 +395,11 @@ void mc6809::jsr(uint16_t ea)
 	//
 }
 
+void mc6809::lbcs(uint16_t ea)
+{
+	//
+}
+
 void mc6809::lbeq(uint16_t ea)
 {
 	//
@@ -391,6 +416,11 @@ void mc6809::lbgt(uint16_t ea)
 }
 
 void mc6809::lbhi(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lbhs(uint16_t ea)
 {
 	//
 }
@@ -465,12 +495,22 @@ void mc6809::ldd(uint16_t ea)
 	//
 }
 
-void mc6809::ldx(uint16_t ea)
+void mc6809::lds(uint16_t ea)
 {
 	//
 }
 
 void mc6809::ldu(uint16_t ea)
+{
+	//
+}
+
+void mc6809::ldx(uint16_t ea)
+{
+	//
+}
+
+void mc6809::ldy(uint16_t ea)
 {
 	//
 }
@@ -610,6 +650,11 @@ void mc6809::rorb(uint16_t ea)
 	//
 }
 
+void mc6809::rti(uint16_t ea)
+{
+	//
+}
+
 void mc6809::rts(uint16_t ea)
 {
 	//
@@ -650,7 +695,17 @@ void mc6809::stu(uint16_t ea)
 	//
 }
 
+void mc6809::sts(uint16_t ea)
+{
+	//
+}
+
 void mc6809::stx(uint16_t ea)
+{
+	//
+}
+
+void mc6809::sty(uint16_t ea)
 {
 	//
 }
