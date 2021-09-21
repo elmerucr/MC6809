@@ -27,6 +27,8 @@ mc6809::mc6809(bus_read r, bus_write w) : ac(*(((uint8_t *)&dr)+1)), br(*((uint8
 	firq_line = &default_pin;
 	irq_line = &default_pin;
 	old_nmi_line = true;
+
+	cycles = 0;
 }
 
 void mc6809::reset()
@@ -63,7 +65,7 @@ bool mc6809::run(uint16_t cycles)
 	// fetch opcode
 	opcode = (*read_8)(pc++);
 
-	effective_address = (this->*addressing_modes[opcode])();
+	effective_address = (this->*addressing_modes_page1[opcode])();
 	(this->*opcodes[opcode])(effective_address);
 	return false;
 }
@@ -84,6 +86,11 @@ uint16_t mc6809::am_ih()
 uint16_t mc6809::am_im()
 {
 	return pc++;
+}
+
+uint16_t mc6809::am_rl()
+{
+	return 0;
 }
 
 /*
@@ -236,7 +243,9 @@ void mc6809::bpl(uint16_t ea)
 
 void mc6809::bra(uint16_t ea)
 {
-	//
+	uint16_t displacement = (uint16_t)read_8(pc++);
+	pc += displacement;
+	cycles += 3;
 }
 
 void mc6809::brn(uint16_t ea)

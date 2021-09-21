@@ -71,6 +71,8 @@ private:
 	bool *irq_line;
 	bool old_irq_line;
 
+	uint32_t cycles;
+
 	typedef uint16_t (mc6809::*addressing_mode)();
 	typedef void (mc6809::*execute_instruction)(uint16_t);
 
@@ -78,7 +80,7 @@ private:
 	uint16_t am_dr();
 	uint16_t am_im();
 	uint16_t am_ih();
-	uint16_t am_rel();
+	uint16_t am_rl();
 
 	// instructions
 	void abx(uint16_t ea);
@@ -217,7 +219,7 @@ private:
 	void tsta(uint16_t ea);
 	void tstb(uint16_t ea);
 private:
-	addressing_mode addressing_modes[256] = {
+	addressing_mode addressing_modes_page1[256] = {
 		&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	// 0x00
 		&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,	&mc6809::am_dr,
 		
@@ -286,6 +288,25 @@ private:
 		&mc6809::eorb,	&mc6809::adcb,	&mc6809::orb,	&mc6809::addb,	&mc6809::ldd,	&mc6809::std,	&mc6809::ldu,	&mc6809::stu,
 		&mc6809::subb,	&mc6809::cmpb,	&mc6809::sbcb,	&mc6809::addd,	&mc6809::andb,	&mc6809::bitb,	&mc6809::ldb,	&mc6809::stb,	// 0xf0
 		&mc6809::eorb,	&mc6809::adcb,	&mc6809::orb,	&mc6809::addb,	&mc6809::ldd,	&mc6809::std,	&mc6809::ldu,	&mc6809::stu
+	};
+
+	uint16_t cycles_page1[256] = {
+		6, 0, 0, 6, 6, 0, 6, 6, 6, 6, 6, 0, 6, 6, 3, 6,
+		0, 0, 2, 4, 0, 0, 5, 9, 0, 2, 3, 0, 3, 2, 8, 6,
+		3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	};
 
 	addressing_mode addressing_modes_page2[256] = {

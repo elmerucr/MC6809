@@ -5,6 +5,7 @@
  */
 
 #include "mc6809.hpp"
+#include <cstdio>
 
 uint8_t memory[65536];
 
