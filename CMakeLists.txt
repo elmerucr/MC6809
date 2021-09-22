@@ -9,4 +9,4 @@ include_directories(
     test/
 )
 
-add_executable(test test/main.cpp src/mc6809.cpp)
+add_executable(test test/main.cpp src/mc6809.cpp src/mc6809dis.cpp)

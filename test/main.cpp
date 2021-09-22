@@ -24,8 +24,17 @@ int main()
 	memory[0xfffe] = 0xc0;	// reset vector $c000
 	memory[0xffff] = 0x00;
 
+	memory[0xc000] = 0x16;	// lbra $c00a
+	memory[0xc001] = 0x00;
+	memory[0xc002] = 0x07;
+
+	memory[0xc00a] = 0x20;	// bra $c010
+	memory[0xc00b] = 0x04;
+
 	mc6809 cpu(read, write);
 	cpu.reset();
+	cpu.status();
+	cpu.run(0);
 	cpu.status();
 	cpu.run(0);
 	cpu.status();

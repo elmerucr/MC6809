@@ -64,33 +64,42 @@ bool mc6809::run(uint16_t cycles)
 
 	// fetch opcode
 	opcode = (*read_8)(pc++);
+	cycles += cycles_page1[opcode];
 
 	effective_address = (this->*addressing_modes_page1[opcode])();
-	(this->*opcodes[opcode])(effective_address);
+	(this->*opcodes_page1[opcode])(effective_address);
 	return false;
 }
 
 /*
  * Addressing modes
  */
-uint16_t mc6809::am_dr()
+uint16_t mc6809::a_dr()
 {
 	return (dp << 8) | read_8(pc++);
 }
 
-uint16_t mc6809::am_ih()
+uint16_t mc6809::a_ih()
 {
 	return 0;
 }
 
-uint16_t mc6809::am_im()
+uint16_t mc6809::a_im()
 {
 	return pc++;
 }
 
-uint16_t mc6809::am_rl()
+uint16_t mc6809::a_srl()
 {
-	return 0;
+	uint16_t offset = (uint16_t)read_8(pc++);
+	return pc + offset;
+}
+
+uint16_t mc6809::a_lrl()
+{
+	uint16_t offset = read_8(pc++);
+	offset = (offset << 8) | read_8(pc++);
+	return pc + offset;
 }
 
 /*
@@ -243,9 +252,7 @@ void mc6809::bpl(uint16_t ea)
 
 void mc6809::bra(uint16_t ea)
 {
-	uint16_t displacement = (uint16_t)read_8(pc++);
-	pc += displacement;
-	cycles += 3;
+	pc = ea;
 }
 
 void mc6809::brn(uint16_t ea)
@@ -466,7 +473,7 @@ void mc6809::lbpl(uint16_t ea)
 
 void mc6809::lbra(uint16_t ea)
 {
-	//
+	pc = ea;
 }
 
 void mc6809::lbrn(uint16_t ea)
