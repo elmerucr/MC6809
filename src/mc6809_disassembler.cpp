@@ -1,31 +1,11 @@
 /*
- * mc6809dis.cpp  -  part of MC6809
+ * mc6809_disassembler.cpp  -  part of MC6809
  *
- * Code was borrowed from dasm09 which can be found at:
+ * Code was inspired by dasm09 which can be found at:
  * http://koti.mbnet.fi/~atjs/mc6809/Disassembler/dasm09.TGZ
- * Original copyright below
  * 
  * (c)2021 elmerucr
  */
-
-/***************************************************************************
- * dasm09 -- Portable M6809/H6309/OS9 Disassembler                         *
- * Copyright (C) 2000  Arto Salmi                                          *
- *                                                                         *
- * This program is free software; you can redistribute it and/or modify    *
- * it under the terms of the GNU General Public License as published by    *
- * the Free Software Foundation; either version 2 of the License, or       *
- * (at your option) any later version.                                     *
- *                                                                         *
- * This program is distributed in the hope that it will be useful,         *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- * GNU General Public License for more details.                            *
- *                                                                         *
- * You should have received a copy of the GNU General Public License       *
- * along with this program; if not, write to the Free Software             *
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.               *
- ***************************************************************************/
 
 #include "mc6809.hpp"
 #include <cstdio>

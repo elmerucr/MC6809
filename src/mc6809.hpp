@@ -108,13 +108,13 @@ private:
 	void bge(uint16_t ea);
 	void bgt(uint16_t ea);
 	void bhi(uint16_t ea);
-	void bhs(uint16_t ea);		// = bcc
+	void bhs(uint16_t ea);		// bcc
 	void bita(uint16_t ea);
 	void bitb(uint16_t ea);
 	void bmi(uint16_t ea);
 	void ble(uint16_t ea);
 
-	void blo(uint16_t ea);		// = bcs
+	void blo(uint16_t ea);		// bcs
 	void bls(uint16_t ea);
 	void blt(uint16_t ea);
 	void bne(uint16_t ea);
@@ -160,9 +160,9 @@ private:
 	void lbgt(uint16_t ea);
 
 	void lbhi(uint16_t ea);
-	void lbhs(uint16_t ea);		// = lbcc
+	void lbhs(uint16_t ea);		// lbcc
 	void lble(uint16_t ea);
-	void lblo(uint16_t ea);		// = lbcs
+	void lblo(uint16_t ea);		// lbcs
 	void lbls(uint16_t ea);
 	void lblt(uint16_t ea);
 	void lbmi(uint16_t ea);
@@ -234,12 +234,13 @@ private:
 	void swi(uint16_t ea);
 	void swi2(uint16_t ea);
 	void swi3(uint16_t ea);
-	
+
 	void sync(uint16_t ea);
 	void tfr(uint16_t ea);
 	void tst(uint16_t ea);
 	void tsta(uint16_t ea);
 	void tstb(uint16_t ea);
+
 private:
 	addressing_mode addressing_modes_page1[256] = {
 		&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	// 0x00
