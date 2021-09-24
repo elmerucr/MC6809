@@ -49,7 +49,7 @@ public:
 	void reset();
 	bool run(uint16_t cycles);
 	void status(char *text_buffer);
-	int disassemble_instruction(char *buffer, uint16_t pc);
+	uint16_t disassemble_instruction(char *buffer, uint16_t pc);
 
 	uint16_t get_pc() { return pc; }
 private:
@@ -92,9 +92,10 @@ private:
 	void adcb(uint16_t ea);
 	void adda(uint16_t ea);
 	void addb(uint16_t ea);
+	void addd(uint16_t ea);
 	void anda(uint16_t ea);
 	void andb(uint16_t ea);
-	void addd(uint16_t ea);
+
 	void andcc(uint16_t ea);
 	void asl(uint16_t ea);		// also lsl
 	void asla(uint16_t ea);
@@ -103,15 +104,17 @@ private:
 	void asra(uint16_t ea);
 	void asrb(uint16_t ea);
 	void beq(uint16_t ea);
+
 	void bge(uint16_t ea);
 	void bgt(uint16_t ea);
 	void bhi(uint16_t ea);
-	void bhs(uint16_t ea);
+	void bhs(uint16_t ea);		// = bcc
 	void bita(uint16_t ea);
 	void bitb(uint16_t ea);
 	void bmi(uint16_t ea);
 	void ble(uint16_t ea);
-	void blo(uint16_t ea);
+
+	void blo(uint16_t ea);		// = bcs
 	void bls(uint16_t ea);
 	void blt(uint16_t ea);
 	void bne(uint16_t ea);
@@ -119,6 +122,7 @@ private:
 	void bra(uint16_t ea);
 	void brn(uint16_t ea);
 	void bsr(uint16_t ea);
+
 	void bvc(uint16_t ea);
 	void bvs(uint16_t ea);
 	void clr(uint16_t ea);
@@ -127,6 +131,7 @@ private:
 	void cmpa(uint16_t ea);
 	void cmpb(uint16_t ea);
 	void cmpd(uint16_t ea);
+
 	void cmps(uint16_t ea);
 	void cmpu(uint16_t ea);
 	void cmpx(uint16_t ea);
@@ -135,6 +140,7 @@ private:
 	void coma(uint16_t ea);
 	void comb(uint16_t ea);
 	void cwai(uint16_t ea);
+
 	void daa(uint16_t ea);
 	void dec(uint16_t ea);
 	void deca(uint16_t ea);
@@ -143,22 +149,25 @@ private:
 	void eorb(uint16_t ea);
 	void exg(uint16_t ea);
 	void ill(uint16_t ea);		// illegal opcode (from 6309)
+
 	void inc(uint16_t ea);
 	void inca(uint16_t ea);
 	void incb(uint16_t ea);
 	void jmp(uint16_t ea);
 	void jsr(uint16_t ea);
-	void lbcs(uint16_t ea);
 	void lbeq(uint16_t ea);
 	void lbge(uint16_t ea);
 	void lbgt(uint16_t ea);
+
 	void lbhi(uint16_t ea);
-	void lbhs(uint16_t ea);
+	void lbhs(uint16_t ea);		// = lbcc
 	void lble(uint16_t ea);
+	void lblo(uint16_t ea);		// = lbcs
 	void lbls(uint16_t ea);
 	void lblt(uint16_t ea);
 	void lbmi(uint16_t ea);
 	void lbne(uint16_t ea);
+
 	void lbpl(uint16_t ea);
 	void lbra(uint16_t ea);
 	void lbrn(uint16_t ea);
@@ -167,15 +176,17 @@ private:
 	void lbvs(uint16_t ea);
 	void lda(uint16_t ea);
 	void ldb(uint16_t ea);
+
 	void ldd(uint16_t ea);
 	void lds(uint16_t ea);
 	void ldu(uint16_t ea);
 	void ldx(uint16_t ea);
 	void ldy(uint16_t ea);
-	void leax(uint16_t ea);
-	void leay(uint16_t ea);
 	void leas(uint16_t ea);
 	void leau(uint16_t ea);
+	void leax(uint16_t ea);
+
+	void leay(uint16_t ea);
 	void lsr(uint16_t ea);
 	void lsra(uint16_t ea);
 	void lsrb(uint16_t ea);
@@ -183,16 +194,20 @@ private:
 	void neg(uint16_t ea);
 	void nega(uint16_t ea);
 	void negb(uint16_t ea);
+
 	void nop(uint16_t ea);
 	void ora(uint16_t ea);
 	void orb(uint16_t ea);
 	void orcc(uint16_t ea);
+
 	void page2(uint16_t ea);
 	void page3(uint16_t ea);
+
 	void pshs(uint16_t ea);
 	void pshu(uint16_t ea);
 	void puls(uint16_t ea);
 	void pulu(uint16_t ea);
+
 	void rol(uint16_t ea);
 	void rola(uint16_t ea);
 	void rolb(uint16_t ea);
@@ -201,6 +216,7 @@ private:
 	void rorb(uint16_t ea);
 	void rti(uint16_t ea);
 	void rts(uint16_t ea);
+
 	void sbca(uint16_t ea);
 	void sbcb(uint16_t ea);
 	void sex(uint16_t ea);
@@ -209,6 +225,7 @@ private:
 	void std(uint16_t ea);
 	void sts(uint16_t ea);
 	void stu(uint16_t ea);
+
 	void stx(uint16_t ea);
 	void sty(uint16_t ea);
 	void suba(uint16_t ea);
@@ -217,6 +234,7 @@ private:
 	void swi(uint16_t ea);
 	void swi2(uint16_t ea);
 	void swi3(uint16_t ea);
+	
 	void sync(uint16_t ea);
 	void tfr(uint16_t ea);
 	void tst(uint16_t ea);
@@ -352,7 +370,7 @@ private:
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x10
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::lbrn,	&mc6809::lbhi,	&mc6809::lbls,	&mc6809::lbhs,	&mc6809::lbcs,	&mc6809::lbne,	&mc6809::lbeq,	// 0x20
+		&mc6809::ill,	&mc6809::lbrn,	&mc6809::lbhi,	&mc6809::lbls,	&mc6809::lbhs,	&mc6809::lblo,	&mc6809::lbne,	&mc6809::lbeq,	// 0x20
 		&mc6809::lbvc,	&mc6809::lbvs,	&mc6809::lbpl,	&mc6809::lbmi,	&mc6809::lbge,	&mc6809::lblt,	&mc6809::lbgt,	&mc6809::lble,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x30
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::swi2,

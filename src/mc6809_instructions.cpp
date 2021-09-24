@@ -6,6 +6,12 @@
 
 #include "mc6809.hpp"
 
+void mc6809::ill(uint16_t ea)
+{
+	// "NEW": from 6309
+	// push all registers, load vector illegal opcode ....
+}
+
 void mc6809::abx(uint16_t ea)
 {
 	//
@@ -281,12 +287,6 @@ void mc6809::exg(uint16_t ea)
 	//
 }
 
-void mc6809::ill(uint16_t ea)
-{
-	// "NEW": from 6309
-	// push all registers, load vector illegal opcode ....
-}
-
 void mc6809::inc(uint16_t ea)
 {
 	//
@@ -308,11 +308,6 @@ void mc6809::jmp(uint16_t ea)
 }
 
 void mc6809::jsr(uint16_t ea)
-{
-	//
-}
-
-void mc6809::lbcs(uint16_t ea)
 {
 	//
 }
@@ -343,6 +338,11 @@ void mc6809::lbhs(uint16_t ea)
 }
 
 void mc6809::lble(uint16_t ea)
+{
+	//
+}
+
+void mc6809::lblo(uint16_t ea)
 {
 	//
 }
