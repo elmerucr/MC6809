@@ -80,8 +80,11 @@ int main()
 			cpu.reset();
 			cpu.status(text_buffer);
 			printf("%s\n", text_buffer);
-			cpu.disassemble_instruction(text_buffer, cpu.get_pc());
-			printf("%s", text_buffer);
+			uint16_t temp_pc = cpu.get_pc();
+			for (int i=0; i<4; i++) {
+				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
+				printf("%s", text_buffer);
+			}
 		} else {
 			printf("error: unknown command '%s'\n", input_string);
 		}

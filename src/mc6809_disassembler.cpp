@@ -1,10 +1,12 @@
 /*
  * mc6809_disassembler.cpp  -  part of MC6809
  *
- * Code was inspired by dasm09 which can be found at:
- * http://koti.mbnet.fi/~atjs/mc6809/Disassembler/dasm09.TGZ
- * 
  * (c)2021 elmerucr
+ *
+ * Code is inspired by dasm09 which can be found at:
+ * http://koti.mbnet.fi/~atjs/mc6809/Disassembler/dasm09.TGZ
+ * And somewhat newer:
+ * https://github.com/Arakula/f9dasm
  */
 
 #include "mc6809.hpp"
@@ -31,26 +33,97 @@ enum mnemonics_index {
 };
 
 const char *mnemonics[133] = {
-	"ABX",  "ADCA", "ADCB", "ADDA", "ADDB", "ADDD", "ANDA", "ANDB",
-	"ANDCC","ASL",  "ASLA", "ASLB", "ASR",  "ASRA", "ASRB", "BEQ",
-	"BGE",  "BGT",  "BHI",  "BHS",  "BITA", "BITB", "BMI",  "BLE",
-	"BLO",  "BLS",  "BLT",  "BNE",  "BPL",  "BRA",  "BRN",  "BSR",
-	"BVC",  "BVS",  "CLR",  "CLRA", "CLRB", "CMPA", "CMPB", "CMPD",
-	"CMPS", "CMPU", "CMPX", "CMPY", "COM",  "COMA", "COMB", "CWAI",
-	"DAA",  "DEC",  "DECA", "DECB", "EORA", "EORB", "EXG",  "ILL",
-	"INC",  "INCA", "INCB", "JMP",  "JSR",  "LBEQ", "LBGE", "LBGT",
-	"LBHI", "LBHS", "LBLE", "LBLO", "LBLS", "LBLT", "LBMI", "LBNE",
-	"LBPL", "LBRA", "LBRN", "LBSR", "LBVC", "LBVS", "LDA",  "LDB",
-	"LDD",  "LDS",  "LDU",  "LDX",  "LDY",  "LEAS", "LEAU", "LEAX",
-	"LEAY", "LSR",  "LSRA", "LSRB", "MUL",  "NEG",  "NEGA", "NEGB",
-	"NOP",  "ORA",  "ORB",  "ORCC", "PSHS", "PSHU", "PULS", "PULU",
-	"ROL",  "ROLA", "ROLB", "ROR",  "RORA", "RORB", "RTI",  "RTS",
-	"SBCA", "SBCB", "SEX",  "STA",  "STB",  "STD",  "STS",  "STU",
-	"STX",  "STY",  "SUBA", "SUBB", "SUBD", "SWI",  "SWI2", "SWI3",
-	"SYNC", "TFR",  "TST",  "TSTA", "TSTB"
-};	    
+	"abx",  "adca", "adcb", "adda", "addb", "addd", "anda", "andb",
+	"andcc","asl",  "asla", "aslb", "asr",  "asra", "asrb", "beq",
+	"bge",  "bgt",  "bhi",  "bhs",  "bita", "bitb", "bmi",  "ble",
+	"blo",  "bls",  "blt",  "bne",  "bpl",  "bra",  "brn",  "bsr",
+	"bvc",  "bvs",  "clr",  "clra", "clrb", "cmpa", "cmpb", "cmpd",
+	"cmps", "cmpu", "cmpx", "cmpy", "com",  "coma", "comb", "cwai",
+	"daa",  "dec",  "deca", "decb", "eora", "eorb", "exg",  "ill",
+	"inc",  "inca", "incb", "jmp",  "jsr",  "lbeq", "lbge", "lbgt",
+	"lbhi", "lbhs", "lble", "lblo", "lbls", "lblt", "lbmi", "lbne",
+	"lbpl", "lbra", "lbrn", "lbsr", "lbvc", "lbvs", "lda",  "ldb",
+	"ldd",  "lds",  "ldu",  "ldx",  "ldy",  "leas", "leau", "leax",
+	"leay", "lsr",  "lsra", "lsrb", "mul",  "neg",  "nega", "negb",
+	"nop",  "ora",  "orb",  "orcc", "pshs", "pshu", "puls", "pulu",
+	"rol",  "rola", "rolb", "ror",  "rora", "rorb", "rti",  "rts",
+	"sbca", "sbcb", "sex",  "sta",  "stb",  "std",  "sts",  "stu",
+	"stx",  "sty",  "suba", "subb", "subd", "swi",  "swi2", "swi3",
+	"sync", "tfr",  "tst",  "tsta", "tstb"
+};
+
+enum mnemonics_index opcodes_page_1[256] = {
+	_NEG,	_ILL,	_ILL,	_COM,	_LSR,	_ILL,	_ROR,	_ASR,	// 0x00
+	_ASL,	_ROL,	_DEC,	_ILL,	_INC,	_TST,	_JMP,	_CLR,
+	_ILL,	_ILL,	_NOP,	_SYNC,	_ILL,	_ILL,	_LBRA,	_LBSR,	// 0x10
+	_ILL,	_DAA,	_ORCC,	_ILL,	_ANDCC,	_SEX,	_EXG,	_TFR,
+	_BRA,	_BRN,	_BHI,	_BLS,	_BHS,	_BLO,	_BNE,	_BEQ,	// 0x20
+	_BVC,	_BVS,	_BPL,	_BMI,	_BGE,	_BLT,	_BGT,	_BLE,
+	_LEAX,	_LEAY,	_LEAS,	_LEAU,	_PSHS,	_PULS,	_PSHU,	_PULU,	// 0x30
+	_ILL,	_RTS,	_ABX,	_RTI,	_CWAI,	_MUL,	_ILL,	_SWI,
+	_NEGA,	_ILL,	_ILL,	_COMA,	_LSRA,	_ILL,	_RORA,	_ASRA,	// 0x40
+	_ASLA,	_ROLA,	_DECA,	_ILL,	_INCA,	_TSTA,	_ILL,	_CLRA,
+	_NEGB,	_ILL,	_ILL,	_COMB,	_LSRB,	_ILL,	_RORB,	_ASRB,	// 0x50
+	_ASLB,	_ROLB,	_DECB,	_ILL,	_INCB,	_TSTB,	_ILL,	_CLRB,
+	_NEG,	_ILL,	_ILL,	_COM,	_LSR,	_ILL,	_ROR,	_ASR,	// 0x60
+	_ASL,	_ROL,	_DEC,	_ILL,	_INC,	_TST,	_JMP,	_CLR,
+	_NEG,	_ILL,	_ILL,	_COM,	_LSR,	_ILL,	_ROR,	_ASR,	// 0x70
+	_ASL,	_ROL,	_DEC,	_ILL,	_INC,	_TST,	_JMP,	_CLR,
+	_SUBA,	_CMPA,	_SBCA,	_SUBD,	_ANDA,	_BITA,	_LDA,	_ILL,	// 0x80
+	_EORA,	_ADCA,	_ORA,	_ADDA,	_CMPX,	_BSR,	_LDX,	_ILL,
+	_SUBA,	_CMPA,	_SBCA,	_SUBD,	_ANDA,	_BITA,	_LDA,	_STA,	// 0x90
+	_EORA,	_ADCA,	_ORA,	_ADDA,	_CMPX,	_JSR,	_LDX,	_STX,
+	_SUBA,	_CMPA,	_SBCA,	_SUBD,	_ANDA,	_BITA,	_LDA,	_STA,	// 0xa0
+	_EORA,	_ADCA,	_ORA,	_ADDA,	_CMPX,	_JSR,	_LDX,	_STX,
+	_SUBA,	_CMPA,	_SBCA,	_SUBD,	_ANDA,	_BITA,	_LDA,	_STA,	// 0xb0
+	_EORA,	_ADCA,	_ORA,	_ADDA,	_CMPX,	_JSR,	_LDX,	_STX,
+	_SUBB,	_CMPB,	_SBCB,	_ADDD,	_ANDB,	_BITB,	_LDB,	_ILL,	// 0xc0
+	_EORB,	_ADCB,	_ORB,	_ADDB,	_LDD,	_ILL,	_LDU,	_ILL,
+	_SUBB,	_CMPB,	_SBCB,	_ADDD,	_ANDB,	_BITB,	_LDB,	_STB,	// 0xd0
+	_EORB,	_ADCB,	_ORB,	_ADDB,	_LDD,	_STD,	_LDU,	_STU,
+	_SUBB,	_CMPB,	_SBCB,	_ADDD,	_ANDB,	_BITB,	_LDB,	_STB,	// 0xe0
+	_EORB,	_ADCB,	_ORB,	_ADDB,	_LDD,	_STD,	_LDU,	_STU,
+	_SUBB,	_CMPB,	_SBCB,	_ADDD,	_ANDB,	_BITB,	_LDB,	_STB,	// 0xf0
+	_EORB,	_ADCB,	_ORB,	_ADDB,	_LDD,	_STD,	_LDU,	_STU
+};
+
+enum mnemonics_index opcodes_page_2[256] = {
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x00
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x10
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_LBRN,	_LBHI,	_LBLS,	_LBHS,	_LBLO,	_LBNE,	_LBEQ,	// 0x20
+	_LBVC,	_LBVS,	_LBPL,	_LBMI,	_LBGE,	_LBLT,	_LBGT,	_LBLE,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x30
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_SWI2,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x40
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x50
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x60
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x70
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_CMPD,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x80
+	_ILL,	_ILL,	_ILL,	_ILL,	_CMPY,	_ILL,	_LDY,	_ILL,
+	_ILL,	_ILL,	_ILL,	_CMPD,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x90
+	_ILL,	_ILL,	_ILL,	_ILL,	_CMPY,	_ILL,	_LDY,	_STY,
+	_ILL,	_ILL,	_ILL,	_CMPD,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xa0
+	_ILL,	_ILL,	_ILL,	_ILL,	_CMPY,	_ILL,	_LDY,	_STY,
+	_ILL,	_ILL,	_ILL,	_CMPD,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xb0
+	_ILL,	_ILL,	_ILL,	_ILL,	_CMPY,	_ILL,	_LDY,	_STY,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xc0
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_LDS,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xd0
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_LDS,	_STS,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xe0
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_LDS,	_STS,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xf0
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_LDS,	_STS
+};
 
 uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address) {
+	char buffer2[64];
 	uint16_t start_address = address;
 	uint8_t opcode = read_8(address++);
 
@@ -62,9 +135,9 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address) {
 		opcode = read_8(address++);
 	} else {
 		// page "1"
-
+		sprintf(buffer2, "%s", mnemonics[opcodes_page_1[opcode]]);
 	}
 
-	snprintf(buffer, 512, ",%04x %02x\n", start_address, opcode);
+	sprintf(buffer, ",%04x %02x %s\n", start_address, opcode, buffer2);
 	return address - start_address;
 }

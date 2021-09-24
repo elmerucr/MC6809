@@ -108,7 +108,7 @@ uint16_t mc6809::a_lrl()
  */
 void mc6809::status(char *text_buffer)
 {
-	snprintf(text_buffer, 512, " pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I\n"
+	sprintf(text_buffer, " pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I\n"
 			"%04x %02x %02x:%02x "
 			"%04x %04x %04x %04x "
 			"%c%c%c%c%c%c%c%c "
@@ -128,24 +128,3 @@ void mc6809::status(char *text_buffer)
 			*firq_line ? '1' : '0',
 			*irq_line ? '1' : '0');
 }
-
-// void mc6809::status(char *text_buffer)
-// {
-// 	printf(" pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I\n");
-// 	printf("%04x %02x %02x:%02x ", pc, dp, ac, br);
-// 	printf("%04x %04x %04x %04x ", xr, yr, us, sp);
-// 	printf("%c%c%c%c%c%c%c%c ",
-// 		cc & E_FLAG ? '*' : '-',
-// 		cc & F_FLAG ? '*' : '-',
-// 		cc & H_FLAG ? '*' : '-',
-// 		cc & I_FLAG ? '*' : '-',
-// 		cc & N_FLAG ? '*' : '-',
-// 		cc & Z_FLAG ? '*' : '-',
-// 		cc & V_FLAG ? '*' : '-',
-// 		cc & C_FLAG ? '*' : '-');
-// 	printf("%c%c %c %c\n",
-// 		old_nmi_line ? '1' : '0',
-// 		*nmi_line ? '1' : '0',
-// 		*firq_line ? '1' : '0',
-// 		*irq_line ? '1' : '0');
-// }
