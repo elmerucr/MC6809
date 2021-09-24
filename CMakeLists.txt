@@ -2,11 +2,17 @@ cmake_minimum_required (VERSION 3.0)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -O3")
 
-project(test)
+project(emulate_mc6809)
 
 include_directories(
     src/
     test/
 )
 
-add_executable(test test/main.cpp src/mc6809.cpp src/mc6809dis.cpp)
+add_executable(
+	emulate_mc6809
+	test/main.cpp
+	src/mc6809.cpp
+	src/mc6809_disassembler.cpp
+	src/mc6809_instructions.cpp
+)

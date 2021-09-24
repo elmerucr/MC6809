@@ -48,7 +48,10 @@ public:
 
 	void reset();
 	bool run(uint16_t cycles);
-	void status();
+	void status(char *text_buffer);
+	int disassemble_instruction(char *buffer, uint16_t pc);
+
+	uint16_t get_pc() { return pc; }
 private:
 	uint16_t pc;	// program counter
 	uint8_t	 dp;	// direct page register
