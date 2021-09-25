@@ -39,6 +39,9 @@ int main()
 	memory[0xc00a] = 0x20;	// bra $c010
 	memory[0xc00b] = 0x04;
 
+	memory[0xc010] = 0x10;	// swi 2 (page2 opcode)
+	memory[0xc011] = 0x3f;
+
 	mc6809 cpu(read, write);
 
 	// reset system and put welcome message

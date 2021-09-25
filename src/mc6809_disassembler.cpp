@@ -32,8 +32,28 @@ enum mnemonics_index {
 	_SYNC, _TFR,  _TST,  _TSTA, _TSTB
 };
 
-enum addr_index {
-	_INH=0,	_EXT
+enum addr_mode_index {
+	_NOM,	// no mode
+	_IMP,	// inherent/implied
+	_IMB,	// immediate byte
+	_IMW,	// immediate word
+	_DIR,	// direct
+	_EXT,	// extended
+	_IND,	// indexed
+	_REB,	// relative byte
+	_REW,	// relative word
+	_R1,	// tfr/exg mode
+	_R2,	// pul/psh system
+	_R3,	// pul/psh user
+	_BD,	// Bit Manipulation direct
+	_BI,	// Bit Manipulation index
+	_BE,	// Bit Manipulation extended
+	_BT,	// Bit Transfers direct
+	_T1,	// Block Transfer r0+,r1+
+	_T2,	// Block Transfer r0-,r1-
+	_T3,	// Block Transfer r0+,r1
+	_T4,	// Block Transfer r0,r1+
+	_IML 	// immediate 32-bit
 };
 
 const char *mnemonics[133] = {
@@ -161,22 +181,33 @@ enum mnemonics_index opcodes_page_3[256] = {
 	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL
 };
 
-uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address) {
-	char buffer2[64];
+uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
+{
+	char *start_buffer = buffer;
+	char *mne_buffer = &buffer[21];
+	uint8_t bytes_printed = 0;
 	uint16_t start_address = address;
 	uint8_t opcode = read_8(address++);
+	buffer += sprintf(buffer, ",%04x %02x", start_address, opcode);
+	bytes_printed++;
 
 	if (opcode == 0x10) {
 		// page 2
 		opcode = read_8(address++);
+		buffer += sprintf(buffer, " %02x", opcode);
+		bytes_printed++;
+		mne_buffer += sprintf(mne_buffer, " %s\n", mnemonics[opcodes_page_2[opcode]]);
 	} else if (opcode == 0x11) {
 		// page 3
 		opcode = read_8(address++);
 	} else {
 		// page "1"
-		sprintf(buffer2, "%s", mnemonics[opcodes_page_1[opcode]]);
+		mne_buffer += sprintf(mne_buffer, " %s\n", mnemonics[opcodes_page_1[opcode]]);
 	}
 
-	sprintf(buffer, ",%04x %02x %s\n", start_address, opcode, buffer2);
+	for (int i=0; i<(5 - bytes_printed); i++) {
+		buffer += sprintf(buffer, "   ");
+	}
+	start_buffer[20] = ' ';
 	return address - start_address;
 }
