@@ -33,23 +33,23 @@ enum mnemonics_index {
 };
 
 const char *mnemonics[133] = {
-	"abx",  "adca", "adcb", "adda", "addb", "addd", "anda", "andb",
-	"andcc","asl",  "asla", "aslb", "asr",  "asra", "asrb", "beq",
-	"bge",  "bgt",  "bhi",  "bhs",  "bita", "bitb", "bmi",  "ble",
-	"blo",  "bls",  "blt",  "bne",  "bpl",  "bra",  "brn",  "bsr",
-	"bvc",  "bvs",  "clr",  "clra", "clrb", "cmpa", "cmpb", "cmpd",
-	"cmps", "cmpu", "cmpx", "cmpy", "com",  "coma", "comb", "cwai",
-	"daa",  "dec",  "deca", "decb", "eora", "eorb", "exg",  "ill",
-	"inc",  "inca", "incb", "jmp",  "jsr",  "lbeq", "lbge", "lbgt",
-	"lbhi", "lbhs", "lble", "lblo", "lbls", "lblt", "lbmi", "lbne",
-	"lbpl", "lbra", "lbrn", "lbsr", "lbvc", "lbvs", "lda",  "ldb",
-	"ldd",  "lds",  "ldu",  "ldx",  "ldy",  "leas", "leau", "leax",
-	"leay", "lsr",  "lsra", "lsrb", "mul",  "neg",  "nega", "negb",
-	"nop",  "ora",  "orb",  "orcc", "pshs", "pshu", "puls", "pulu",
-	"rol",  "rola", "rolb", "ror",  "rora", "rorb", "rti",  "rts",
-	"sbca", "sbcb", "sex",  "sta",  "stb",  "std",  "sts",  "stu",
-	"stx",  "sty",  "suba", "subb", "subd", "swi",  "swi2", "swi3",
-	"sync", "tfr",  "tst",  "tsta", "tstb"
+	"abx  ","adca ","adcb ","adda ","addb ","addd ","anda ","andb ",
+	"andcc","asl  ","asla ","aslb ","asr  ","asra ","asrb ","beq  ",
+	"bge  ","bgt  ","bhi  ","bhs  ","bita ","bitb ","bmi  ","ble  ",
+	"blo  ","bls  ","blt  ","bne  ","bpl  ","bra  ","brn  ","bsr  ",
+	"bvc  ","bvs  ","clr  ","clra ","clrb ","cmpa ","cmpb ","cmpd ",
+	"cmps ","cmpu ","cmpx ","cmpy ","com  ","coma ","comb ","cwai ",
+	"daa  ","dec  ","deca ","decb ","eora ","eorb ","exg  ","ill  ",
+	"inc  ","inca ","incb ","jmp  ","jsr  ","lbeq ","lbge ","lbgt ",
+	"lbhi ","lbhs ","lble ","lblo ","lbls ","lblt ","lbmi ","lbne ",
+	"lbpl ","lbra ","lbrn ","lbsr ","lbvc ","lbvs ","lda  ","ldb  ",
+	"ldd  ","lds  ","ldu  ","ldx  ","ldy  ","leas ","leau ","leax ",
+	"leay ","lsr  ","lsra ","lsrb ","mul  ","neg  ","nega ","negb ",
+	"nop  ","ora  ","orb  ","orcc ","pshs ","pshu ","puls ","pulu ",
+	"rol  ","rola ","rolb ","ror  ","rora ","rorb ","rti  ","rts  ",
+	"sbca ","sbcb ","sex  ","sta  ","stb  ","std  ","sts  ","stu  ",
+	"stx  ","sty  ","suba ","subb ","subd ","swi  ","swi2 ","swi3 ",
+	"sync ","tfr  ","tst  ","tsta ","tstb "
 };
 
 enum mnemonics_index opcodes_page_1[256] = {
