@@ -5,7 +5,7 @@
  *
  * Code is inspired by dasm09 which can be found at:
  * http://koti.mbnet.fi/~atjs/mc6809/Disassembler/dasm09.TGZ
- * And somewhat newer:
+ * And by f9dasm:
  * https://github.com/Arakula/f9dasm
  */
 
@@ -30,6 +30,10 @@ enum mnemonics_index {
 	_SBCA, _SBCB, _SEX,  _STA,  _STB,  _STD,  _STS,  _STU,
 	_STX,  _STY,  _SUBA, _SUBB, _SUBD, _SWI,  _SWI2, _SWI3,
 	_SYNC, _TFR,  _TST,  _TSTA, _TSTB
+};
+
+enum addr_index {
+	_INH=0,	_EXT
 };
 
 const char *mnemonics[133] = {
@@ -120,6 +124,41 @@ enum mnemonics_index opcodes_page_2[256] = {
 	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_LDS,	_STS,
 	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xf0
 	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_LDS,	_STS
+};
+
+enum mnemonics_index opcodes_page_3[256] = {
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x00
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x10
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x20
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x30
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_SWI3,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x40
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x50
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x60
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x70
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_CMPU,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x80
+	_ILL,	_ILL,	_ILL,	_ILL,	_CMPS,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_CMPU,	_ILL,	_ILL,	_ILL,	_ILL,	// 0x90
+	_ILL,	_ILL,	_ILL,	_ILL,	_CMPS,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_CMPU,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xa0
+	_ILL,	_ILL,	_ILL,	_ILL,	_CMPS,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_CMPU,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xb0
+	_ILL,	_ILL,	_ILL,	_ILL,	_CMPS,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xc0
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xd0
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xe0
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	// 0xf0
+	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL,	_ILL
 };
 
 uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address) {
