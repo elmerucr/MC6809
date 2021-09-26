@@ -5,6 +5,7 @@
  */
 
 #include "mc6809.hpp"
+#include <cstdio>
 
 void mc6809::ill(uint16_t ea)
 {
@@ -509,7 +510,14 @@ void mc6809::orcc(uint16_t ea)
 
 void mc6809::page2(uint16_t ea)
 {
-	//
+	printf("let's do a page2 instruction\n");
+
+	// fetch opcode
+	uint8_t opcode = (*read_8)(pc++);
+	cycles += cycles_page2[opcode];
+
+	uint16_t effective_address = (this->*addressing_modes_page2[opcode])();
+	(this->*opcodes_page2[opcode])(effective_address);
 }
 
 void mc6809::page3(uint16_t ea)
@@ -649,12 +657,12 @@ void mc6809::swi(uint16_t ea)
 
 void mc6809::swi2(uint16_t ea)
 {
-	//
+	printf("swi2() not implemented\n");
 }
 
 void mc6809::swi3(uint16_t ea)
 {
-	//
+	printf("swi3() not implemented\n");
 }
 
 void mc6809::sync(uint16_t ea)

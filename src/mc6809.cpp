@@ -59,14 +59,12 @@ void mc6809::reset()
 
 bool mc6809::run(uint16_t cycles)
 {
-	uint8_t opcode;
-	uint16_t effective_address;
-
-	// fetch opcode
-	opcode = (*read_8)(pc++);
+	// fetch opcode (= first byte of instruction, possible for)
+	// breakpoints later on
+	uint8_t opcode = (*read_8)(pc++);
 	cycles += cycles_page1[opcode];
 
-	effective_address = (this->*addressing_modes_page1[opcode])();
+	uint16_t effective_address = (this->*addressing_modes_page1[opcode])();
 	(this->*opcodes_page1[opcode])(effective_address);
 	return false;
 }
@@ -76,7 +74,7 @@ bool mc6809::run(uint16_t cycles)
  */
 uint16_t mc6809::a_dr()
 {
-	return (dp << 8) | read_8(pc++);
+	return (dp << 8) | (*read_8)(pc++);
 }
 
 uint16_t mc6809::a_ih()
@@ -91,14 +89,14 @@ uint16_t mc6809::a_im()
 
 uint16_t mc6809::a_srl()
 {
-	uint16_t offset = (uint16_t)read_8(pc++);
-	return pc + offset;
+	uint16_t offset = (uint16_t)((int8_t)(*read_8)(pc++));
+	return (uint16_t)(pc + offset);
 }
 
 uint16_t mc6809::a_lrl()
 {
-	uint16_t offset = read_8(pc++);
-	offset = (offset << 8) | read_8(pc++);
+	uint16_t offset = (*read_8)(pc++);
+	offset = (offset << 8) | (*read_8)(pc++);
 	return pc + offset;
 }
 
