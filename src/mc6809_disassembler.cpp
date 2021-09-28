@@ -64,7 +64,7 @@ const char *mnemonics[133] = {
 	"blo  ","bls  ","blt  ","bne  ","bpl  ","bra  ","brn  ","bsr  ",
 	"bvc  ","bvs  ","clr  ","clra ","clrb ","cmpa ","cmpb ","cmpd ",
 	"cmps ","cmpu ","cmpx ","cmpy ","com  ","coma ","comb ","cwai ",
-	"daa  ","dec  ","deca ","decb ","eora ","eorb ","exg  ","ill  ",
+	"daa  ","dec  ","deca ","decb ","eora ","eorb ","exg  ","???  ",
 	"inc  ","inca ","incb ","jmp  ","jsr  ","lbeq ","lbge ","lbgt ",
 	"lbhi ","lbhs ","lble ","lblo ","lbls ","lblt ","lbmi ","lbne ",
 	"lbpl ","lbra ","lbrn ","lbsr ","lbvc ","lbvs ","lda  ","ldb  ",
@@ -198,7 +198,7 @@ enum addr_mode_index addr_mode_page_1[256] = {
 
 uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 {
-	char *start_buffer = buffer;
+	char *original_buffer = buffer;
 	char *mne_buffer = &buffer[21];
 	uint8_t bytes_printed = 0;
 	uint16_t start_address = address;
@@ -212,22 +212,33 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		byte = read_8(address++);
 		buffer += sprintf(buffer, " %02x", byte);
 		bytes_printed++;
-		mne_buffer += sprintf(mne_buffer, "%s\n", mnemonics[opcodes_page_2[byte]]);
+		mne_buffer += sprintf(mne_buffer, "%s\n",
+			mnemonics[opcodes_page_2[byte]]);
 	} else if (byte == 0x11) {
 		// page 3
 		byte = read_8(address++);
+		buffer += sprintf(buffer, " %02x", byte);
+		bytes_printed++;
+		mne_buffer += sprintf(mne_buffer, "%s\n",
+			mnemonics[opcodes_page_3[byte]]);
 	} else {
 		// page "1"
-		mne_buffer += sprintf(mne_buffer, "%s ", mnemonics[opcodes_page_1[byte]]);
+		mne_buffer += sprintf(mne_buffer, "%s ",
+			mnemonics[opcodes_page_1[byte]]);
 		switch (addr_mode_page_1[byte]) {
 			case __DIR_:
-				mne_buffer += sprintf(mne_buffer, "$%02x", (*read_8)(address++));
+				byte = (*read_8)(address++);
+				buffer += sprintf(buffer, " %02x", byte);
+				bytes_printed++;
+				mne_buffer += sprintf(mne_buffer,
+					"$%02x", byte);
 				break;
 			case __REB_:
 				byte = (*read_8)(address++);
 				buffer += sprintf(buffer, " %02x", byte);
 				bytes_printed++;
-				mne_buffer += sprintf(mne_buffer, "$%04x", (uint16_t)(address + (uint16_t)((int8_t)byte)));
+				mne_buffer += sprintf(mne_buffer, "$%04x",
+					(uint16_t)(address + (uint16_t)((int8_t)byte)));
 				break;
 			case __REW_:
 				byte = (*read_8)(address++);
@@ -238,7 +249,10 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 				buffer += sprintf(buffer, " %02x", byte);
 				bytes_printed++;
 				word |= byte;
-				mne_buffer += sprintf(mne_buffer, "$%04x", (uint16_t)(address + word));
+				mne_buffer += sprintf(mne_buffer, "$%04x",
+					(uint16_t)(address + word));
+				break;
+			case __NOM_:
 				break;
 			default:
 				break;
@@ -249,6 +263,6 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 	for (int i=0; i<(5 - bytes_printed); i++) {
 		buffer += sprintf(buffer, "   ");
 	}
-	start_buffer[20] = ' ';
+	original_buffer[20] = ' ';
 	return address - start_address;
 }

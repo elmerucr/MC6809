@@ -510,9 +510,6 @@ void mc6809::orcc(uint16_t ea)
 
 void mc6809::page2(uint16_t ea)
 {
-	printf("let's do a page2 instruction\n");
-
-	// fetch opcode
 	uint8_t opcode = (*read_8)(pc++);
 	cycles += cycles_page2[opcode];
 
@@ -522,7 +519,11 @@ void mc6809::page2(uint16_t ea)
 
 void mc6809::page3(uint16_t ea)
 {
-	//
+	uint8_t opcode = (*read_8)(pc++);
+	cycles += cycles_page3[opcode];
+
+	uint16_t effective_address = (this->*addressing_modes_page3[opcode])();
+	(this->*opcodes_page3[opcode])(effective_address);
 }
 
 void mc6809::pshs(uint16_t ea)

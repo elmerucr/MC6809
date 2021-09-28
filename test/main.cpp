@@ -9,7 +9,10 @@
 #include <cstring>
 #include <cstdlib>
 
-// This function reads a line from stdin, and returns a pointer to a string. The caller needs to free allocated memory
+/*
+ * This function reads a line from stdin, and returns a pointer to a
+ * string. The caller needs to free allocated memory.
+ */
 char *read_line(void);
 
 char text_buffer[512];
@@ -35,6 +38,9 @@ int main()
 	memory[0xc000] = 0x16;	// lbra $c00a
 	memory[0xc001] = 0x00;
 	memory[0xc002] = 0x07;
+	memory[0xc003] = 0x01;	// illegal
+	memory[0xc004] = 0x10;	// illegal page 2
+	memory[0xc005] = 0x32;
 
 	memory[0xc00a] = 0x20;	// bra $c010
 	memory[0xc00b] = 0x04;
@@ -43,6 +49,8 @@ int main()
 	memory[0xc011] = 0x3f;
 	memory[0xc012] = 0x00;	// neg $ed
 	memory[0xc013] = 0xed;
+	memory[0xc014] = 0x11;	// swi3 (page3 opcode)
+	memory[0xc015] = 0x3f;
 
 	mc6809 cpu(read, write);
 
@@ -52,8 +60,11 @@ int main()
 	cpu.reset();
 	cpu.status(text_buffer);
 	printf("%s\n", text_buffer);
-	cpu.disassemble_instruction(text_buffer, cpu.get_pc());
-	printf("%s", text_buffer);
+	uint16_t temp_pc = cpu.get_pc();
+	for (int i=0; i<4; i++) {
+		temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
+		printf("%s", text_buffer);
+	}
 
 	// prepare repl
 	char prompt = '.';
@@ -78,8 +89,11 @@ int main()
 			cpu.run(0);
 			cpu.status(text_buffer);
 			printf("%s\n", text_buffer);
-			cpu.disassemble_instruction(text_buffer, cpu.get_pc());
-			printf("%s", text_buffer);
+			uint16_t temp_pc = cpu.get_pc();
+			for (int i=0; i<4; i++) {
+				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
+				printf("%s", text_buffer);
+			}
 		} else if (strcmp(token0, "reset") == 0) {
 			printf("resetting mc6809...\n\n");
 			cpu.reset();
@@ -98,7 +112,6 @@ int main()
 	free(input_string);
 	return 0;
 }
-
 
 char *read_line(void)
 {

@@ -87,13 +87,13 @@ uint16_t mc6809::a_im()
 	return pc++;
 }
 
-uint16_t mc6809::a_srl()
+uint16_t mc6809::a_reb()
 {
 	uint16_t offset = (uint16_t)((int8_t)(*read_8)(pc++));
 	return (uint16_t)(pc + offset);
 }
 
-uint16_t mc6809::a_lrl()
+uint16_t mc6809::a_rew()
 {
 	uint16_t offset = (*read_8)(pc++);
 	offset = (offset << 8) | (*read_8)(pc++);

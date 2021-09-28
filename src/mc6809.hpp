@@ -83,8 +83,8 @@ private:
 	uint16_t a_dr();
 	uint16_t a_im();
 	uint16_t a_ih();
-	uint16_t a_srl();	// short relative (8 bit signed)
-	uint16_t a_lrl();	// long relative (16 bit signed)
+	uint16_t a_reb();	// relative byte (8 bit signed)
+	uint16_t a_rew();	// relative word (16 bit signed)
 
 	// instructions
 	void abx(uint16_t ea);
@@ -245,10 +245,10 @@ private:
 	addressing_mode addressing_modes_page1[256] = {
 		&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	// 0x00
 		&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_lrl,	&mc6809::a_lrl,	// 0x10
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_rew,	&mc6809::a_rew,	// 0x10
 		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_im,
-		&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	// 0x20
-		&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,	&mc6809::a_srl,
+		&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	// 0x20
+		&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,
 		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x30
 		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
 		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x40
