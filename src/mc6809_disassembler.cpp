@@ -196,12 +196,105 @@ enum addr_mode_index addr_mode_page_1[256] = {
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 };
 
+enum addr_mode_index addr_mode_page_2[256] = {
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_
+};
+
+enum addr_mode_index addr_mode_page_3[256] = {
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_
+};
+
 uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 {
+	/*
+	 * original_buffer points to the original start. Now it is
+	 * possible to refer to a fixed char (and remove the \0 )
+	 */
 	char *original_buffer = buffer;
+
+	/*
+	 * mnemonics buffer = starting point of the mnemonic in the
+	 * disassembler output.
+	 */
 	char *mne_buffer = &buffer[17];
+
+	/*
+	 * Any instruction has a maximum of 5 bytes - keep track of
+	 * the number of printed bytes, to know how many spaces need
+	 * to be printed.
+	 */
 	uint8_t bytes_printed = 0;
+
+	/*
+	 * Keep track of the original start address, to calculate the
+	 * total number of bytes that the instruction takes.
+	 */
 	uint16_t start_address = address;
+
+	enum addr_mode_index mode;
+
 	uint8_t byte = (*read_8)(address++);
 	uint16_t word = 0;
 	buffer += sprintf(buffer, ",%04x %02x", start_address, byte);
@@ -212,72 +305,77 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		byte = (*read_8)(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
-		mne_buffer += sprintf(mne_buffer, "%s\n",
+		mne_buffer += sprintf(mne_buffer, "%s",
 			mnemonics[opcodes_page_2[byte]]);
+		mode = addr_mode_page_2[byte];
 	} else if (byte == 0x11) {
 		// page 3
 		byte = read_8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
-		mne_buffer += sprintf(mne_buffer, "%s\n",
+		mne_buffer += sprintf(mne_buffer, "%s",
 			mnemonics[opcodes_page_3[byte]]);
+		mode = addr_mode_page_3[byte];
 	} else {
 		// page "1"
 		mne_buffer += sprintf(mne_buffer, "%s ",
 			mnemonics[opcodes_page_1[byte]]);
-		switch (addr_mode_page_1[byte]) {
-			case __DIR_:
-				byte = (*read_8)(address++);
-				buffer += sprintf(buffer, "%02x", byte);
-				bytes_printed++;
-				mne_buffer += sprintf(mne_buffer,
-					"$%02x", byte);
-				break;
-			case __REB_:
-				byte = (*read_8)(address++);
-				buffer += sprintf(buffer, "%02x", byte);
-				bytes_printed++;
-				mne_buffer += sprintf(mne_buffer, "$%04x",
-					(uint16_t)(address + (uint16_t)((int8_t)byte)));
-				break;
-			case __REW_:
-				byte = (*read_8)(address++);
-				buffer += sprintf(buffer, "%02x", byte);
-				bytes_printed++;
-				word = byte << 8;
-				byte = (*read_8)(address++);
-				buffer += sprintf(buffer, "%02x", byte);
-				bytes_printed++;
-				word |= byte;
-				mne_buffer += sprintf(mne_buffer, "$%04x",
-					(uint16_t)(address + word));
-				break;
-			case __IMB_:
-				byte = (*read_8)(address++);
-				buffer += sprintf(buffer, "%02x", byte);
-				bytes_printed++;
-				mne_buffer += sprintf(mne_buffer,
-					"#$%02x", byte);
-				break;
-			case __IMW_:
-				byte = (*read_8)(address++);
-				buffer += sprintf(buffer, "%02x", byte);
-				bytes_printed++;
-				mne_buffer += sprintf(mne_buffer,
-					"#$%02x", byte);
-				byte = (*read_8)(address++);
-				buffer += sprintf(buffer, "%02x", byte);
-				bytes_printed++;
-				mne_buffer += sprintf(mne_buffer,
-					"%02x", byte);
-				break;
-			case __NOM_:
-				break;
-			default:
-				break;
-		};
-		mne_buffer += sprintf(mne_buffer, "\n");
+		mode = addr_mode_page_1[byte];
 	}
+
+	switch (mode) {
+		case __DIR_:
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			mne_buffer += sprintf(mne_buffer,
+				"$%02x", byte);
+			break;
+		case __REB_:
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			mne_buffer += sprintf(mne_buffer, "$%04x",
+				(uint16_t)(address + (uint16_t)((int8_t)byte)));
+			break;
+		case __REW_:
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			word = byte << 8;
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			word |= byte;
+			mne_buffer += sprintf(mne_buffer, "$%04x",
+				(uint16_t)(address + word));
+			break;
+		case __IMB_:
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			mne_buffer += sprintf(mne_buffer,
+				"#$%02x", byte);
+			break;
+		case __IMW_:
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			mne_buffer += sprintf(mne_buffer,
+				"#$%02x", byte);
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			mne_buffer += sprintf(mne_buffer,
+				"%02x", byte);
+			break;
+		case __NOM_:
+			break;
+		default:
+			break;
+	};
+
+	mne_buffer += sprintf(mne_buffer, "\n");
 
 	for (int i=0; i<(5 - bytes_printed); i++) {
 		buffer += sprintf(buffer, "  ");
