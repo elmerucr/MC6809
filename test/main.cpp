@@ -51,6 +51,8 @@ int main()
 	memory[0xc013] = 0xed;
 	memory[0xc014] = 0x11;	// swi3 (page3 opcode)
 	memory[0xc015] = 0x3f;
+	memory[0xc016] = 0x1a;	// orcc #$b2
+	memory[0xc017] = 0xb2;
 
 	mc6809 cpu(read, write);
 

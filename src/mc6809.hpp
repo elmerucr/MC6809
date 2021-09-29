@@ -49,7 +49,7 @@ public:
 	void reset();
 	bool run(uint16_t cycles);
 	void status(char *text_buffer);
-	uint16_t disassemble_instruction(char *buffer, uint16_t pc);
+	uint16_t disassemble_instruction(char *buffer, uint16_t address);
 
 	uint16_t get_pc() { return pc; }
 private:
