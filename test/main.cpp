@@ -53,6 +53,8 @@ int main()
 	memory[0xc015] = 0x3f;
 	memory[0xc016] = 0x1a;	// orcc #$b2
 	memory[0xc017] = 0xb2;
+	memory[0xc018] = 0x1f;	// tfr x,y
+	memory[0xc019] = 0x1a;
 
 	mc6809 cpu(read, write);
 

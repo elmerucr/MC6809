@@ -37,13 +37,13 @@ enum addr_mode_index {
 	__NOM_,	// no mode
 	__REB_,	// relative byte
 	__REW_,	// relative word
-
-	__IMP_,	// inherent/implied
 	__IMB_,	// immediate byte
 	__IMW_,	// immediate word
+	__R1_,	// tfr/exg mode
+
+	__IMP_,	// inherent/implied
 	__EXT_,	// extended
 	__IND_,	// indexed
-	__R1_,	// tfr/exg mode
 	__R2_,	// pul/psh system
 	__R3_,	// pul/psh user
 	__BD_,	// Bit Manipulation direct
@@ -75,6 +75,25 @@ const char *mnemonics[133] = {
 	"sbca ","sbcb ","sex  ","sta  ","stb  ","std  ","sts  ","stu  ",
 	"stx  ","sty  ","suba ","subb ","subd ","swi  ","swi2 ","swi3 ",
 	"sync ","tfr  ","tst  ","tsta ","tstb "
+};
+
+const char *r1_registers[16] = {
+	"d",		// 0b0000 - 16
+	"x",		// 0b0001 - 16
+	"y",		// 0b0010 - 16
+	"us",		// 0b0011 - 16
+	"sp",		// 0b0100 - 16
+	"pc",		// 0b0101 - 16
+	"?",		// 0b0110
+	"?",		// 0b0111
+	"a",		// 0b1000 - 8
+	"b",		// 0b1001 - 8
+	"cc",		// 0b1010 - 8
+	"dp",		// 0b1011 - 8
+	"?",		// 0b1100
+	"?",		// 0b1101
+	"?",		// 0b1110
+	"?"		// 0b1111
 };
 
 enum mnemonics_index opcodes_page_1[256] = {
@@ -183,11 +202,11 @@ enum mnemonics_index opcodes_page_3[256] = {
 };
 
 enum addr_mode_index addr_mode_page_1[256] = {
-	__DIR_, __NOM_, __NOM_, __DIR_, __DIR_, __NOM_, __DIR_, __DIR_,	// 0x00
-	__DIR_, __DIR_, __DIR_, __NOM_, __DIR_, __DIR_, __DIR_, __DIR_,
+	__DIR_, __NOM_, __NOM_, __DIR_, __DIR_, __NOM_, __DIR_,	__DIR_,	// 0x00
+	__DIR_, __DIR_, __DIR_, __NOM_, __DIR_, __DIR_, __NOM_, __NOM_,
 
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __REW_, __NOM_,	// 0x10
-	__NOM_, __NOM_, __IMB_, __NOM_, __IMB_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __IMB_, __NOM_, __IMB_, __NOM_, __R1_, 	__R1_,
 
 	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x20
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
@@ -368,6 +387,18 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			bytes_printed++;
 			mne_buffer += sprintf(mne_buffer,
 				"%02x", byte);
+			break;
+		case __R1_:
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			mne_buffer += sprintf(mne_buffer, "%s,%s",
+				r1_registers[(byte >> 4)],
+				r1_registers[byte & 0x0f]);
+			if (((byte & 0x80) >> 4) != (byte & 0x08)) {
+				mne_buffer += sprintf(mne_buffer,
+					" illegal");
+			}
 			break;
 		case __NOM_:
 			break;
