@@ -77,24 +77,35 @@ const char *mnemonics[133] = {
 	"sync ","tfr  ","tst  ","tsta ","tstb "
 };
 
-const char *r1_registers[16] = {
-	"d",		// 0b0000 - 16
-	"x",		// 0b0001 - 16
-	"y",		// 0b0010 - 16
-	"us",		// 0b0011 - 16
-	"sp",		// 0b0100 - 16
-	"pc",		// 0b0101 - 16
-	"?",		// 0b0110
-	"?",		// 0b0111
-	"a",		// 0b1000 - 8
-	"b",		// 0b1001 - 8
-	"cc",		// 0b1010 - 8
-	"dp",		// 0b1011 - 8
-	"?",		// 0b1100
-	"?",		// 0b1101
-	"?",		// 0b1110
-	"?"		// 0b1111
+struct exg_tfr_operand {
+	char name[3];
+	bool illegal;
+	bool eight_bit;
 };
+
+const struct exg_tfr_operand exg_tfr_operands[16] = {
+	{ "d",  false, false },
+	{ "x",  false, false },
+	{ "y",  false, false },
+	{ "us", false, false },
+	{ "sp", false, false },
+	{ "pc", false, false },
+	{ "?",  true,  false },
+	{ "?",  true,  false },
+	{ "a",  false, true  },
+	{ "b",  false, true  },
+	{ "cc", false, true  },
+	{ "dp", false, true  },
+	{ "?",  true,  false },
+	{ "?",  true,  false },
+	{ "?",  true,  false },
+	{ "?",  true,  false }
+};
+
+// const char *us_register_names[8] = {
+// 	"pc",
+// 	"boe"
+// };
 
 enum mnemonics_index opcodes_page_1[256] = {
 	_NEG,	_ILL,	_ILL,	_COM,	_LSR,	_ILL,	_ROR,	_ASR,	// 0x00
@@ -392,12 +403,13 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			byte = (*read_8)(address++);
 			buffer += sprintf(buffer, "%02x", byte);
 			bytes_printed++;
-			mne_buffer += sprintf(mne_buffer, "%s,%s",
-				r1_registers[(byte >> 4)],
-				r1_registers[byte & 0x0f]);
-			if (((byte & 0x80) >> 4) != (byte & 0x08)) {
-				mne_buffer += sprintf(mne_buffer,
-					" illegal");
+			if (((exg_tfr_operands[byte>>4].illegal) || (exg_tfr_operands[byte&0xf].illegal)) ||
+			((exg_tfr_operands[byte>>4].eight_bit) != (exg_tfr_operands[byte&0xf].eight_bit))) {
+				mne_buffer += sprintf(mne_buffer, "illegal");
+			} else {
+				mne_buffer += sprintf(mne_buffer, "%s,%s",
+					exg_tfr_operands[(byte >> 4)].name,
+					exg_tfr_operands[byte & 0x0f].name);
 			}
 			break;
 		case __NOM_:
