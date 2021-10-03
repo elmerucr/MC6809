@@ -41,9 +41,9 @@ enum addr_mode_index {
 	__IMW_,	// immediate word
 	__R1_,	// tfr/exg mode
 
-	__IMP_,	// inherent/implied
+	__INH_,	// inherent
 	__EXT_,	// extended
-	__IND_,	// indexed
+	__IDX_,	// indexed
 	__R2_,	// pul/psh system
 	__R3_,	// pul/psh user
 	__BD_,	// Bit Manipulation direct
@@ -54,7 +54,7 @@ enum addr_mode_index {
 	__T2_,	// Block Transfer r0-,r1-
 	__T3_,	// Block Transfer r0+,r1
 	__T4_,	// Block Transfer r0,r1+
-	__IML_ 	// immediate 32-bit
+	// __IML_ 	// immediate 32-bit
 };
 
 const char *mnemonics[133] = {
