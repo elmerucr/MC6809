@@ -245,7 +245,7 @@ private:
 	void tstb(uint16_t ea);
 
 private:
-	execute_instruction opcodes_page1[256] = {
+	const execute_instruction opcodes_page1[256] = {
 		&mc6809::neg,	&mc6809::ill,	&mc6809::ill,	&mc6809::com,	&mc6809::lsr,	&mc6809::ill,	&mc6809::ror,	&mc6809::asr,	// 0x00
 		&mc6809::asl,	&mc6809::rol,	&mc6809::dec,	&mc6809::ill,	&mc6809::inc,	&mc6809::tst,	&mc6809::jmp,	&mc6809::clr,
 		&mc6809::page2,	&mc6809::page3,	&mc6809::nop,	&mc6809::sync,	&mc6809::ill,	&mc6809::ill,	&mc6809::lbra,	&mc6809::lbsr,	// 0x10
@@ -280,7 +280,7 @@ private:
 		&mc6809::eorb,	&mc6809::adcb,	&mc6809::orb,	&mc6809::addb,	&mc6809::ldd,	&mc6809::std,	&mc6809::ldu,	&mc6809::stu
 	};
 
-	execute_instruction opcodes_page2[256] = {
+	const execute_instruction opcodes_page2[256] = {
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x00
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x10
@@ -315,7 +315,7 @@ private:
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::lds,	&mc6809::sts
 	};
 
-	execute_instruction opcodes_page3[256] = {
+	const execute_instruction opcodes_page3[256] = {
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x00
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x10
@@ -350,7 +350,7 @@ private:
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill
 	};
 
-	addressing_mode addressing_modes_page1[256] = {
+	const addressing_mode addressing_modes_page1[256] = {
 		&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,	// 0x00
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,
 		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_rew,	&mc6809::a_rew,	// 0x10
@@ -361,17 +361,14 @@ private:
 		&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,
 		&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x40
 		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,
-
-		// the no's must be done...
-
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x50
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	// 0x60
-		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,
-		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	// 0x70
-		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,
-		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	// 0x80
-		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_reb,	&mc6809::a_im,	&mc6809::a_im,
+		&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x50
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,
+		&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_idx,	// 0x60
+		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,
+		&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,	// 0x70
+		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,
+		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_no,	// 0x80
+		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_reb,	&mc6809::a_im,	&mc6809::a_no,
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	// 0x90
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,
 		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	// 0xa0
@@ -388,77 +385,77 @@ private:
 		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext
 	};
 
-	addressing_mode addressing_modes_page2[256] = {
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x00
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x10
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x20
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x30
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x40
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x50
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x60
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x70
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x80
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x90
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xa0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xb0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xc0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xd0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xe0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xf0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih
+	const addressing_mode addressing_modes_page2[256] = {
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x00
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x10
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	// 0x20
+		&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,	&mc6809::a_rew,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x30
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ih,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x40
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x50
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x60
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x70
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x80
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x90
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xa0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_idx,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xb0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xc0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xd0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xe0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_idx,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xf0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext
 	};
 
-	addressing_mode addressing_modes_page3[256] = {
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x00
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x10
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x20
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x30
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x40
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x50
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x60
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x70
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x80
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x90
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xa0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xb0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xc0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xd0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xe0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xf0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih
+	const addressing_mode addressing_modes_page3[256] = {
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x00
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x10
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x20
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x30
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ih,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x40
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x50
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x60
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x70
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x80
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x90
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xa0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xb0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xc0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xd0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xe0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xf0
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no
 	};
 
-	uint16_t cycles_page1[256] = {
+	const uint16_t cycles_page1[256] = {
 		 6,  0,  0,  6,  6,  0,  6,  6,  6,  6,  6,  0,  6,  6,  3,  6,	// 0x00
 		 0,  0,  2,  4,  0,  0,  5,  9,  0,  2,  3,  0,  3,  2,  8,  6,	// 0x10
 		 3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,	// 0x20
@@ -477,7 +474,7 @@ private:
 		 5,  5,  5,  7,  5,  5,  5,  5,  5,  5,  5,  5,  6,  6,  6,  6	// 0xf0
 	};
 
-	uint16_t cycles_page2[256] = {
+	const uint16_t cycles_page2[256] = {
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x00
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x10
 		 0,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,	// 0x20
@@ -496,7 +493,7 @@ private:
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  7,  7	// 0xf0
 	};
 
-	uint16_t cycles_page3[256] = {
+	const uint16_t cycles_page3[256] = {
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x00
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x10
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x20
