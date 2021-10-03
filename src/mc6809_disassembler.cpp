@@ -366,7 +366,8 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			buffer += sprintf(buffer, "%02x", byte);
 			bytes_printed++;
 			mne_buffer += sprintf(mne_buffer, "$%04x",
-				(uint16_t)(address + (uint16_t)((int8_t)byte)));
+				(uint16_t)(address +
+				(uint16_t)((int8_t)byte)));
 			break;
 		case __REW_:
 			byte = (*read_8)(address++);
@@ -403,8 +404,8 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			byte = (*read_8)(address++);
 			buffer += sprintf(buffer, "%02x", byte);
 			bytes_printed++;
-			if (((exg_tfr_operands[byte>>4].illegal) || (exg_tfr_operands[byte&0xf].illegal)) ||
-			((exg_tfr_operands[byte>>4].eight_bit) != (exg_tfr_operands[byte&0xf].eight_bit))) {
+			if (((exg_tfr_operands[byte >> 4].illegal) || (exg_tfr_operands[byte & 0x0f].illegal)) ||
+			((exg_tfr_operands[byte >> 4].eight_bit) != (exg_tfr_operands[byte & 0x0f].eight_bit))) {
 				mne_buffer += sprintf(mne_buffer, "illegal");
 			} else {
 				mne_buffer += sprintf(mne_buffer, "%s,%s",

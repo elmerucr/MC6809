@@ -72,7 +72,7 @@ bool mc6809::run(uint16_t cycles)
 /*
  * Addressing modes
  */
-uint16_t mc6809::a_dr()
+uint16_t mc6809::a_dir()
 {
 	return (dp << 8) | (*read_8)(pc++);
 }
@@ -98,6 +98,24 @@ uint16_t mc6809::a_rew()
 	uint16_t offset = (*read_8)(pc++);
 	offset = (offset << 8) | (*read_8)(pc++);
 	return pc + offset;
+}
+
+uint16_t mc6809::a_idx()
+{
+	// to do
+	return 0;
+}
+
+uint16_t mc6809::a_ext()
+{
+	// to do
+	return 0;
+}
+
+uint16_t mc6809::a_no()
+{
+	// no mode @ illegal instruction
+	return 0;
 }
 
 /*

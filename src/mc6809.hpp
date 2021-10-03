@@ -80,11 +80,14 @@ private:
 	typedef void (mc6809::*execute_instruction)(uint16_t);
 
 	// addressing modes
-	uint16_t a_dr();
+	uint16_t a_dir();
 	uint16_t a_im();
 	uint16_t a_ih();
 	uint16_t a_reb();	// relative byte (8 bit signed)
 	uint16_t a_rew();	// relative word (16 bit signed)
+	uint16_t a_idx();	// indexed
+	uint16_t a_ext();	// extended
+	uint16_t a_no();	// no mode (@ illegal instructions)
 
 	// instructions
 	void abx(uint16_t ea);
@@ -242,41 +245,6 @@ private:
 	void tstb(uint16_t ea);
 
 private:
-	addressing_mode addressing_modes_page1[256] = {
-		&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	// 0x00
-		&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,	&mc6809::a_dr,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_rew,	&mc6809::a_rew,	// 0x10
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_im,
-		&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	// 0x20
-		&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x30
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x40
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x50
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x60
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x70
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x80
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x90
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xa0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xb0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xc0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xd0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xe0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xf0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih
-	};
-
 	execute_instruction opcodes_page1[256] = {
 		&mc6809::neg,	&mc6809::ill,	&mc6809::ill,	&mc6809::com,	&mc6809::lsr,	&mc6809::ill,	&mc6809::ror,	&mc6809::asr,	// 0x00
 		&mc6809::asl,	&mc6809::rol,	&mc6809::dec,	&mc6809::ill,	&mc6809::inc,	&mc6809::tst,	&mc6809::jmp,	&mc6809::clr,
@@ -310,60 +278,6 @@ private:
 		&mc6809::eorb,	&mc6809::adcb,	&mc6809::orb,	&mc6809::addb,	&mc6809::ldd,	&mc6809::std,	&mc6809::ldu,	&mc6809::stu,
 		&mc6809::subb,	&mc6809::cmpb,	&mc6809::sbcb,	&mc6809::addd,	&mc6809::andb,	&mc6809::bitb,	&mc6809::ldb,	&mc6809::stb,	// 0xf0
 		&mc6809::eorb,	&mc6809::adcb,	&mc6809::orb,	&mc6809::addb,	&mc6809::ldd,	&mc6809::std,	&mc6809::ldu,	&mc6809::stu
-	};
-
-	uint16_t cycles_page1[256] = {
-		 6,  0,  0,  6,  6,  0,  6,  6,  6,  6,  6,  0,  6,  6,  3,  6,	// 0x00
-		 0,  0,  2,  4,  0,  0,  5,  9,  0,  2,  3,  0,  3,  2,  8,  6,	// 0x10
-		 3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,	// 0x20
-		 4,  4,  4,  4,  5,  5,  5,  5,  0,  5,  3,  6, 20, 11,  0, 19,	// 0x30
-		 2,  0,  0,  2,  2,  0,  2,  2,  2,  2,  2,  0,  2,  2,  0,  2,	// 0x40
-		 2,  0,  0,  2,  2,  0,  2,  2,  2,  2,  2,  0,  2,  2,  0,  2,	// 0x50
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x60
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x70
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x80
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x90
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xa0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xb0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xc0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xd0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xe0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0	// 0xf0
-	};
-
-	addressing_mode addressing_modes_page2[256] = {
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x00
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x10
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x20
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x30
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x40
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x50
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x60
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x70
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x80
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x90
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xa0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xb0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xc0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xd0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xe0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xf0
-		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih
 	};
 
 	execute_instruction opcodes_page2[256] = {
@@ -401,23 +315,112 @@ private:
 		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::lds,	&mc6809::sts
 	};
 
-	uint16_t cycles_page2[256] = {
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x00
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x10
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x20
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x30
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x40
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x50
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x60
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x70
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x80
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x90
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xa0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xb0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xc0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xd0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xe0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0	// 0xf0
+	execute_instruction opcodes_page3[256] = {
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x00
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x10
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x20
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x30
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::swi3,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x40
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x50
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x60
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x70
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmpu,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x80
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmps,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmpu,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x90
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmps,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmpu,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xa0
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmps,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmpu,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xb0
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmps,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xc0
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xd0
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xe0
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xf0
+		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill
+	};
+
+	addressing_mode addressing_modes_page1[256] = {
+		&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,	// 0x00
+		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_rew,	&mc6809::a_rew,	// 0x10
+		&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_im,
+		&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	// 0x20
+		&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,
+		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	// 0x30
+		&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x40
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,
+
+		// the no's must be done...
+
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x50
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	// 0x60
+		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,
+		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	// 0x70
+		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,
+		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	// 0x80
+		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_reb,	&mc6809::a_im,	&mc6809::a_im,
+		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	// 0x90
+		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,
+		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	// 0xa0
+		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,
+		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	// 0xb0
+		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,
+		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_no,	// 0xc0
+		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,
+		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	// 0xd0
+		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,
+		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	// 0xe0
+		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,
+		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	// 0xf0
+		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext
+	};
+
+	addressing_mode addressing_modes_page2[256] = {
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x00
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x10
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x20
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x30
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x40
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x50
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x60
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x70
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x80
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x90
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xa0
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xb0
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xc0
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xd0
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xe0
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	// 0xf0
+		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih
 	};
 
 	addressing_mode addressing_modes_page3[256] = {
@@ -455,54 +458,57 @@ private:
 		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih
 	};
 
-	execute_instruction opcodes_page3[256] = {
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x00
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x10
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x20
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x30
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::swi3,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x40
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x50
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x60
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x70
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmpu,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x80
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmps,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmpu,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0x90
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmps,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmpu,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xa0
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmps,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmpu,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xb0
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::cmps,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xc0
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xd0
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xe0
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	// 0xf0
-		&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill,	&mc6809::ill
+	uint16_t cycles_page1[256] = {
+		 6,  0,  0,  6,  6,  0,  6,  6,  6,  6,  6,  0,  6,  6,  3,  6,	// 0x00
+		 0,  0,  2,  4,  0,  0,  5,  9,  0,  2,  3,  0,  3,  2,  8,  6,	// 0x10
+		 3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,	// 0x20
+		 4,  4,  4,  4,  5,  5,  5,  5,  0,  5,  3,  6, 20, 11,  0, 19,	// 0x30
+		 2,  0,  0,  2,  2,  0,  2,  2,  2,  2,  2,  0,  2,  2,  0,  2,	// 0x40
+		 2,  0,  0,  2,  2,  0,  2,  2,  2,  2,  2,  0,  2,  2,  0,  2,	// 0x50
+		 6,  0,  0,  6,  6,  0,  6,  6,  6,  6,  6,  0,  6,  6,  3,  6,	// 0x60
+		 7,  0,  0,  7,  7,  0,  7,  7,  7,  7,  7,  0,  7,  7,  4,  7,	// 0x70
+		 2,  2,  2,  4,  2,  2,  2,  0,  2,  2,  2,  2,  4,  7,  3,  0,	// 0x80
+		 4,  4,  4,  6,  4,  4,  4,  4,  4,  4,  4,  4,  6,  7,  5,  5,	// 0x90
+		 4,  4,  4,  6,  4,  4,  4,  4,  4,  4,  4,  4,  6,  7,  5,  5,	// 0xa0
+		 5,  5,  5,  7,  5,  5,  5,  5,  5,  5,  5,  5,  7,  8,  6,  6,	// 0xb0
+		 2,  2,  2,  4,  2,  2,  2,  0,  2,  2,  2,  2,  3,  0,  3,  0,	// 0xc0
+		 4,  4,  4,  6,  4,  4,  4,  4,  4,  4,  4,  4,  5,  5,  5,  5,	// 0xd0
+		 4,  4,  4,  6,  4,  4,  4,  4,  4,  4,  4,  4,  5,  5,  5,  5,	// 0xe0
+		 5,  5,  5,  7,  5,  5,  5,  5,  5,  5,  5,  5,  6,  6,  6,  6	// 0xf0
+	};
+
+	uint16_t cycles_page2[256] = {
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x00
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x10
+		 0,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,	// 0x20
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 20,	// 0x30
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x40
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x50
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x60
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x70
+		 0,  0,  0,  5,  0,  0,  0,  0,  0,  0,  0,  0,  5,  0,  4,  0,	// 0x80
+		 0,  0,  0,  7,  0,  0,  0,  0,  0,  0,  0,  0,  7,  0,  6,  6,	// 0x90
+		 0,  0,  0,  7,  0,  0,  0,  0,  0,  0,  0,  0,  7,  0,  6,  6,	// 0xa0
+		 0,  0,  0,  8,  0,  0,  0,  0,  0,  0,  0,  0,  8,  0,  7,  7,	// 0xb0
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  4,  0,	// 0xc0
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  6,  6,	// 0xd0
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  6,  6,	// 0xe0
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  7,  7	// 0xf0
 	};
 
 	uint16_t cycles_page3[256] = {
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x00
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x10
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x20
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x30
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 20,	// 0x30
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x40
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x50
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x60
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x70
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x80
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0x90
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xa0
-		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xb0
+		 0,  0,  0,  5,  0,  0,  0,  0,  0,  0,  0,  0,  5,  0,  0,  0,	// 0x80
+		 0,  0,  0,  7,  0,  0,  0,  0,  0,  0,  0,  0,  7,  0,  0,  0,	// 0x90
+		 0,  0,  0,  7,  0,  0,  0,  0,  0,  0,  0,  0,  7,  0,  0,  0,	// 0xa0
+		 0,  0,  0,  8,  0,  0,  0,  0,  0,  0,  0,  0,  8,  0,  0,  0,	// 0xb0
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xc0
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xd0
 		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	// 0xe0
