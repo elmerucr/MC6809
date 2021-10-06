@@ -39,10 +39,10 @@ enum addr_mode_index {
 	__REW_,	// relative word
 	__IMB_,	// immediate byte
 	__IMW_,	// immediate word
+	__EXT_,	// extended
+	__INH_,	// inherent
 	__R1_,	// tfr/exg mode
 
-	__INH_,	// inherent
-	__EXT_,	// extended
 	__IDX_,	// indexed
 	__R2_,	// pul/psh system
 	__R3_,	// pul/psh user
@@ -51,10 +51,10 @@ enum addr_mode_index {
 	__BE_,	// Bit Manipulation extended
 	__BT_,	// Bit Transfers direct
 	__T1_,	// Block Transfer r0+,r1+
-	__T2_,	// Block Transfer r0-,r1-
-	__T3_,	// Block Transfer r0+,r1
-	__T4_,	// Block Transfer r0,r1+
-	// __IML_ 	// immediate 32-bit
+	__T2_,	// Block Transfer r0-,r1-	// 6309??
+	__T3_,	// Block Transfer r0+,r1	// 6309??
+	__T4_,	// Block Transfer r0,r1+	// 6309??
+	__IML_ 	// immediate 32-bit		// 6309??
 };
 
 const char *mnemonics[133] = {
@@ -262,6 +262,9 @@ enum addr_mode_index addr_mode_page_2[256] = {
 };
 
 enum addr_mode_index addr_mode_page_3[256] = {
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x00
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x10
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
@@ -281,6 +284,7 @@ enum addr_mode_index addr_mode_page_3[256] = {
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __EXT_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xb0
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
@@ -288,11 +292,7 @@ enum addr_mode_index addr_mode_page_3[256] = {
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xf0
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_
 };
 
@@ -335,7 +335,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		byte = (*read_8)(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
-		mne_buffer += sprintf(mne_buffer, "%s",
+		mne_buffer += sprintf(mne_buffer, "%s ",
 			mnemonics[opcodes_page_2[byte]]);
 		mode = addr_mode_page_2[byte];
 	} else if (byte == 0x11) {
@@ -343,7 +343,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		byte = read_8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
-		mne_buffer += sprintf(mne_buffer, "%s",
+		mne_buffer += sprintf(mne_buffer, "%s ",
 			mnemonics[opcodes_page_3[byte]]);
 		mode = addr_mode_page_3[byte];
 	} else {
@@ -400,6 +400,18 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			mne_buffer += sprintf(mne_buffer,
 				"%02x", byte);
 			break;
+		case __EXT_:
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			word = byte << 8;
+			byte = (*read_8)(address++);
+			buffer += sprintf(buffer, "%02x", byte);
+			bytes_printed++;
+			word |= byte;
+			mne_buffer += sprintf(mne_buffer,
+				"$%04x", word);
+			break;
 		case __R1_:
 			byte = (*read_8)(address++);
 			buffer += sprintf(buffer, "%02x", byte);
@@ -412,6 +424,9 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 					exg_tfr_operands[(byte >> 4)].name,
 					exg_tfr_operands[byte & 0x0f].name);
 			}
+			break;
+		case __INH_:
+			// no further information to be printed
 			break;
 		case __NOM_:
 			break;
