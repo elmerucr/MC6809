@@ -221,9 +221,32 @@ enum addr_mode_index addr_mode_page_1[256] = {
 
 	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x20
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x30
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x40
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x50
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x60
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x70
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x80
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x90
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xa0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xb0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xc0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xd0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xe0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __IDX_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xf0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_
 };
 
 enum addr_mode_index addr_mode_page_2[256] = {
@@ -298,6 +321,10 @@ enum addr_mode_index addr_mode_page_3[256] = {
 
 uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 {
+	const char *reg_names[4] = {
+		"x", "y", "u", "s"
+	};
+
 	/*
 	 * original_buffer points to the original start. Now it is
 	 * possible to refer to a fixed char (and remove the \0 )
@@ -354,22 +381,72 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 	}
 
 	switch (mode) {
-		case __DIR_:
-			byte = (*read_8)(address++);
-			buffer += sprintf(buffer, "%02x", byte);
-			bytes_printed++;
-			mne_buffer += sprintf(mne_buffer,
-				"$%02x", byte);
-			break;
-		case __REB_:
-			byte = (*read_8)(address++);
-			buffer += sprintf(buffer, "%02x", byte);
-			bytes_printed++;
-			mne_buffer += sprintf(mne_buffer, "$%04x",
-				(uint16_t)(address +
-				(uint16_t)((int8_t)byte)));
-			break;
-		case __REW_:
+	case __DIR_:
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		mne_buffer += sprintf(mne_buffer,
+			"$%02x", byte);
+		break;
+	case __REB_:
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		mne_buffer += sprintf(mne_buffer, "$%04x",
+			(uint16_t)(address +
+			(uint16_t)((int8_t)byte)));
+		break;
+	case __REW_:
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		word = byte << 8;
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		word |= byte;
+		mne_buffer += sprintf(mne_buffer, "$%04x",
+			(uint16_t)(address + word));
+		break;
+	case __IMB_:
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		mne_buffer += sprintf(mne_buffer,
+			"#$%02x", byte);
+		break;
+	case __IMW_:
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		mne_buffer += sprintf(mne_buffer,
+			"#$%02x", byte);
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		mne_buffer += sprintf(mne_buffer,
+			"%02x", byte);
+		break;
+	case __EXT_:
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		word = byte << 8;
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		word |= byte;
+		mne_buffer += sprintf(mne_buffer,
+			"$%04x", word);
+		break;
+	case __IDX_:
+		// read postbyte
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		if (byte == 0b10011111) {
+			// indirect extended
+			mne_buffer += sprintf(mne_buffer, "[");
 			byte = (*read_8)(address++);
 			buffer += sprintf(buffer, "%02x", byte);
 			bytes_printed++;
@@ -378,60 +455,95 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			buffer += sprintf(buffer, "%02x", byte);
 			bytes_printed++;
 			word |= byte;
-			mne_buffer += sprintf(mne_buffer, "$%04x",
-				(uint16_t)(address + word));
-			break;
-		case __IMB_:
-			byte = (*read_8)(address++);
-			buffer += sprintf(buffer, "%02x", byte);
-			bytes_printed++;
-			mne_buffer += sprintf(mne_buffer,
-				"#$%02x", byte);
-			break;
-		case __IMW_:
-			byte = (*read_8)(address++);
-			buffer += sprintf(buffer, "%02x", byte);
-			bytes_printed++;
-			mne_buffer += sprintf(mne_buffer,
-				"#$%02x", byte);
-			byte = (*read_8)(address++);
-			buffer += sprintf(buffer, "%02x", byte);
-			bytes_printed++;
-			mne_buffer += sprintf(mne_buffer,
-				"%02x", byte);
-			break;
-		case __EXT_:
-			byte = (*read_8)(address++);
-			buffer += sprintf(buffer, "%02x", byte);
-			bytes_printed++;
-			word = byte << 8;
-			byte = (*read_8)(address++);
-			buffer += sprintf(buffer, "%02x", byte);
-			bytes_printed++;
-			word |= byte;
-			mne_buffer += sprintf(mne_buffer,
-				"$%04x", word);
-			break;
-		case __R1_:
-			byte = (*read_8)(address++);
-			buffer += sprintf(buffer, "%02x", byte);
-			bytes_printed++;
-			if (((exg_tfr_operands[byte >> 4].illegal) || (exg_tfr_operands[byte & 0x0f].illegal)) ||
-			((exg_tfr_operands[byte >> 4].eight_bit) != (exg_tfr_operands[byte & 0x0f].eight_bit))) {
-				mne_buffer += sprintf(mne_buffer, "illegal");
-			} else {
-				mne_buffer += sprintf(mne_buffer, "%s,%s",
-					exg_tfr_operands[(byte >> 4)].name,
-					exg_tfr_operands[byte & 0x0f].name);
+			mne_buffer += sprintf(mne_buffer, "$%04x]", word);
+		} else {
+			switch (byte & 0b10000000) {
+			case 0b10000000:
+				switch (byte & 0b00010000) {
+				case 0b00000000:
+					// non-indirect
+					switch (byte & 0b00001111) {
+					case 0b0100:
+						// no offset
+						break;
+					case 0b1000:
+						// 8 bit offset
+						break;
+					case 0b1001:
+						// 16 bit offset
+						break;
+					case 0b0110:
+						// accu a offset
+						break;
+					case 0b0101:
+						// accu b offset
+						break;
+					case 0b1011:
+						// accu d offset
+						break;
+					case 0b0000:
+						// auto increment by 1
+						break;
+					case 0b0001:
+						// auto increment by 2
+						break;
+					case 0b0010:
+						// auto decrement by 1
+						break;
+					case 0b0011:
+						// auto decrement by 2
+						break;
+					case 0b1100:
+						// const offset pc 8bit, read extra byte
+						break;
+					case 0b1101:
+						// const offs pc 16 bit, read 2 extr bytes
+						break;
+					default:
+						// all others are illegal
+						break;
+					}
+					break;
+				case 0b00010000:
+					// indirect
+					switch (byte & 0b00001111) {
+					default:
+						// all others are illegal
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+			case 0b00000000:
+				// non-indirect
+				// constant 5 bit signed offset
+				break;
+			default:
+				break;
 			}
-			break;
-		case __INH_:
-			// no further information to be printed
-			break;
-		case __NOM_:
-			break;
-		default:
-			break;
+		}
+		break;
+	case __R1_:
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		if (((exg_tfr_operands[byte >> 4].illegal) || (exg_tfr_operands[byte & 0x0f].illegal)) ||
+		((exg_tfr_operands[byte >> 4].eight_bit) != (exg_tfr_operands[byte & 0x0f].eight_bit))) {
+			mne_buffer += sprintf(mne_buffer, "illegal");
+		} else {
+			mne_buffer += sprintf(mne_buffer, "%s,%s",
+				exg_tfr_operands[(byte >> 4)].name,
+				exg_tfr_operands[byte & 0x0f].name);
+		}
+		break;
+	case __INH_:
+		// no further information to be printed
+		break;
+	case __NOM_:
+		break;
+	default:
+		break;
 	};
 
 	mne_buffer += sprintf(mne_buffer, "\n");
