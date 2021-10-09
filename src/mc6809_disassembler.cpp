@@ -325,6 +325,13 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		"x", "y", "u", "s"
 	};
 
+	const char *offset_5_bit[32] = {
+		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+		"11", "12", "13", "14", "15", "-16", "-15", "-14", "-13",
+		"-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4",
+		"-3", "-2", "-1"
+	};
+
 	/*
 	 * original_buffer points to the original start. Now it is
 	 * possible to refer to a fixed char (and remove the \0 )
@@ -465,6 +472,9 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 					switch (byte & 0b00001111) {
 					case 0b0100:
 						// no offset
+						mne_buffer += sprintf(mne_buffer,
+							",%s",
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1000:
 						// 8 bit offset
@@ -507,6 +517,12 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 				case 0b00010000:
 					// indirect
 					switch (byte & 0b00001111) {
+					case 0b0100:
+						// indirect no offset
+						mne_buffer += sprintf(mne_buffer,
+							"[,%s]",
+							reg_names[(byte & 0b01100000) >> 5]);
+						break;
 					default:
 						// all others are illegal
 						break;
@@ -515,9 +531,13 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 				default:
 					break;
 				}
+				break;
 			case 0b00000000:
 				// non-indirect
 				// constant 5 bit signed offset
+				mne_buffer += sprintf(mne_buffer, "%s,%s",
+					offset_5_bit[byte & 0b00011111],
+					reg_names[(byte & 0b01100000) >> 5]);
 				break;
 			default:
 				break;
