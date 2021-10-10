@@ -43,19 +43,20 @@ enum addr_mode_index {
 	__EXT_,	// extended
 	__INH_,	// inherent
 	__R1_,	// tfr/exg mode
-
-	__IDX_,	// indexed
 	__R2_,	// pul/psh system
 	__R3_,	// pul/psh user
-	__BD_,	// Bit Manipulation direct
-	__BI_,	// Bit Manipulation index
-	__BE_,	// Bit Manipulation extended
-	__BT_,	// Bit Transfers direct
-	__T1_,	// Block Transfer r0+,r1+
-	__T2_,	// Block Transfer r0-,r1-	// 6309??
-	__T3_,	// Block Transfer r0+,r1	// 6309??
-	__T4_,	// Block Transfer r0,r1+	// 6309??
-	__IML_ 	// immediate 32-bit		// 6309??
+	__IDX_,	// indexed
+
+
+	// __BD_,	// Bit Manipulation direct	// 6309??
+	// __BI_,	// Bit Manipulation index	// 6309??
+	// __BE_,	// Bit Manipulation extended	// 6309??
+	// __BT_,	// Bit Transfers direct		// 6309??
+	// __T1_,	// Block Transfer r0+,r1+	// 6309??
+	// __T2_,	// Block Transfer r0-,r1-	// 6309??
+	// __T3_,	// Block Transfer r0+,r1	// 6309??
+	// __T4_,	// Block Transfer r0,r1+	// 6309??
+	// __IML_ 	// immediate 32-bit		// 6309??
 };
 
 const char *mnemonics[133] = {
@@ -102,11 +103,6 @@ const struct exg_tfr_operand exg_tfr_operands[16] = {
 	{ "?",  true,  false },
 	{ "?",  true,  false }
 };
-
-// const char *us_register_names[8] = {
-// 	"pc",
-// 	"boe"
-// };
 
 enum mnemonics_index opcodes_page_1[256] = {
 	_NEG,	_ILL,	_ILL,	_COM,	_LSR,	_ILL,	_ROR,	_ASR,	// 0x00
@@ -215,21 +211,20 @@ enum mnemonics_index opcodes_page_3[256] = {
 
 enum addr_mode_index addr_mode_page_1[256] = {
 	__DIR_, __NOM_, __NOM_, __DIR_, __DIR_, __NOM_, __DIR_,	__DIR_,	// 0x00
-	__DIR_, __DIR_, __DIR_, __NOM_, __DIR_, __DIR_, __NOM_, __NOM_,
+	__DIR_, __DIR_, __DIR_, __NOM_, __DIR_, __DIR_, __NOM_, __DIR_,
+	__NOM_, __NOM_, __INH_, __INH_, __NOM_, __NOM_, __REW_, __REW_,	// 0x10
+	__NOM_, __INH_, __IBB_, __NOM_, __IBB_, __INH_, __R1_, 	__R1_,
+	__REB_, __REB_, __REB_, __REB_, __REB_, __REB_, __REB_, __REB_,	// 0x20
+	__REB_, __REB_, __REB_, __REB_, __REB_, __REB_, __REB_, __REB_,
+	__IDX_, __IDX_, __IDX_, __IDX_, __R2_,  __R2_,  __R3_,  __R3_,	// 0x30
+	__NOM_, __INH_, __INH_, __INH_, __IMB_, __INH_, __NOM_, __INH_,
+	__INH_, __NOM_, __NOM_, __INH_, __INH_, __NOM_, __INH_, __INH_,	// 0x40
+	__INH_, __INH_, __INH_, __NOM_, __INH_, __INH_, __NOM_, __INH_,
+	__INH_, __NOM_, __NOM_, __INH_, __INH_, __NOM_, __INH_, __INH_,	// 0x50
+	__INH_, __INH_, __INH_, __NOM_, __INH_, __INH_, __NOM_, __INH_,
+	__IDX_, __NOM_, __NOM_, __IDX_, __IDX_, __NOM_, __IDX_, __IDX_,	// 0x60
+	__IDX_, __IDX_, __IDX_, __NOM_, __IDX_, __IDX_, __IDX_, __IDX_,
 
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __REW_, __NOM_,	// 0x10
-	__NOM_, __NOM_, __IBB_, __NOM_, __IBB_, __NOM_, __R1_, 	__R1_,
-
-	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x20
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x30
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x40
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x50
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x60
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x70
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x80
@@ -251,38 +246,38 @@ enum addr_mode_index addr_mode_page_1[256] = {
 };
 
 enum addr_mode_index addr_mode_page_2[256] = {
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x00
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x10
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __REW_, __REW_, __REW_, __REW_, __REW_, __REW_, __REW_,	// 0x20
+	__REW_, __REW_, __REW_, __REW_, __REW_, __REW_, __REW_, __REW_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x30
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __INH_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x40
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x50
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x60
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x70
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_
+	__NOM_, __NOM_, __NOM_, __IMW_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x80
+	__NOM_, __NOM_, __NOM_, __NOM_, __IMW_, __NOM_, __IMW_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __DIR_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x90
+	__NOM_, __NOM_, __NOM_, __NOM_, __DIR_, __NOM_, __DIR_, __DIR_,
+	__NOM_, __NOM_, __NOM_, __IDX_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xa0
+	__NOM_, __NOM_, __NOM_, __NOM_, __IDX_, __NOM_, __IDX_, __IDX_,
+	__NOM_, __NOM_, __NOM_, __EXT_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xb0
+	__NOM_, __NOM_, __NOM_, __NOM_, __EXT_, __NOM_, __EXT_, __EXT_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xc0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __IMW_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xd0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __DIR_, __DIR_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xe0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __IDX_, __IDX_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xf0
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __EXT_, __EXT_
 };
 
 enum addr_mode_index addr_mode_page_3[256] = {
@@ -290,31 +285,31 @@ enum addr_mode_index addr_mode_page_3[256] = {
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x10
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x20
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x30
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __INH_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x40
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x50
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x60
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x70
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __IMW_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x80
+	__NOM_, __NOM_, __NOM_, __NOM_, __IMW_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __DIR_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x90
+	__NOM_, __NOM_, __NOM_, __NOM_, __DIR_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __IDX_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xa0
+	__NOM_, __NOM_, __NOM_, __NOM_, __IDX_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __EXT_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xb0
+	__NOM_, __NOM_, __NOM_, __NOM_, __EXT_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xc0
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xd0
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
+	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xe0
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xf0
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_
@@ -322,8 +317,18 @@ enum addr_mode_index addr_mode_page_3[256] = {
 
 uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 {
-	const char *reg_names[4] = {
+	const char *idx_reg_names[4] = {
 		"x", "y", "u", "s"
+	};
+
+	/* pul/psh system register names */
+	const char *r2_reg_names[8] = {
+		"pc", "u", "y", "x", "dp", "b", "a", "cc"
+	};
+
+	/* pul/psh user register names */
+	const char *r3_reg_names[8] = {
+		"pc", "s", "y", "x", "dp", "b", "a", "cc"
 	};
 
 	const char *offset_5_bit[32] = {
@@ -491,7 +496,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						// no offset
 						mne_buffer += sprintf(mne_buffer,
 							",%s",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1000:
 						// 8 bit offset
@@ -501,7 +506,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						mne_buffer += sprintf(mne_buffer,
 							"$%02x,%s",
 							byte2,
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1001:
 						// 16 bit offset
@@ -516,49 +521,49 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						mne_buffer += sprintf(mne_buffer,
 							"$%04x,%s",
 							word,
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0110:
 						// accu a offset
 						mne_buffer += sprintf(mne_buffer,
 							"a,%s",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0101:
 						// accu b offset
 						mne_buffer += sprintf(mne_buffer,
 							"b,%s",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1011:
 						// accu d offset
 						mne_buffer += sprintf(mne_buffer,
 							"d,%s",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0000:
 						// auto increment by 1
 						mne_buffer += sprintf(mne_buffer,
 							",%s+",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0001:
 						// auto increment by 2
 						mne_buffer += sprintf(mne_buffer,
 							",%s++",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0010:
 						// auto decrement by 1
 						mne_buffer += sprintf(mne_buffer,
 							",-%s",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0011:
 						// auto decrement by 2
 						mne_buffer += sprintf(mne_buffer,
 							",--%s",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1100:
 						// const offset pc 8bit, read extra byte
@@ -597,7 +602,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						// indirect no offset
 						mne_buffer += sprintf(mne_buffer,
 							"[,%s]",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1000:
 						// indirect 8 bit offset
@@ -607,7 +612,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						mne_buffer += sprintf(mne_buffer,
 							"[$%02x,%s]",
 							byte2,
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1001:
 						// indirect 16 bit offset
@@ -622,37 +627,37 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						mne_buffer += sprintf(mne_buffer,
 							"[$%04x,%s]",
 							word,
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0110:
 						// indirect accu a offset
 						mne_buffer += sprintf(mne_buffer,
 							"[a,%s]",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0101:
 						// indirect accu b offset
 						mne_buffer += sprintf(mne_buffer,
 							"[b,%s]",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1011:
 						// indirect accu d offset
 						mne_buffer += sprintf(mne_buffer,
 							"[d,%s]",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0001:
 						// indirect auto increment by 2
 						mne_buffer += sprintf(mne_buffer,
 							"[,%s++]",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0011:
 						// indirect auto decrement by 2
 						mne_buffer += sprintf(mne_buffer,
 							"[,--%s]",
-							reg_names[(byte & 0b01100000) >> 5]);
+							idx_reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1100:
 						// indirect const offset pc 8bit, read extra byte
@@ -693,7 +698,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 				// constant 5 bit signed offset
 				mne_buffer += sprintf(mne_buffer, "%s,%s",
 					offset_5_bit[byte & 0b00011111],
-					reg_names[(byte & 0b01100000) >> 5]);
+					idx_reg_names[(byte & 0b01100000) >> 5]);
 				break;
 			default:
 				break;
@@ -711,6 +716,50 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			mne_buffer += sprintf(mne_buffer, "%s,%s",
 				exg_tfr_operands[(byte >> 4)].name,
 				exg_tfr_operands[byte & 0x0f].name);
+		}
+		break;
+	case __R2_:
+		// pul/psh system
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		if (byte == 0x00) {
+			mne_buffer += sprintf(mne_buffer, "illegal");
+		} else {
+			int number = 0;
+			for (uint8_t i=0x80; i != 0; i /= 2) {
+				if (byte & i) {
+					mne_buffer += sprintf(
+						mne_buffer,
+						"%s,",
+						r2_reg_names[number]);
+				}
+				number++;
+			}
+			mne_buffer--;		// remove last komma
+			*mne_buffer = '\0';
+		}
+		break;
+	case __R3_:
+		// pul/psh user
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		if (byte == 0x00) {
+			mne_buffer += sprintf(mne_buffer, "illegal");
+		} else {
+			int number = 0;
+			for (uint8_t i=0x80; i != 0; i /= 2) {
+				if (byte & i) {
+					mne_buffer += sprintf(
+						mne_buffer,
+						"%s,",
+						r3_reg_names[number]);
+				}
+				number++;
+			}
+			mne_buffer--;		// remove last komma
+			*mne_buffer = '\0';
 		}
 		break;
 	case __INH_:
