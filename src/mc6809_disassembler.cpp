@@ -39,6 +39,7 @@ enum addr_mode_index {
 	__REW_,	// relative word
 	__IMB_,	// immediate byte
 	__IMW_,	// immediate word
+	__IBB_,	// immediate byte binary (for andcc and orcc)
 	__EXT_,	// extended
 	__INH_,	// inherent
 	__R1_,	// tfr/exg mode
@@ -217,7 +218,7 @@ enum addr_mode_index addr_mode_page_1[256] = {
 	__DIR_, __DIR_, __DIR_, __NOM_, __DIR_, __DIR_, __NOM_, __NOM_,
 
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __REW_, __NOM_,	// 0x10
-	__NOM_, __NOM_, __IMB_, __NOM_, __IMB_, __NOM_, __R1_, 	__R1_,
+	__NOM_, __NOM_, __IBB_, __NOM_, __IBB_, __NOM_, __R1_, 	__R1_,
 
 	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x20
 	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
@@ -360,6 +361,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 	enum addr_mode_index mode;
 
 	uint8_t byte = (*read_8)(address++);
+	uint8_t byte2 = 0;
 	uint16_t word = 0;
 	buffer += sprintf(buffer, ",%04x %02x", start_address, byte);
 	bytes_printed++;
@@ -434,6 +436,21 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		mne_buffer += sprintf(mne_buffer,
 			"%02x", byte);
 		break;
+	case __IBB_:
+		byte = (*read_8)(address++);
+		buffer += sprintf(buffer, "%02x", byte);
+		bytes_printed++;
+		mne_buffer += sprintf(mne_buffer,
+			"#%%%c%c%c%c%c%c%c%c",
+			byte & 0x80 ? '1' : '0',
+			byte & 0x40 ? '1' : '0',
+			byte & 0x20 ? '1' : '0',
+			byte & 0x10 ? '1' : '0',
+			byte & 0x08 ? '1' : '0',
+			byte & 0x04 ? '1' : '0',
+			byte & 0x02 ? '1' : '0',
+			byte & 0x01 ? '1' : '0');
+		break;
 	case __EXT_:
 		byte = (*read_8)(address++);
 		buffer += sprintf(buffer, "%02x", byte);
@@ -478,39 +495,98 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					case 0b1000:
 						// 8 bit offset
+						byte2 = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte2);
+						bytes_printed++;
+						mne_buffer += sprintf(mne_buffer,
+							"$%02x,%s",
+							byte2,
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1001:
 						// 16 bit offset
+						byte2 = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte2);
+						bytes_printed++;
+						word = byte2 << 8;
+						byte2 = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte2);
+						bytes_printed++;
+						word |= byte2;
+						mne_buffer += sprintf(mne_buffer,
+							"$%04x,%s",
+							word,
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0110:
 						// accu a offset
+						mne_buffer += sprintf(mne_buffer,
+							"a,%s",
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0101:
 						// accu b offset
+						mne_buffer += sprintf(mne_buffer,
+							"b,%s",
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1011:
 						// accu d offset
+						mne_buffer += sprintf(mne_buffer,
+							"d,%s",
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0000:
 						// auto increment by 1
+						mne_buffer += sprintf(mne_buffer,
+							",%s+",
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0001:
 						// auto increment by 2
+						mne_buffer += sprintf(mne_buffer,
+							",%s++",
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0010:
 						// auto decrement by 1
+						mne_buffer += sprintf(mne_buffer,
+							",-%s",
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b0011:
 						// auto decrement by 2
+						mne_buffer += sprintf(mne_buffer,
+							",--%s",
+							reg_names[(byte & 0b01100000) >> 5]);
 						break;
 					case 0b1100:
 						// const offset pc 8bit, read extra byte
+						byte = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte);
+						bytes_printed++;
+						mne_buffer += sprintf(mne_buffer,
+							"$%02x,pc",
+							byte);
 						break;
 					case 0b1101:
 						// const offs pc 16 bit, read 2 extr bytes
+						byte = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte);
+						bytes_printed++;
+						word = byte << 8;
+						byte = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte);
+						bytes_printed++;
+						word |= byte;
+						mne_buffer += sprintf(mne_buffer,
+							"$%04x,pc",
+							word);
 						break;
 					default:
 						// all others are illegal
+						mne_buffer += sprintf(mne_buffer,
+							"illegal");
 						break;
 					}
 					break;
@@ -523,8 +599,88 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 							"[,%s]",
 							reg_names[(byte & 0b01100000) >> 5]);
 						break;
+					case 0b1000:
+						// indirect 8 bit offset
+						byte2 = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte2);
+						bytes_printed++;
+						mne_buffer += sprintf(mne_buffer,
+							"[$%02x,%s]",
+							byte2,
+							reg_names[(byte & 0b01100000) >> 5]);
+						break;
+					case 0b1001:
+						// indirect 16 bit offset
+						byte2 = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte2);
+						bytes_printed++;
+						word = byte2 << 8;
+						byte2 = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte2);
+						bytes_printed++;
+						word |= byte2;
+						mne_buffer += sprintf(mne_buffer,
+							"[$%04x,%s]",
+							word,
+							reg_names[(byte & 0b01100000) >> 5]);
+						break;
+					case 0b0110:
+						// indirect accu a offset
+						mne_buffer += sprintf(mne_buffer,
+							"[a,%s]",
+							reg_names[(byte & 0b01100000) >> 5]);
+						break;
+					case 0b0101:
+						// indirect accu b offset
+						mne_buffer += sprintf(mne_buffer,
+							"[b,%s]",
+							reg_names[(byte & 0b01100000) >> 5]);
+						break;
+					case 0b1011:
+						// indirect accu d offset
+						mne_buffer += sprintf(mne_buffer,
+							"[d,%s]",
+							reg_names[(byte & 0b01100000) >> 5]);
+						break;
+					case 0b0001:
+						// indirect auto increment by 2
+						mne_buffer += sprintf(mne_buffer,
+							"[,%s++]",
+							reg_names[(byte & 0b01100000) >> 5]);
+						break;
+					case 0b0011:
+						// indirect auto decrement by 2
+						mne_buffer += sprintf(mne_buffer,
+							"[,--%s]",
+							reg_names[(byte & 0b01100000) >> 5]);
+						break;
+					case 0b1100:
+						// indirect const offset pc 8bit, read extra byte
+						byte = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte);
+						bytes_printed++;
+						mne_buffer += sprintf(mne_buffer,
+							"[$%02x,pc]",
+							byte);
+						break;
+					case 0b1101:
+						// indirect const offs pc 16 bit, read 2 extr bytes
+						byte = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte);
+						bytes_printed++;
+						word = byte << 8;
+						byte = (*read_8)(address++);
+						buffer += sprintf(buffer, "%02x", byte);
+						bytes_printed++;
+						word |= byte;
+						mne_buffer += sprintf(mne_buffer,
+							"[$%04x,pc]",
+							word);
+						break;
 					default:
 						// all others are illegal
+						mne_buffer += sprintf(mne_buffer,
+							"illegal");
 						break;
 					}
 					break;
