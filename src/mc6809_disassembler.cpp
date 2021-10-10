@@ -224,25 +224,24 @@ enum addr_mode_index addr_mode_page_1[256] = {
 	__INH_, __INH_, __INH_, __NOM_, __INH_, __INH_, __NOM_, __INH_,
 	__IDX_, __NOM_, __NOM_, __IDX_, __IDX_, __NOM_, __IDX_, __IDX_,	// 0x60
 	__IDX_, __IDX_, __IDX_, __NOM_, __IDX_, __IDX_, __IDX_, __IDX_,
-
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x70
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x80
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0x90
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xa0
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xb0
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xc0
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xd0
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,
-	__REB_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xe0
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __IDX_, __NOM_,
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_,	// 0xf0
-	__NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_, __NOM_
+	__EXT_, __NOM_, __NOM_, __EXT_, __EXT_, __NOM_, __EXT_, __EXT_,	// 0x70
+	__EXT_, __EXT_, __EXT_, __NOM_, __EXT_, __EXT_, __EXT_, __EXT_,
+	__IMB_, __IMB_, __IMB_, __IMB_, __IMB_, __IMB_, __IMB_, __NOM_,	// 0x80
+	__IMB_, __IMB_, __IMB_, __IMB_, __IMW_, __REB_, __IMW_, __NOM_,
+	__DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_,	// 0x90
+	__DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_,
+	__IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_,	// 0xa0
+	__IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_,
+	__EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_,	// 0xb0
+	__EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_,
+	__IMB_, __IMB_, __IMB_, __IMW_, __IMB_, __IMB_, __IMB_, __NOM_,	// 0xc0
+	__IMB_, __IMB_, __IMB_, __IMB_, __IMW_, __NOM_, __IMW_, __NOM_,
+	__DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_,	// 0xd0
+	__DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_,
+	__IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_,	// 0xe0
+	__IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_, __IDX_,
+	__EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_,	// 0xf0
+	__EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_, __EXT_
 };
 
 enum addr_mode_index addr_mode_page_2[256] = {
@@ -317,6 +316,8 @@ enum addr_mode_index addr_mode_page_3[256] = {
 
 uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 {
+	disassemble_success = true;
+
 	const char *idx_reg_names[4] = {
 		"x", "y", "u", "s"
 	};
@@ -393,6 +394,8 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			mnemonics[opcodes_page_1[byte]]);
 		mode = addr_mode_page_1[byte];
 	}
+
+	if (mode == __NOM_) disassemble_success = false;
 
 	switch (mode) {
 	case __DIR_:
@@ -592,6 +595,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						// all others are illegal
 						mne_buffer += sprintf(mne_buffer,
 							"illegal");
+						disassemble_success = false;
 						break;
 					}
 					break;
@@ -686,6 +690,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						// all others are illegal
 						mne_buffer += sprintf(mne_buffer,
 							"illegal");
+						disassemble_success = false;
 						break;
 					}
 					break;
@@ -712,6 +717,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		if (((exg_tfr_operands[byte >> 4].illegal) || (exg_tfr_operands[byte & 0x0f].illegal)) ||
 		((exg_tfr_operands[byte >> 4].eight_bit) != (exg_tfr_operands[byte & 0x0f].eight_bit))) {
 			mne_buffer += sprintf(mne_buffer, "illegal");
+			disassemble_success = false;
 		} else {
 			mne_buffer += sprintf(mne_buffer, "%s,%s",
 				exg_tfr_operands[(byte >> 4)].name,
@@ -725,6 +731,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		bytes_printed++;
 		if (byte == 0x00) {
 			mne_buffer += sprintf(mne_buffer, "illegal");
+			disassemble_success = false;
 		} else {
 			int number = 0;
 			for (uint8_t i=0x80; i != 0; i /= 2) {
@@ -747,6 +754,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		bytes_printed++;
 		if (byte == 0x00) {
 			mne_buffer += sprintf(mne_buffer, "illegal");
+			disassemble_success = false;
 		} else {
 			int number = 0;
 			for (uint8_t i=0x80; i != 0; i /= 2) {

@@ -18,7 +18,7 @@
 #define	F_FLAG	0x40	// firq
 #define	E_FLAG	0x80	// entire state on stack
 
-#define	VECTOR_ILL_OPC	0xfff0	// this one comes originally from 6309
+#define	VECTOR_ILL_OPC	0xfff0	// originally from 6309
 #define	VECTOR_SWI3	0xfff2
 #define	VECTOR_SWI2	0xfff4
 #define	VECTOR_FIRQ	0xfff6
@@ -50,6 +50,7 @@ public:
 	bool run(uint16_t cycles);
 	void status(char *text_buffer);
 	uint16_t disassemble_instruction(char *buffer, uint16_t address);
+	bool disassemble_successfull() { return disassemble_success; }
 
 	uint16_t get_pc() { return pc; }
 private:
@@ -79,10 +80,12 @@ private:
 	typedef uint16_t (mc6809::*addressing_mode)();
 	typedef void (mc6809::*execute_instruction)(uint16_t);
 
+	bool disassemble_success;
+
 	// addressing modes
-	uint16_t a_dir();
-	uint16_t a_im();
-	uint16_t a_ih();
+	uint16_t a_dir();	// direct page (base page)
+	uint16_t a_im();	// immediate
+	uint16_t a_ih();	// inherent
 	uint16_t a_reb();	// relative byte (8 bit signed)
 	uint16_t a_rew();	// relative word (16 bit signed)
 	uint16_t a_idx();	// indexed
