@@ -19,6 +19,7 @@ char text_buffer[512];
 #define TEXT_BUFFER_SIZE 64
 
 uint8_t memory[65536];
+extern uint8_t rom[];
 
 uint8_t read(uint16_t address)
 {
@@ -32,28 +33,12 @@ void write(uint16_t address, uint8_t byte)
 
 int main()
 {
-	memory[0xfffe] = 0xc0;	// reset vector $c000
-	memory[0xffff] = 0x00;
-
-	memory[0xc000] = 0x0f;	// pulu
-	memory[0xc001] = 0x00;
-
-	memory[0xc002] = 0xee;	// ldu
-	memory[0xc003] = 0x89;
-	memory[0xc004] = 0x12;
-	memory[0xc005] = 0xbe;
-
-	memory[0xc006] = 0x11;	// cmpu [$d021]
-	memory[0xc007] = 0xa3;
-	memory[0xc008] = 0x9f;
-	memory[0xc009] = 0xd0;
-	memory[0xc00a] = 0x21;
-
-	memory[0xc00b] = 0xf8;
-	memory[0xc00c] = 0xba;
-	memory[0xc00d] = 0xab;
-
-
+	/*
+	 * Copy simple rom image into ram
+	 */
+	for (int i=0; i<8192; i++) {
+		memory[0xe000+i] = rom[i];
+	}
 
 	mc6809 cpu(read, write);
 

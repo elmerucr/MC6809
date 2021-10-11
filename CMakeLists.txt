@@ -12,6 +12,7 @@ include_directories(
 add_executable(
 	emulate_mc6809
 	test/main.cpp
+	test/rom.cpp
 	src/mc6809.cpp
 	src/mc6809_disassembler.cpp
 	src/mc6809_instructions.cpp
