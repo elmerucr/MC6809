@@ -1,2 +1,9 @@
 build/
 .DS_Store
+rom/mk_rom
+rom/rom_unpatched.bin
+rom/rom.bin
+rom/rom.cpp
+rom/rom.map
+*.o
+*.list
