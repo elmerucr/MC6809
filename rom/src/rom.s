@@ -1,4 +1,3 @@
-	global	vector_reset
 	global	vector_illegal_opcode
 	global	vector_swi3
 	global	vector_swi2
@@ -28,9 +27,8 @@ vector_swi:
 vector_nmi:
 
 vector_reset:
-	orcc	#%10000001
-	lda	[$2000]
-	andcc	#%11100111
-	; orcc	#%00000100
-	pshs	x,y,pc,u
-	bne	vector_reset
+	ldx	#$2000
+	ldb	[$45,x]
+	ldb	.1,pc
+	lbra	vector_reset
+.1	db	$2e, $2f, $01

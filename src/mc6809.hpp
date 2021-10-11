@@ -47,7 +47,7 @@ public:
 	void assign_irq_line(bool *line) { irq_line = line; }
 
 	void reset();
-	bool run(uint16_t cycles);
+	bool run(uint16_t cycles_to_run);
 	void status(char *text_buffer);
 	uint16_t disassemble_instruction(char *buffer, uint16_t address);
 	bool disassemble_successfull() { return disassemble_success; }
@@ -130,6 +130,8 @@ private:
 	uint16_t sp;	// hardware stack pointer
 	uint8_t  cc;	// condition code register
 
+	uint16_t *index_regs[4];
+
 	bool nmi_blocked;
 	bool default_pin;
 
@@ -149,7 +151,8 @@ private:
 
 	// addressing modes
 	uint16_t a_dir();	// direct page (base page)
-	uint16_t a_im();	// immediate
+	uint16_t a_imb();	// immediate byte
+	uint16_t a_imw();	// immediate word
 	uint16_t a_ih();	// inherent
 	uint16_t a_reb();	// relative byte (8 bit signed)
 	uint16_t a_rew();	// relative word (16 bit signed)
@@ -422,10 +425,10 @@ private:
 		&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,	// 0x00
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,
 		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_rew,	&mc6809::a_rew,	// 0x10
-		&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_ih,	&mc6809::a_im,	&mc6809::a_im,
+		&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_imb,	&mc6809::a_no,	&mc6809::a_imb,	&mc6809::a_ih,	&mc6809::a_imb,	&mc6809::a_imb,
 		&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	// 0x20
 		&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,	&mc6809::a_reb,
-		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	// 0x30
+		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	// 0x30
 		&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,
 		&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	// 0x40
 		&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,	&mc6809::a_ih,	&mc6809::a_no,	&mc6809::a_ih,
@@ -435,16 +438,16 @@ private:
 		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,
 		&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,	// 0x70
 		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,
-		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_no,	// 0x80
-		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_reb,	&mc6809::a_im,	&mc6809::a_no,
+		&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_no,	// 0x80
+		&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imw,	&mc6809::a_reb,	&mc6809::a_imw,	&mc6809::a_no,
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	// 0x90
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,
 		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	// 0xa0
 		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,
 		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	// 0xb0
 		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,
-		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_no,	// 0xc0
-		&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,
+		&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imw,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_no,	// 0xc0
+		&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imw,	&mc6809::a_no,	&mc6809::a_imw,	&mc6809::a_no,
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	// 0xd0
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,
 		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	// 0xe0
@@ -470,8 +473,8 @@ private:
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x70
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
-		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x80
-		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_imw,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x80
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_imw,	&mc6809::a_no,	&mc6809::a_imw,	&mc6809::a_no,
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x90
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xa0
@@ -479,7 +482,7 @@ private:
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xb0
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xc0
-		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_imw,	&mc6809::a_no,
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xd0
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_dir,
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xe0
@@ -505,8 +508,8 @@ private:
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x70
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
-		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x80
-		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_im,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_imw,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x80
+		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_imw,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0x90
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_dir,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,
 		&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_no,	// 0xa0

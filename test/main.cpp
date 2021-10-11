@@ -36,9 +36,9 @@ void write(uint16_t address, uint8_t byte)
 
 int main()
 {
-	memory[0x2000] = 0xb3;
-	memory[0x2001] = 0x23;
-	memory[0xb323] = 0b10000000;
+	memory[0x2045] = 0xb3;
+	memory[0x2046] = 0x23;
+	memory[0xb323] = 0b11110001;
 
 	mc6809 cpu(read, write);
 

@@ -29,6 +29,11 @@ mc6809::mc6809(bus_read r, bus_write w) : ac(*(((uint8_t *)&dr)+1)), br(*((uint8
 	old_nmi_line = true;
 
 	cycles = 0;
+
+	index_regs[0b00] = &xr;
+	index_regs[0b01] = &yr;
+	index_regs[0b10] = &us;
+	index_regs[0b11] = &sp;
 }
 
 void mc6809::reset()
@@ -57,7 +62,7 @@ void mc6809::reset()
 	pc |= (*read_8)(VECTOR_RESET+1);
 }
 
-bool mc6809::run(uint16_t cycles)
+bool mc6809::run(uint16_t cycles_to_run)
 {
 	// fetch opcode (= first byte of instruction, possible for)
 	// breakpoints later on

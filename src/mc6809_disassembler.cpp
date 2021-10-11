@@ -694,8 +694,6 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					}
 					break;
-				default:
-					break;
 				}
 				break;
 			case 0b00000000:
