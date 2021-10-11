@@ -39,9 +39,9 @@ int main(int argc, char *argv[]) {
 	f = fopen("rom.cpp","w");
 
 	fprintf(f, "/*\n");
-	fprintf(f, " * E64-ROM (rom.cpp) elmerucr (c)2021\n");
+	fprintf(f, " * emulate_mc6809 (rom.cpp) elmerucr (c)2021\n");
 	fprintf(f, " *\n");
-	fprintf(f, " * built-in rom image for E64\n");
+	fprintf(f, " * built-in rom image for emulate_mc6809\n");
 	fprintf(f, " * %s",ctime(&t));
 	fprintf(f, " */\n\n");
 	fprintf(f, "#include <cstdint>\n\n");

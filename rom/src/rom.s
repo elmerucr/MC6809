@@ -13,6 +13,9 @@
 vector_illegal_opcode:
 
 vector_swi3:
+	sex
+	ldx	#vector_reset
+	rti
 
 vector_swi2:
 
@@ -25,4 +28,9 @@ vector_swi:
 vector_nmi:
 
 vector_reset:
-	lds	#$2000
+	orcc	#%10000001
+	lda	[$2000]
+	andcc	#%11100111
+	; orcc	#%00000100
+	pshs	x,y,pc,u
+	bne	vector_reset

@@ -38,7 +38,7 @@ public:
 	bus_write write_8;
 
 	/*
-	 * constructor
+	 * constructor receives function pointers for memory calls
 	 */
 	mc6809(bus_read r, bus_write w);
 
@@ -52,7 +52,72 @@ public:
 	uint16_t disassemble_instruction(char *buffer, uint16_t address);
 	bool disassemble_successfull() { return disassemble_success; }
 
-	uint16_t get_pc() { return pc; }
+	inline bool is_e_flag_set()   { return (cc & E_FLAG) ? true  : false; }
+	inline bool is_e_flag_clear() { return (cc & E_FLAG) ? false : true ; }
+	inline bool is_f_flag_set()   { return (cc & F_FLAG) ? true  : false; }
+	inline bool is_f_flag_clear() { return (cc & F_FLAG) ? false : true ; }
+	inline bool is_h_flag_set()   { return (cc & H_FLAG) ? true  : false; }
+	inline bool is_h_flag_clear() { return (cc & H_FLAG) ? false : true ; }
+	inline bool is_i_flag_set()   { return (cc & I_FLAG) ? true  : false; }
+	inline bool is_i_flag_clear() { return (cc & I_FLAG) ? false : true ; }
+	inline bool is_n_flag_set()   { return (cc & N_FLAG) ? true  : false; }
+	inline bool is_n_flag_clear() { return (cc & N_FLAG) ? false : true ; }
+	inline bool is_z_flag_set()   { return (cc & Z_FLAG) ? true  : false; }
+	inline bool is_z_flag_clear() { return (cc & Z_FLAG) ? false : true ; }
+	inline bool is_v_flag_set()   { return (cc & V_FLAG) ? true  : false; }
+	inline bool is_v_flag_clear() { return (cc & V_FLAG) ? false : true ; }
+	inline bool is_c_flag_set()   { return (cc & C_FLAG) ? true  : false; }
+	inline bool is_c_flag_clear() { return (cc & C_FLAG) ? false : true ; }
+
+	inline void set_e_flag()   { cc |= E_FLAG; }
+	inline void clear_e_flag() { cc &= (0xff - E_FLAG); }
+	inline void set_f_flag()   { cc |= F_FLAG; }
+	inline void clear_f_flag() { cc &= (0xff - F_FLAG); }
+	inline void set_h_flag()   { cc |= H_FLAG; }
+	inline void clear_h_flag() { cc &= (0xff - H_FLAG); }
+	inline void set_i_flag()   { cc |= I_FLAG; }
+	inline void clear_i_flag() { cc &= (0xff - I_FLAG); }
+	inline void set_n_flag()   { cc |= N_FLAG; }
+	inline void clear_n_flag() { cc &= (0xff - N_FLAG); }
+	inline void set_z_flag()   { cc |= Z_FLAG; }
+	inline void clear_z_flag() { cc &= (0xff - Z_FLAG); }
+	inline void set_v_flag()   { cc |= V_FLAG; }
+	inline void clear_v_flag() { cc &= (0xff - V_FLAG); }
+	inline void set_c_flag()   { cc |= C_FLAG; }
+	inline void clear_c_flag() { cc &= (0xff - C_FLAG); }
+
+	inline void test_n_flag(uint8_t byte) { if (byte &  0x80) set_n_flag(); else clear_n_flag(); }
+	inline void test_z_flag(uint8_t byte) { if (byte == 0x00) set_z_flag(); else clear_z_flag(); }
+	inline void test_nz_flags(uint8_t byte) { test_n_flag(byte); test_z_flag(byte); }
+	inline void test_n_flag_16(uint16_t word) { if (word &  0x8000) set_n_flag(); else clear_n_flag(); }
+	inline void test_z_flag_16(uint16_t word) { if (word == 0x0000) set_z_flag(); else clear_z_flag(); }
+	inline void test_nz_flags_16(uint16_t word) { test_n_flag_16(word); test_z_flag_16(word); }
+
+	/*
+	 * getters and setters, useful while debugging
+	 * TODO: what about flags here?
+	 */
+	uint16_t get_pc()              { return pc; }
+	void     set_pc(uint16_t word) { pc = word; }
+	uint8_t  get_dp()              { return dp; }
+	void     set_dp(uint8_t  byte) { dp = byte; }
+	uint8_t  get_ac()              { return ac; }
+	void     set_ac(uint8_t  byte) { ac = byte; }
+	uint8_t  get_br()              { return br; }
+	void     set_br(uint8_t  byte) { br = byte; }
+	uint16_t get_dr()              { return dr; }
+	void     set_dr(uint16_t word) { br = word; }
+	uint16_t get_xr()              { return xr; }
+	void     set_xr(uint16_t word) { xr = word; }
+	uint16_t get_yr()              { return yr; }
+	void     set_yr(uint16_t word) { yr = word; }
+	uint16_t get_us()              { return us; }
+	void     set_us(uint16_t word) { us = word; }
+	uint16_t get_sp()              { return sp; }
+	void     set_sp(uint16_t word) { sp = word; }
+	uint8_t  get_cc()              { return cc; }
+	void     set_cc(uint8_t  byte) { cc = byte; }
+
 private:
 	uint16_t pc;	// program counter
 	uint8_t	 dp;	// direct page register

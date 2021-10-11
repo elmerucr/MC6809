@@ -19,8 +19,8 @@ mc6809::mc6809(bus_read r, bus_write w) : ac(*(((uint8_t *)&dr)+1)), br(*((uint8
 	cc = 0b00000000;
 
 	/*
-	 * When NFI pins are not yet assigned, there needs to be a
-	 * decent value (true).
+	 * When NFI pins are not (yet) assigned, there needs to be a
+	 * decent starting value (true).
 	 */
 	default_pin = true;
 	nmi_line = &default_pin;
@@ -67,55 +67,6 @@ bool mc6809::run(uint16_t cycles)
 	uint16_t effective_address = (this->*addressing_modes_page1[opcode])();
 	(this->*opcodes_page1[opcode])(effective_address);
 	return false;
-}
-
-/*
- * Addressing modes
- */
-uint16_t mc6809::a_dir()
-{
-	return (dp << 8) | (*read_8)(pc++);
-}
-
-uint16_t mc6809::a_ih()
-{
-	return 0;
-}
-
-uint16_t mc6809::a_im()
-{
-	return pc++;
-}
-
-uint16_t mc6809::a_reb()
-{
-	uint16_t offset = (uint16_t)((int8_t)(*read_8)(pc++));
-	return (uint16_t)(pc + offset);
-}
-
-uint16_t mc6809::a_rew()
-{
-	uint16_t offset = (*read_8)(pc++);
-	offset = (offset << 8) | (*read_8)(pc++);
-	return pc + offset;
-}
-
-uint16_t mc6809::a_idx()
-{
-	// to do
-	return 0;
-}
-
-uint16_t mc6809::a_ext()
-{
-	// to do
-	return 0;
-}
-
-uint16_t mc6809::a_no()
-{
-	// no mode @ illegal instruction
-	return 0;
 }
 
 /*

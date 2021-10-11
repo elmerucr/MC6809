@@ -17,13 +17,16 @@ char *read_line(void);
 
 char text_buffer[512];
 #define TEXT_BUFFER_SIZE 64
-
 uint8_t memory[65536];
 extern uint8_t rom[];
 
 uint8_t read(uint16_t address)
 {
-	return memory[address];
+	if ((address & 0xe000) == 0xe000) {
+		return rom[address & 0x1fff];
+	} else {
+		return memory[address];
+	}
 }
 
 void write(uint16_t address, uint8_t byte)
@@ -33,12 +36,9 @@ void write(uint16_t address, uint8_t byte)
 
 int main()
 {
-	/*
-	 * Copy simple rom image into ram
-	 */
-	for (int i=0; i<8192; i++) {
-		memory[0xe000+i] = rom[i];
-	}
+	memory[0x2000] = 0xb3;
+	memory[0x2001] = 0x23;
+	memory[0xb323] = 0b10000000;
 
 	mc6809 cpu(read, write);
 
@@ -70,8 +70,17 @@ int main()
 		token3 = strtok(NULL, " ");
 
 		if (token0 == NULL) {
-			// do nothing, just catch the empty token, as strcmp with NULL pointer results in segfault
-		} else if (strcmp(token0, "exit") == 0 ) {
+			/*
+			 * Do nothing, just catch the empty token, as
+			 * strcmp with NULL pointer results in segfault
+			 */
+		} else if (strcmp(token0, "ac") == 0) {
+			printf("$%02x\n", cpu.get_ac());
+		} else if (strcmp(token0, "br") == 0) {
+			printf("$%02x\n", cpu.get_br());
+		} else if (strcmp(token0, "dr") == 0) {
+			printf("$%04x\n", cpu.get_dr());
+		} else if (strcmp(token0, "exit") == 0) {
 			finished = true;
 		} else if (strcmp(token0, "n") == 0) {
 			cpu.run(0);

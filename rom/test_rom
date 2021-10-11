@@ -1,0 +1,6 @@
+make
+cp rom.cpp ../test/
+cd ../build/
+make
+./emulate_mc6809
+cd ../rom/

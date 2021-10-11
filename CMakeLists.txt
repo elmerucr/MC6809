@@ -16,4 +16,5 @@ add_executable(
 	src/mc6809.cpp
 	src/mc6809_disassembler.cpp
 	src/mc6809_instructions.cpp
+	src/mc6809_addressing_modes.cpp
 )
