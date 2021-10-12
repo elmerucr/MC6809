@@ -182,7 +182,9 @@ void mc6809::brn(uint16_t ea)
 
 void mc6809::bsr(uint16_t ea)
 {
-	//
+	push_sp(pc & 0x00ff);
+	push_sp((pc & 0xff00) >> 8);
+	pc = ea;
 }
 
 void mc6809::bvc(uint16_t ea)
@@ -315,7 +317,81 @@ void mc6809::eorb(uint16_t ea)
 
 void mc6809::exg(uint16_t ea)
 {
-	//
+	/* illegal combinations do nothing */
+
+	switch ((*read_8)(ea)) {
+		/*
+		 * exchange 16 bit registers
+		 */
+		//case 0b00000000: word = dr; dr = dr; dr = word; break;
+		case 0b00000001: word = xr; xr = dr; dr = word; break;
+		case 0b00000010: word = yr; yr = dr; dr = word; break;
+		case 0b00000011: word = us; us = dr; dr = word; break;
+		case 0b00000100: word = sp; sp = dr; dr = word; break;
+		case 0b00000101: word = pc; pc = dr; dr = word; break;
+
+		case 0b00010000: word = dr; dr = xr; xr = word; break;
+		//case 0b00010001: word = xr; xr = xr; xr = word; break;
+		case 0b00010010: word = yr; yr = xr; xr = word; break;
+		case 0b00010011: word = us; us = xr; xr = word; break;
+		case 0b00010100: word = sp; sp = xr; xr = word; break;
+		case 0b00010101: word = pc; pc = xr; xr = word; break;
+
+		case 0b00100000: word = dr; dr = yr; yr = word; break;
+		case 0b00100001: word = xr; xr = yr; yr = word; break;
+		//case 0b00100010: word = yr; yr = yr; yr = word; break;
+		case 0b00100011: word = us; us = yr; yr = word; break;
+		case 0b00100100: word = sp; sp = yr; yr = word; break;
+		case 0b00100101: word = pc; pc = yr; yr = word; break;
+
+		case 0b00110000: word = dr; dr = us; us = word; break;
+		case 0b00110001: word = xr; xr = us; us = word; break;
+		case 0b00110010: word = yr; yr = us; us = word; break;
+		//case 0b00110011: word = us; us = us; us = word; break;
+		case 0b00110100: word = sp; sp = us; us = word; break;
+		case 0b00110101: word = pc; pc = us; us = word; break;
+
+		case 0b01000000: word = dr; dr = sp; sp = word; break;
+		case 0b01000001: word = xr; xr = sp; sp = word; break;
+		case 0b01000010: word = yr; yr = sp; sp = word; break;
+		case 0b01000011: word = us; us = sp; sp = word; break;
+		//case 0b01000100: word = sp; sp = sp; sp = word; break;
+		case 0b01000101: word = pc; pc = sp; sp = word; break;
+
+		case 0b01010000: word = dr; dr = pc; pc = word; break;
+		case 0b01010001: word = xr; xr = pc; pc = word; break;
+		case 0b01010010: word = yr; yr = pc; pc = word; break;
+		case 0b01010011: word = us; us = pc; pc = word; break;
+		case 0b01010100: word = sp; sp = pc; pc = word; break;
+		//case 0b01010101: word = pc; pc = pc; pc = word; break;
+
+		/*
+		 * exchange 8 bit registers
+		 */
+		//case 0b10001000: byte = ac; ac = ac; ac = byte; break;
+		case 0b10001001: byte = br; br = ac; ac = byte; break;
+		case 0b10001010: byte = cc; cc = ac; ac = byte; break;
+		case 0b10001011: byte = dp; dp = ac; ac = byte; break;
+
+		case 0b10011000: byte = ac; ac = br; br = byte; break;
+		//case 0b10011001: byte = br; br = br; br = byte; break;
+		case 0b10011010: byte = cc; cc = br; br = byte; break;
+		case 0b10011011: byte = dp; dp = br; br = byte; break;
+
+		case 0b10101000: byte = ac; ac = cc; cc = byte; break;
+		case 0b10101001: byte = br; br = cc; cc = byte; break;
+		//case 0b10101010: byte = cc; cc = cc; cc = byte; break;
+		case 0b10101011: byte = dp; dp = cc; cc = byte; break;
+
+		case 0b10111000: byte = ac; ac = dp; dp = byte; break;
+		case 0b10111001: byte = br; br = dp; dp = byte; break;
+		case 0b10111010: byte = cc; cc = dp; dp = byte; break;
+		//case 0b10111011: byte = dp; dp = dp; dp = byte; break;
+
+		default:
+			// do nothing
+			break;
+	}
 }
 
 void mc6809::inc(uint16_t ea)
@@ -340,7 +416,9 @@ void mc6809::jmp(uint16_t ea)
 
 void mc6809::jsr(uint16_t ea)
 {
-	//
+	push_sp(pc & 0x00ff);
+	push_sp((pc & 0xff00) >> 8);
+	pc = ea;
 }
 
 void mc6809::lbeq(uint16_t ea)
@@ -415,7 +493,9 @@ void mc6809::lbrn(uint16_t ea)
 
 void mc6809::lbsr(uint16_t ea)
 {
-	//
+	push_sp(pc & 0x00ff);
+	push_sp((pc & 0xff00) >> 8);
+	pc = ea;
 }
 
 void mc6809::lbvc(uint16_t ea)
@@ -585,7 +665,9 @@ void mc6809::page2(uint16_t ea)
 	uint8_t opcode = (*read_8)(pc++);
 	cycles += cycles_page2[opcode];
 
-	uint16_t effective_address = (this->*addressing_modes_page2[opcode])();
+	bool am_legal;
+
+	uint16_t effective_address = (this->*addressing_modes_page2[opcode])(&am_legal);
 	(this->*opcodes_page2[opcode])(effective_address);
 }
 
@@ -594,28 +676,66 @@ void mc6809::page3(uint16_t ea)
 	uint8_t opcode = (*read_8)(pc++);
 	cycles += cycles_page3[opcode];
 
-	uint16_t effective_address = (this->*addressing_modes_page3[opcode])();
+	bool am_legal;
+
+	uint16_t effective_address = (this->*addressing_modes_page3[opcode])(&am_legal);
 	(this->*opcodes_page3[opcode])(effective_address);
 }
 
 void mc6809::pshs(uint16_t ea)
 {
-	//
+	byte = (*read_8)(ea);
+
+	if (byte & 0x80) { push_sp(pc & 0x00ff); push_sp((pc & 0xff00) >> 8); cycles += 2; }
+	if (byte & 0x40) { push_sp(us & 0x00ff); push_sp((us & 0xff00) >> 8); cycles += 2; }
+	if (byte & 0x20) { push_sp(yr & 0x00ff); push_sp((yr & 0xff00) >> 8); cycles += 2; }
+	if (byte & 0x10) { push_sp(xr & 0x00ff); push_sp((xr & 0xff00) >> 8); cycles += 2; }
+	if (byte & 0x08) { push_sp(dp);                                       cycles += 1; }
+	if (byte & 0x04) { push_sp(br);                                       cycles += 1; }
+	if (byte & 0x02) { push_sp(ac);                                       cycles += 1; }
+	if (byte & 0x01) { push_sp(cc);                                       cycles += 1; }
 }
 
 void mc6809::pshu(uint16_t ea)
 {
-	//
+	byte = (*read_8)(ea);
+
+	if (byte & 0x80) { push_us(pc & 0x00ff); push_us((pc & 0xff00) >> 8); cycles += 2; }
+	if (byte & 0x40) { push_us(sp & 0x00ff); push_us((sp & 0xff00) >> 8); cycles += 2; }
+	if (byte & 0x20) { push_us(yr & 0x00ff); push_us((yr & 0xff00) >> 8); cycles += 2; }
+	if (byte & 0x10) { push_us(xr & 0x00ff); push_us((xr & 0xff00) >> 8); cycles += 2; }
+	if (byte & 0x08) { push_us(dp);                                       cycles += 1; }
+	if (byte & 0x04) { push_us(br);                                       cycles += 1; }
+	if (byte & 0x02) { push_us(ac);                                       cycles += 1; }
+	if (byte & 0x01) { push_us(cc);                                       cycles += 1; }
 }
 
 void mc6809::puls(uint16_t ea)
 {
-	//
+	byte = (*read_8)(ea);
+
+	if (byte & 0x01) { cc   = pull_sp();                                    cycles += 1; }
+	if (byte & 0x02) { ac   = pull_sp();                                    cycles += 1; }
+	if (byte & 0x04) { br   = pull_sp();                                    cycles += 1; }
+	if (byte & 0x08) { dp   = pull_sp();                                    cycles += 1; }
+	if (byte & 0x10) { word = pull_sp() << 8; word |= pull_sp(); xr = word; cycles += 2; }
+	if (byte & 0x20) { word = pull_sp() << 8; word |= pull_sp(); yr = word; cycles += 2; }
+	if (byte & 0x40) { word = pull_sp() << 8; word |= pull_sp(); us = word; cycles += 2; }
+	if (byte & 0x80) { word = pull_sp() << 8; word |= pull_sp(); pc = word; cycles += 2; }
 }
 
 void mc6809::pulu(uint16_t ea)
 {
-	//
+	byte = (*read_8)(ea);
+
+	if (byte & 0x01) { cc   = pull_us();                                    cycles += 1; }
+	if (byte & 0x02) { ac   = pull_us();                                    cycles += 1; }
+	if (byte & 0x04) { br   = pull_us();                                    cycles += 1; }
+	if (byte & 0x08) { dp   = pull_us();                                    cycles += 1; }
+	if (byte & 0x10) { word = pull_us() << 8; word |= pull_us(); xr = word; cycles += 2; }
+	if (byte & 0x20) { word = pull_us() << 8; word |= pull_us(); yr = word; cycles += 2; }
+	if (byte & 0x40) { word = pull_us() << 8; word |= pull_us(); sp = word; cycles += 2; }
+	if (byte & 0x80) { word = pull_us() << 8; word |= pull_us(); pc = word; cycles += 2; }
 }
 
 void mc6809::rol(uint16_t ea)
@@ -655,7 +775,9 @@ void mc6809::rti(uint16_t ea)
 
 void mc6809::rts(uint16_t ea)
 {
-	//
+	word = pull_sp() << 8;
+	word |= pull_sp();
+	pc = word;
 }
 
 void mc6809::sbca(uint16_t ea)
@@ -745,7 +867,81 @@ void mc6809::sync(uint16_t ea)
 
 void mc6809::tfr(uint16_t ea)
 {
-	//
+	/* illegal combinations do nothing */
+
+	switch ((*read_8)(ea)) {
+		/*
+		 * transfer 16 bit registers
+		 */
+		//case 0b00000000: dr = dr; break;
+		case 0b00000001: xr = dr; break;
+		case 0b00000010: yr = dr; break;
+		case 0b00000011: us = dr; break;
+		case 0b00000100: sp = dr; break;
+		case 0b00000101: pc = dr; break;
+
+		case 0b00010000: dr = xr; break;
+		//case 0b00010001: xr = xr; break;
+		case 0b00010010: yr = xr; break;
+		case 0b00010011: us = xr; break;
+		case 0b00010100: sp = xr; break;
+		case 0b00010101: pc = xr; break;
+
+		case 0b00100000: dr = yr; break;
+		case 0b00100001: xr = yr; break;
+		//case 0b00100010: yr = yr; break;
+		case 0b00100011: us = yr; break;
+		case 0b00100100: sp = yr; break;
+		case 0b00100101: pc = yr; break;
+
+		case 0b00110000: dr = us; break;
+		case 0b00110001: xr = us; break;
+		case 0b00110010: yr = us; break;
+		//case 0b00110011: us = us; break;
+		case 0b00110100: sp = us; break;
+		case 0b00110101: pc = us; break;
+
+		case 0b01000000: dr = sp; break;
+		case 0b01000001: xr = sp; break;
+		case 0b01000010: yr = sp; break;
+		case 0b01000011: us = sp; break;
+		//case 0b01000100: sp = sp; break;
+		case 0b01000101: pc = sp; break;
+
+		case 0b01010000: dr = pc; break;
+		case 0b01010001: xr = pc; break;
+		case 0b01010010: yr = pc; break;
+		case 0b01010011: us = pc; break;
+		case 0b01010100: sp = pc; break;
+		//case 0b01010101: pc = pc; break;
+
+		/*
+		 * transfer 8 bit registers
+		 */
+		//case 0b10001000: ac = ac; break;
+		case 0b10001001: br = ac; break;
+		case 0b10001010: cc = ac; break;
+		case 0b10001011: dp = ac; break;
+
+		case 0b10011000: ac = br; break;
+		//case 0b10011001: br = br; break;
+		case 0b10011010: cc = br; break;
+		case 0b10011011: dp = br; break;
+
+		case 0b10101000: ac = cc; break;
+		case 0b10101001: br = cc; break;
+		//case 0b10101010: cc = cc; break;
+		case 0b10101011: dp = cc; break;
+
+		case 0b10111000: ac = dp; break;
+		case 0b10111001: br = dp; break;
+		case 0b10111010: cc = dp; break;
+		//case 0b10111011: dp = dp; break;
+
+		default:
+			// do nothing
+			break;
+	}
 }
 
 void mc6809::tst(uint16_t ea)

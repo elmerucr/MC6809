@@ -6,45 +6,57 @@
 
 #include "mc6809.hpp"
 
-uint16_t mc6809::a_dir()
+uint16_t mc6809::a_dir(bool *legal)
 {
+	*legal = true;
 	return (dp << 8) | (*read_8)(pc++);
 }
 
-uint16_t mc6809::a_ih()
+uint16_t mc6809::a_ih(bool *legal)
 {
 	// Inherent, instruction contains all information.
+	*legal = true;
 	return 0;
 }
 
-uint16_t mc6809::a_imb()
+uint16_t mc6809::a_imb(bool *legal)
 {
+	*legal = true;
 	return pc++;
 }
 
-uint16_t mc6809::a_imw()
+uint16_t mc6809::a_imw(bool *legal)
 {
 	uint16_t address = pc++;
 	pc++;
+	*legal = true;
 	return address;
 }
 
-uint16_t mc6809::a_reb()
+uint16_t mc6809::a_reb(bool *legal)
 {
 	// sign extend the 8 bit value
 	uint16_t offset = (uint16_t)((int8_t)(*read_8)(pc++));
+	*legal = true;
 	return (uint16_t)(pc + offset);
 }
 
-uint16_t mc6809::a_rew()
+uint16_t mc6809::a_rew(bool *legal)
 {
 	uint16_t offset = (*read_8)(pc++);
 	offset = (offset << 8) | (*read_8)(pc++);
+	*legal = true;
 	return pc + offset;
 }
 
-uint16_t mc6809::a_idx()
+uint16_t mc6809::a_idx(bool *legal)
 {
+	/*
+	 * First, assume the addressing mode is legal. If not, this
+	 * flag will be changed in the code below.
+	 */
+	*legal = true;
+
 	uint16_t address = 0;
 	uint16_t offset;
 	uint8_t byte;
@@ -214,9 +226,20 @@ uint16_t mc6809::a_idx()
 					}
 					address = pc + offset;
 					break;
+				case 0b1101:
+					/*
+					 * constant offset pc 16bit, reads 2 extra bytes
+					 */
+					cycles += 5;
+
+					offset = (*read_8)(pc++) << 8;
+					offset |= (*read_8)(pc++);
+					address = pc + offset;
+					break;
 				default:
 					// TODO
 					// all others are illegal
+					*legal = false;
 					break;
 				}
 				break;
@@ -253,9 +276,117 @@ uint16_t mc6809::a_idx()
 					address = (*read_8)(word++) << 8;
 					address |= (*read_8)(word);
 					break;
+				case 0b1001:
+					/*
+					 * indirect, 16-bit offset
+					 */
+					cycles += 7;
+
+					offset = (*read_8)(pc++) << 8;
+					offset |= (*read_8)(pc++);
+					word = *index_regs[(postbyte & 0b01100000) >> 5]
+						+ offset;
+					address = (*read_8)(word++) << 8;
+					address |= (*read_8)(word);
+					break;
+				case 0b0110:
+					/*
+					 * indirect accumulator a offset
+					 */
+					cycles += 4;
+
+					if (ac & 0b10000000) {
+						offset = 0xff00 | ac;
+					} else {
+						offset = ac;
+					}
+					word = *index_regs[(postbyte & 0b01100000) >> 5]
+						+ offset;
+					address = (*read_8)(word++) << 8;
+					address |= (*read_8)(word);
+					break;
+				case 0b0101:
+					/*
+					 * indirect accumulator b offset
+					 */
+					cycles += 4;
+
+					if (br & 0b10000000) {
+						offset = 0xff00 | br;
+					} else {
+						offset = br;
+					}
+					word = *index_regs[(postbyte & 0b01100000) >> 5]
+						+ offset;
+					address = (*read_8)(word++) << 8;
+					address |= (*read_8)(word);
+					break;
+				case 0b1011:
+					/*
+					 * accumulator d offset
+					 */
+					cycles += 7;
+
+					offset = dr;
+					word = *index_regs[(postbyte & 0b01100000) >> 5]
+						+ offset;
+					address = (*read_8)(word++) << 8;
+					address |= (*read_8)(word);
+					break;
+				case 0b0001:
+					/*
+					 * indirect auto increment by 2
+					 */
+					cycles += 6;
+
+					word = *index_regs[(postbyte & 0b01100000) >> 5];
+					(*index_regs[(postbyte & 0b01100000) >> 5]) += 2;
+					address = (*read_8)(word++) << 8;
+					address |= (*read_8)(word);
+					break;
+				case 0b0011:
+					/*
+					 * indirect auto decrement by 2
+					 */
+					cycles += 6;
+
+					(*index_regs[(postbyte & 0b01100000) >> 5]) -= 2;
+					word = *index_regs[(postbyte & 0b01100000) >> 5];
+					address = (*read_8)(word++) << 8;
+					address |= (*read_8)(word);
+					break;
+				case 0b1100:
+					/*
+					 * indirect constant offset pc 8bit, reads extra byte
+					 */
+					cycles += 4;
+
+					byte = (*read_8)(pc++);
+					if (byte & 0b10000000) {
+						offset = 0xff00 | byte;
+					} else {
+						offset = byte;
+					}
+					word = pc + offset;
+					address = (*read_8)(word++) << 8;
+					address |= (*read_8)(word);
+					break;
+				case 0b1101:
+					/*
+					 * indirect constant offset pc 16bit, reads 2 extra bytes
+					 */
+					cycles += 8;
+
+					offset = (*read_8)(pc++) << 8;
+					offset |= (*read_8)(pc++);
+					word = pc + offset;
+					address = (*read_8)(word++) << 8;
+					address |= (*read_8)(word);
+					break;
 				default:
 					// TODO
 					// all others are illegal
+					*legal = false;
 					break;
 				}
 				break;
@@ -266,15 +397,17 @@ uint16_t mc6809::a_idx()
 	return address;
 }
 
-uint16_t mc6809::a_ext()
+uint16_t mc6809::a_ext(bool *legal)
 {
 	uint16_t word = ((*read_8)(pc++)) << 8;
 	word |= (*read_8)(pc++);
+	*legal = true;
 	return word;
 }
 
-uint16_t mc6809::a_no()
+uint16_t mc6809::a_no(bool *legal)
 {
 	// no mode @ illegal instruction
+	*legal = false;
 	return 0;
 }

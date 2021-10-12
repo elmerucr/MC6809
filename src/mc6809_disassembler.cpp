@@ -89,8 +89,8 @@ const struct exg_tfr_operand exg_tfr_operands[16] = {
 	{ "d",  false, false },
 	{ "x",  false, false },
 	{ "y",  false, false },
-	{ "us", false, false },
-	{ "sp", false, false },
+	{ "u",  false, false },
+	{ "s",  false, false },
 	{ "pc", false, false },
 	{ "?",  true,  false },
 	{ "?",  true,  false },
@@ -728,8 +728,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		if (byte == 0x00) {
-			mne_buffer += sprintf(mne_buffer, "illegal");
-			disassemble_success = false;
+			mne_buffer += sprintf(mne_buffer, "<empty>");
 		} else {
 			int number = 0;
 			for (uint8_t i=0x80; i != 0; i /= 2) {
@@ -751,8 +750,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		if (byte == 0x00) {
-			mne_buffer += sprintf(mne_buffer, "illegal");
-			disassemble_success = false;
+			mne_buffer += sprintf(mne_buffer, "<empty>");
 		} else {
 			int number = 0;
 			for (uint8_t i=0x80; i != 0; i /= 2) {

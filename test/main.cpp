@@ -36,9 +36,13 @@ void write(uint16_t address, uint8_t byte)
 
 int main()
 {
-	memory[0x2045] = 0xb3;
-	memory[0x2046] = 0x23;
-	memory[0xb323] = 0b11110001;
+	memory[0x2000] = 0xb3;
+	memory[0x2001] = 0x23;
+	memory[0x2002] = 0xb3;
+	memory[0x2003] = 0x24;
+
+	memory[0xb323] = 0xf1;
+	memory[0xb324] = 0xaa;
 
 	mc6809 cpu(read, write);
 
@@ -100,6 +104,16 @@ int main()
 			for (int i=0; i<4; i++) {
 				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
 				printf("%s", text_buffer);
+			}
+		} else if (strcmp(token0, "s") == 0) {
+			// display last 8 values from both stacks
+			printf("   sp        us\n");
+			for (int i=0; i<8; i++) {
+				printf("%04x: %02x  %04x: %02x\n",
+					cpu.get_sp() + i,
+					cpu.read_8((uint16_t)(cpu.get_sp() + i)),
+					cpu.get_us() + i,
+					cpu.read_8((uint16_t)(cpu.get_us() + i)));
 			}
 		} else {
 			printf("error: unknown command '%s'\n", input_string);

@@ -12,6 +12,7 @@
 vector_illegal_opcode:
 
 vector_swi3:
+	abx
 	sex
 	ldx	#vector_reset
 	rti
@@ -27,8 +28,19 @@ vector_swi:
 vector_nmi:
 
 vector_reset:
-	ldx	#$2000
-	ldb	[$45,x]
-	ldb	.1,pc
-	lbra	vector_reset
-.1	db	$2e, $2f, $01
+	; set stackpointers
+	lds	#$1000
+	ldu	#$0800
+
+.1	lbsr	test
+	ldx	#$1234
+	ldy	#$5678
+	pshu	x,y
+	ldx	#$ffff
+	ldy	#$eeee
+	pulu	x,y
+	lbra	.1
+
+test:
+	tfr	x,y
+	rts

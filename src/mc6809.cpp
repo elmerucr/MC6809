@@ -64,12 +64,12 @@ void mc6809::reset()
 
 bool mc6809::run(uint16_t cycles_to_run)
 {
-	// fetch opcode (= first byte of instruction, possible for)
-	// breakpoints later on
 	uint8_t opcode = (*read_8)(pc++);
 	cycles += cycles_page1[opcode];
 
-	uint16_t effective_address = (this->*addressing_modes_page1[opcode])();
+	bool am_legal;
+
+	uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
 	(this->*opcodes_page1[opcode])(effective_address);
 	return false;
 }

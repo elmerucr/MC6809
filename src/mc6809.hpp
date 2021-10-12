@@ -144,21 +144,29 @@ private:
 
 	uint32_t cycles;
 
-	typedef uint16_t (mc6809::*addressing_mode)();
+	typedef uint16_t (mc6809::*addressing_mode)(bool *legal);
 	typedef void (mc6809::*execute_instruction)(uint16_t);
 
 	bool disassemble_success;
 
+	/*
+	 * internal stackpointers funcitonality
+	 */
+	inline void    push_sp(uint8_t byte) { (*write_8)(--sp, byte); }
+	inline uint8_t pull_sp()             { return (*read_8)(sp++); }
+	inline void    push_us(uint8_t byte) { (*write_8)(--us, byte); }
+	inline uint8_t pull_us()             { return (*read_8)(us++); }
+
 	// addressing modes
-	uint16_t a_dir();	// direct page (base page)
-	uint16_t a_imb();	// immediate byte
-	uint16_t a_imw();	// immediate word
-	uint16_t a_ih();	// inherent
-	uint16_t a_reb();	// relative byte (8 bit signed)
-	uint16_t a_rew();	// relative word (16 bit signed)
-	uint16_t a_idx();	// indexed
-	uint16_t a_ext();	// extended
-	uint16_t a_no();	// no mode (@ illegal instructions)
+	uint16_t a_dir(bool *legal);	// direct page (base page)
+	uint16_t a_imb(bool *legal);	// immediate byte
+	uint16_t a_imw(bool *legal);	// immediate word
+	uint16_t a_ih(bool *legal);	// inherent
+	uint16_t a_reb(bool *legal);	// relative byte (8 bit signed)
+	uint16_t a_rew(bool *legal);	// relative word (16 bit signed)
+	uint16_t a_idx(bool *legal);	// indexed
+	uint16_t a_ext(bool *legal);	// extended
+	uint16_t a_no(bool *legal);	// no mode (@ illegal instructions)
 
 	// instructions
 	void abx(uint16_t ea);
