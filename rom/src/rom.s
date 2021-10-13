@@ -1,3 +1,5 @@
+RAM1	equ	$2000
+
 	global	vector_illegal_opcode
 	global	vector_swi3
 	global	vector_swi2
@@ -42,8 +44,9 @@ vector_reset:
 	lbra	.1
 
 test:
-	ldd	#$7ffc
-	addd	data1
-	rts
+	lda	#$05
+	cmpa	#$06
 
-data1:	dw	$0004
+.1	asrb
+	bne	.1
+	rts

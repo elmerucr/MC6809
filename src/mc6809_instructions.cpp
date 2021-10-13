@@ -12,6 +12,7 @@ uint16_t word;
 
 void mc6809::ill(uint16_t ea)
 {
+	// TODO !!!!!
 	// "NEW": from 6309
 	// push all registers, load vector illegal opcode ....
 }
@@ -172,32 +173,74 @@ void mc6809::andcc(uint16_t ea)
 
 void mc6809::asl(uint16_t ea)
 {
-	//
+	byte = (*read_8)(ea);
+
+	if (byte & 0x80) set_c_flag(); else clear_c_flag();
+	if (((byte & 0xc0) == 0x80) || ((byte & 0xc0) == 0x40))
+		set_v_flag(); else clear_v_flag();
+
+	byte <<= 1;
+
+	test_nz_flags(byte);
+	(*write_8)(ea, byte);
 }
 
 void mc6809::asla(uint16_t ea)
 {
-	//
+	if (ac & 0x80) set_c_flag(); else clear_c_flag();
+	if (((ac & 0xc0) == 0x80) || ((ac & 0xc0) == 0x40))
+		set_v_flag(); else clear_v_flag();
+
+	ac <<= 1;
+
+	test_nz_flags(ac);
 }
 
 void mc6809::aslb(uint16_t ea)
 {
-	//
+	if (br & 0x80) set_c_flag(); else clear_c_flag();
+	if (((br & 0xc0) == 0x80) || ((br & 0xc0) == 0x40))
+		set_v_flag(); else clear_v_flag();
+
+	br <<= 1;
+
+	test_nz_flags(br);
 }
 
 void mc6809::asr(uint16_t ea)
 {
-	//
+	byte = (*read_8)(ea);
+
+	if (byte & 0x01) set_c_flag(); else clear_c_flag();
+	bool bit7 = (byte & 0x80) ? true : false;
+
+	byte >>= 1;
+	if (bit7) byte |= 0x80; else byte &= 0x7f;
+
+	test_nz_flags(byte);
+	(*write_8)(ea, byte);
 }
 
 void mc6809::asra(uint16_t ea)
 {
-	//
+	if (ac & 0x01) set_c_flag(); else clear_c_flag();
+	bool bit7 = (ac & 0x80) ? true : false;
+
+	ac >>= 1;
+	if (bit7) ac |= 0x80; else ac &= 0x7f;
+
+	test_nz_flags(ac);
 }
 
 void mc6809::asrb(uint16_t ea)
 {
-	//
+	if (br & 0x01) set_c_flag(); else clear_c_flag();
+	bool bit7 = (br & 0x80) ? true : false;
+
+	br >>= 1;
+	if (bit7) br |= 0x80; else br &= 0x7f;
+
+	test_nz_flags(br);
 }
 
 void mc6809::beq(uint16_t ea)
@@ -238,12 +281,16 @@ void mc6809::bhs(uint16_t ea)
 
 void mc6809::bita(uint16_t ea)
 {
-	//
+	byte = ac & (*read_8)(ea);
+	clear_v_flag();
+	test_nz_flags(byte);
 }
 
 void mc6809::bitb(uint16_t ea)
 {
-	//
+	byte = br & (*read_8)(ea);
+	clear_v_flag();
+	test_nz_flags(byte);
 }
 
 void mc6809::ble(uint16_t ea)
@@ -261,7 +308,7 @@ void mc6809::blo(uint16_t ea)
 	}
 }
 
-// CHECK
+// CHECK THIS COMPLETELY!!!
 //
 void mc6809::bls(uint16_t ea)
 {
@@ -358,7 +405,10 @@ void mc6809::clrb(uint16_t ea)
 
 void mc6809::cmpa(uint16_t ea)
 {
-	//
+	word = ac - (*read_8)(ea);
+	bool borrow = (word & 0x0100) ? true : false;
+	if (borrow) printf("we had a borrow\n"); else printf("NO borrow\n");
+	// continue here
 }
 
 void mc6809::cmpb(uint16_t ea)
@@ -451,6 +501,8 @@ void mc6809::exg(uint16_t ea)
 {
 	/* illegal combinations do nothing */
 
+	/* when the sp is written to, it enables nmi's */
+
 	switch ((*read_8)(ea)) {
 		/*
 		 * exchange 16 bit registers
@@ -459,42 +511,42 @@ void mc6809::exg(uint16_t ea)
 		case 0b00000001: word = xr; xr = dr; dr = word; break;
 		case 0b00000010: word = yr; yr = dr; dr = word; break;
 		case 0b00000011: word = us; us = dr; dr = word; break;
-		case 0b00000100: word = sp; sp = dr; dr = word; break;
+		case 0b00000100: word = sp; sp = dr; dr = word; nmi_blocked = false; break;
 		case 0b00000101: word = pc; pc = dr; dr = word; break;
 
 		case 0b00010000: word = dr; dr = xr; xr = word; break;
 		//case 0b00010001: word = xr; xr = xr; xr = word; break;
 		case 0b00010010: word = yr; yr = xr; xr = word; break;
 		case 0b00010011: word = us; us = xr; xr = word; break;
-		case 0b00010100: word = sp; sp = xr; xr = word; break;
+		case 0b00010100: word = sp; sp = xr; xr = word; nmi_blocked = false; break;
 		case 0b00010101: word = pc; pc = xr; xr = word; break;
 
 		case 0b00100000: word = dr; dr = yr; yr = word; break;
 		case 0b00100001: word = xr; xr = yr; yr = word; break;
 		//case 0b00100010: word = yr; yr = yr; yr = word; break;
 		case 0b00100011: word = us; us = yr; yr = word; break;
-		case 0b00100100: word = sp; sp = yr; yr = word; break;
+		case 0b00100100: word = sp; sp = yr; yr = word; nmi_blocked = false; break;
 		case 0b00100101: word = pc; pc = yr; yr = word; break;
 
 		case 0b00110000: word = dr; dr = us; us = word; break;
 		case 0b00110001: word = xr; xr = us; us = word; break;
 		case 0b00110010: word = yr; yr = us; us = word; break;
 		//case 0b00110011: word = us; us = us; us = word; break;
-		case 0b00110100: word = sp; sp = us; us = word; break;
+		case 0b00110100: word = sp; sp = us; us = word; nmi_blocked = false; break;
 		case 0b00110101: word = pc; pc = us; us = word; break;
 
-		case 0b01000000: word = dr; dr = sp; sp = word; break;
-		case 0b01000001: word = xr; xr = sp; sp = word; break;
-		case 0b01000010: word = yr; yr = sp; sp = word; break;
-		case 0b01000011: word = us; us = sp; sp = word; break;
-		//case 0b01000100: word = sp; sp = sp; sp = word; break;
-		case 0b01000101: word = pc; pc = sp; sp = word; break;
+		case 0b01000000: word = dr; dr = sp; sp = word; nmi_blocked = false; break;
+		case 0b01000001: word = xr; xr = sp; sp = word; nmi_blocked = false; break;
+		case 0b01000010: word = yr; yr = sp; sp = word; nmi_blocked = false; break;
+		case 0b01000011: word = us; us = sp; sp = word; nmi_blocked = false; break;
+		//case 0b01000100: word = sp; sp = sp; sp = word; nmi_blocked = false; break;
+		case 0b01000101: word = pc; pc = sp; sp = word; nmi_blocked = false; break;
 
 		case 0b01010000: word = dr; dr = pc; pc = word; break;
 		case 0b01010001: word = xr; xr = pc; pc = word; break;
 		case 0b01010010: word = yr; yr = pc; pc = word; break;
 		case 0b01010011: word = us; us = pc; pc = word; break;
-		case 0b01010100: word = sp; sp = pc; pc = word; break;
+		case 0b01010100: word = sp; sp = pc; pc = word; nmi_blocked = false; break;
 		//case 0b01010101: word = pc; pc = pc; pc = word; break;
 
 		/*
@@ -611,7 +663,7 @@ void mc6809::lblo(uint16_t ea)
 	}
 }
 
-// CHECK
+// CHECK THIS COMPLETELY!!!
 //
 void mc6809::lbls(uint16_t ea)
 {
@@ -688,36 +740,32 @@ void mc6809::lbvs(uint16_t ea)
 
 void mc6809::lda(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	ac = (*read_8)(ea);
 	clear_v_flag();
-	test_nz_flags(byte);
-	ac = byte;
+	test_nz_flags(ac);
 }
 
 void mc6809::ldb(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	br = (*read_8)(ea);
 	clear_v_flag();
-	test_nz_flags(byte);
-	br = byte;
+	test_nz_flags(br);
 }
 
 void mc6809::ldd(uint16_t ea)
 {
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	dr = (*read_8)(ea++) << 8;
+	dr |= (*read_8)((uint16_t)ea);
 	clear_v_flag();
-	test_nz_flags_16(word);
-	dr = word;
+	test_nz_flags_16(dr);
 }
 
 void mc6809::lds(uint16_t ea)
 {
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	sp = (*read_8)(ea++) << 8;
+	sp |= (*read_8)((uint16_t)ea);
 	clear_v_flag();
-	test_nz_flags_16(word);
-	sp = word;
+	test_nz_flags_16(sp);
 
 	// a write to system stackpointer enables nmi's
 	nmi_blocked = false;
@@ -725,29 +773,26 @@ void mc6809::lds(uint16_t ea)
 
 void mc6809::ldu(uint16_t ea)
 {
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	us = (*read_8)(ea++) << 8;
+	us |= (*read_8)((uint16_t)ea);
 	clear_v_flag();
-	test_nz_flags_16(word);
-	us = word;
+	test_nz_flags_16(us);
 }
 
 void mc6809::ldx(uint16_t ea)
 {
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	xr = (*read_8)(ea++) << 8;
+	xr |= (*read_8)((uint16_t)ea);
 	clear_v_flag();
-	test_nz_flags_16(word);
-	xr = word;
+	test_nz_flags_16(xr);
 }
 
 void mc6809::ldy(uint16_t ea)
 {
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	yr = (*read_8)(ea++) << 8;
+	yr |= (*read_8)((uint16_t)ea);
 	clear_v_flag();
-	test_nz_flags_16(word);
-	yr = word;
+	test_nz_flags_16(yr);
 }
 
 void mc6809::leax(uint16_t ea)
@@ -975,12 +1020,16 @@ void mc6809::sex(uint16_t ea)
 
 void mc6809::sta(uint16_t ea)
 {
-	//
+	(*write_8)(ea, ac);
+	clear_v_flag();
+	test_nz_flags(ac);
 }
 
 void mc6809::stb(uint16_t ea)
 {
-	//
+	(*write_8)(ea, br);
+	clear_v_flag();
+	test_nz_flags(br);
 }
 
 void mc6809::std(uint16_t ea)
@@ -1047,6 +1096,8 @@ void mc6809::tfr(uint16_t ea)
 {
 	/* illegal combinations do nothing */
 
+	/* when sp is written to, nmi's are enabled */
+
 	switch ((*read_8)(ea)) {
 		/*
 		 * transfer 16 bit registers
@@ -1055,42 +1106,42 @@ void mc6809::tfr(uint16_t ea)
 		case 0b00000001: xr = dr; break;
 		case 0b00000010: yr = dr; break;
 		case 0b00000011: us = dr; break;
-		case 0b00000100: sp = dr; break;
+		case 0b00000100: sp = dr; nmi_blocked = false; break;
 		case 0b00000101: pc = dr; break;
 
 		case 0b00010000: dr = xr; break;
 		//case 0b00010001: xr = xr; break;
 		case 0b00010010: yr = xr; break;
 		case 0b00010011: us = xr; break;
-		case 0b00010100: sp = xr; break;
+		case 0b00010100: sp = xr; nmi_blocked = false; break;
 		case 0b00010101: pc = xr; break;
 
 		case 0b00100000: dr = yr; break;
 		case 0b00100001: xr = yr; break;
 		//case 0b00100010: yr = yr; break;
 		case 0b00100011: us = yr; break;
-		case 0b00100100: sp = yr; break;
+		case 0b00100100: sp = yr; nmi_blocked = false; break;
 		case 0b00100101: pc = yr; break;
 
 		case 0b00110000: dr = us; break;
 		case 0b00110001: xr = us; break;
 		case 0b00110010: yr = us; break;
 		//case 0b00110011: us = us; break;
-		case 0b00110100: sp = us; break;
+		case 0b00110100: sp = us; nmi_blocked = false; break;
 		case 0b00110101: pc = us; break;
 
 		case 0b01000000: dr = sp; break;
 		case 0b01000001: xr = sp; break;
 		case 0b01000010: yr = sp; break;
 		case 0b01000011: us = sp; break;
-		//case 0b01000100: sp = sp; break;
+		//case 0b01000100: sp = sp; nmi_blocked = false; break;
 		case 0b01000101: pc = sp; break;
 
 		case 0b01010000: dr = pc; break;
 		case 0b01010001: xr = pc; break;
 		case 0b01010010: yr = pc; break;
 		case 0b01010011: us = pc; break;
-		case 0b01010100: sp = pc; break;
+		case 0b01010100: sp = pc; nmi_blocked = false; break;
 		//case 0b01010101: pc = pc; break;
 
 		/*
