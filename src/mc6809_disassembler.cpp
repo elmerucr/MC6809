@@ -226,7 +226,7 @@ enum addr_mode_index addr_mode_page_1[256] = {
 	__IDX_, __IDX_, __IDX_, __NOM_, __IDX_, __IDX_, __IDX_, __IDX_,
 	__EXT_, __NOM_, __NOM_, __EXT_, __EXT_, __NOM_, __EXT_, __EXT_,	// 0x70
 	__EXT_, __EXT_, __EXT_, __NOM_, __EXT_, __EXT_, __EXT_, __EXT_,
-	__IMB_, __IMB_, __IMB_, __IMB_, __IMB_, __IMB_, __IMB_, __NOM_,	// 0x80
+	__IMB_, __IMB_, __IMB_, __IMW_, __IMB_, __IMB_, __IMB_, __NOM_,	// 0x80
 	__IMB_, __IMB_, __IMB_, __IMB_, __IMW_, __REB_, __IMW_, __NOM_,
 	__DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_,	// 0x90
 	__DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_, __DIR_,

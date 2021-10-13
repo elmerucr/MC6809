@@ -446,7 +446,7 @@ private:
 		&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_no,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,	&mc6809::a_idx,
 		&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,	// 0x70
 		&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_no,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,	&mc6809::a_ext,
-		&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_no,	// 0x80
+		&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imw,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_no,	// 0x80
 		&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imb,	&mc6809::a_imw,	&mc6809::a_reb,	&mc6809::a_imw,	&mc6809::a_no,
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	// 0x90
 		&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,	&mc6809::a_dir,

@@ -271,7 +271,13 @@ void mc6809::bhi(uint16_t ea)
 	}
 }
 
-// bcc
+/*
+ * bhs - Branch if Higher or Same
+ * bcc - Branch if Carry Clear
+ *
+ * E.g. if no borrow was needed (carry clear) after a comparison, then
+ * value in register must be higher than or the same as the compared value.
+ */
 void mc6809::bhs(uint16_t ea)
 {
 	if (is_c_flag_clear()) {
@@ -300,7 +306,13 @@ void mc6809::ble(uint16_t ea)
 	}
 }
 
-// bcs
+/*
+ * blo - Branch if Lower
+ * bcs - Branch if Carry Set
+ *
+ * E.g. if a borrow was needed (carry set) after a comparison, the
+ * value in the register must be lower than the compared value.
+ */
 void mc6809::blo(uint16_t ea)
 {
 	if (is_c_flag_set()) {
@@ -308,11 +320,12 @@ void mc6809::blo(uint16_t ea)
 	}
 }
 
-// CHECK THIS COMPLETELY!!!
-//
+/*
+ * bls - Branch if Lower or Same
+ */
 void mc6809::bls(uint16_t ea)
 {
-	if ((is_c_flag_set() && is_z_flag_clear()) || (is_c_flag_clear() && is_z_flag_set())) {
+	if (is_c_flag_set() || is_z_flag_set()) {
 		pc = ea;
 	}
 }
@@ -405,40 +418,124 @@ void mc6809::clrb(uint16_t ea)
 
 void mc6809::cmpa(uint16_t ea)
 {
-	word = ac - (*read_8)(ea);
-	bool borrow = (word & 0x0100) ? true : false;
-	if (borrow) printf("we had a borrow\n"); else printf("NO borrow\n");
-	// continue here
+	byte = (~(*read_8)(ea))+1;	// two's complement
+
+	bool bit_7_carry_in = (((ac & 0x7f) + (byte & 0x7f)) & 0x80) ? true : false;
+
+	word = ac + byte;		// do an addition
+	byte = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();	// final carry is a complement (borrow)
+	test_nz_flags(byte);
 }
 
 void mc6809::cmpb(uint16_t ea)
 {
-	//
+	byte = (~(*read_8)(ea))+1;	// two's complement
+
+	bool bit_7_carry_in = (((br & 0x7f) + (byte & 0x7f)) & 0x80) ? true : false;
+
+	word = br + byte;		// do an addition
+	byte = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();	// final carry is a complement (borrow)
+	test_nz_flags(byte);
 }
 
 void mc6809::cmpd(uint16_t ea)
 {
-	//
+	word = (*read_8)(ea++) << 8;
+	word |= (*read_8)((uint16_t)ea);
+	word = (~word) + 1;	// two's complement
+
+	bool bit_15_carry_in = (((dr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+
+	uint32_t dword = dr + word;
+	word = dword & 0x0000ffff;
+
+	bool carry = (dword & 0x00010000) ? true : false;
+
+	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();
+	test_nz_flags_16(word);
 }
 
 void mc6809::cmpu(uint16_t ea)
 {
-	//
+	word = (*read_8)(ea++) << 8;
+	word |= (*read_8)((uint16_t)ea);
+	word = (~word) + 1;	// two's complement
+
+	bool bit_15_carry_in = (((us & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+
+	uint32_t dword = us + word;
+	word = dword & 0x0000ffff;
+
+	bool carry = (dword & 0x00010000) ? true : false;
+
+	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();
+	test_nz_flags_16(word);
 }
 
 void mc6809::cmps(uint16_t ea)
 {
-	//
+	word = (*read_8)(ea++) << 8;
+	word |= (*read_8)((uint16_t)ea);
+	word = (~word) + 1;	// two's complement
+
+	bool bit_15_carry_in = (((sp & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+
+	uint32_t dword = sp + word;
+	word = dword & 0x0000ffff;
+
+	bool carry = (dword & 0x00010000) ? true : false;
+
+	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();
+	test_nz_flags_16(word);
 }
 
 void mc6809::cmpx(uint16_t ea)
 {
-	//
+	word = (*read_8)(ea++) << 8;
+	word |= (*read_8)((uint16_t)ea);
+	word = (~word) + 1;	// two's complement
+
+	bool bit_15_carry_in = (((xr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+
+	uint32_t dword = xr + word;
+	word = dword & 0x0000ffff;
+
+	bool carry = (dword & 0x00010000) ? true : false;
+
+	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();
+	test_nz_flags_16(word);
 }
 
 void mc6809::cmpy(uint16_t ea)
 {
-	//
+	word = (*read_8)(ea++) << 8;
+	word |= (*read_8)((uint16_t)ea);
+	word = (~word) + 1;	// two's complement
+
+	bool bit_15_carry_in = (((yr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+
+	uint32_t dword = yr + word;
+	word = dword & 0x0000ffff;
+
+	bool carry = (dword & 0x00010000) ? true : false;
+
+	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();
+	test_nz_flags_16(word);
 }
 
 void mc6809::com(uint16_t ea)
@@ -468,17 +565,45 @@ void mc6809::daa(uint16_t ea)
 
 void mc6809::dec(uint16_t ea)
 {
-	//
+	byte = (*read_8)(ea);
+
+	bool bit_7_carry_in = (((byte & 0x7f) + 0x7f) & 0x80) ? true : false;
+
+	word = byte + 0xff;
+	byte = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	test_nz_flags(byte);
+
+	(*write_8)(ea, byte);
 }
 
 void mc6809::deca(uint16_t ea)
 {
-	//
+	bool bit_7_carry_in = (((ac & 0x7f) + 0x7f) & 0x80) ? true : false;
+
+	word = ac + 0xff;		// do an addition
+	ac = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	test_nz_flags(ac);
 }
 
 void mc6809::decb(uint16_t ea)
 {
-	//
+	bool bit_7_carry_in = (((br & 0x7f) + 0x7f) & 0x80) ? true : false;
+
+	word = br + 0xff;		// do an addition
+	br = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	test_nz_flags(br);
 }
 
 void mc6809::eora(uint16_t ea)
@@ -639,6 +764,13 @@ void mc6809::lbhi(uint16_t ea)
 	}
 }
 
+/*
+ * lbhs - Branch if Higher or Same
+ * lbcc - Branch if Carry Clear
+ *
+ * E.g. if no borrow was needed (carry clear) after a comparison, then
+ * value in register must be higher or the same as the compared value.
+ */
 void mc6809::lbhs(uint16_t ea)
 {
 	if (is_c_flag_clear()) {
@@ -655,6 +787,13 @@ void mc6809::lble(uint16_t ea)
 	}
 }
 
+/*
+ * lblo - Branch if Lower
+ * lbcs - Branch if Carry Set
+ *
+ * E.g. if a borrow was needed (carry set) after a comparison, the
+ * value in the register must be lower than the compared value.
+ */
 void mc6809::lblo(uint16_t ea)
 {
 	if (is_c_flag_set()) {
@@ -663,11 +802,12 @@ void mc6809::lblo(uint16_t ea)
 	}
 }
 
-// CHECK THIS COMPLETELY!!!
-//
+/*
+ * bls - Branch if Lower or Same
+ */
 void mc6809::lbls(uint16_t ea)
 {
-	if ((is_c_flag_set() && is_z_flag_clear()) || (is_c_flag_clear() && is_z_flag_set())) {
+	if (is_c_flag_set() || is_z_flag_set()) {
 		pc = ea;
 		cycles += 1;
 	}
@@ -1059,17 +1199,52 @@ void mc6809::sty(uint16_t ea)
 
 void mc6809::suba(uint16_t ea)
 {
-	//
+	byte = (~(*read_8)(ea))+1;	// two's complement
+
+	bool bit_7_carry_in = (((ac & 0x7f) + (byte & 0x7f)) & 0x80) ? true : false;
+
+	word = ac + byte;		// do an addition
+	ac = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();	// final carry is a complement (borrow)
+	test_nz_flags(ac);
 }
 
 void mc6809::subb(uint16_t ea)
 {
-	//
+	byte = (~(*read_8)(ea)) + 1;	// two's complement
+
+	bool bit_7_carry_in = (((br & 0x7f) + (byte & 0x7f)) & 0x80) ? true : false;
+
+	word = br + byte;		// do an addition
+	br = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();	// final carry is a complement (borrow)
+	test_nz_flags(br);
 }
 
 void mc6809::subd(uint16_t ea)
 {
-	//
+	word = (*read_8)(ea++) << 8;
+	word |= (*read_8)((uint16_t)ea);
+	word = (~word) + 1;	// two's complement
+
+	bool bit_15_carry_in = (((dr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+
+	uint32_t dword = dr + word;
+	dr = dword & 0x0000ffff;
+
+	bool carry = (dword & 0x00010000) ? true : false;
+
+	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) clear_c_flag(); else set_c_flag();
+	test_nz_flags_16(dr);
 }
 
 void mc6809::swi(uint16_t ea)

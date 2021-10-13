@@ -34,19 +34,20 @@ vector_reset:
 	lds	#$1000
 	ldu	#$0800
 
-.1	lbsr	test
-	ldx	#$1234
-	ldy	#$5678
-	pshu	x,y
-	ldx	#$ffff
-	ldy	#$eeee
-	pulu	x,y
-	lbra	.1
+	ldb	data
+	ldx	#(data+1)
+	ldy	#$0042
+.1	lda	,x+
+	sta	,y+
+	decb
+	bne	.1
+
 
 test:
-	lda	#$05
-	cmpa	#$06
-
-.1	asrb
-	bne	.1
+	ldd	#$ffff
+	cmpd	#$ffff
 	rts
+
+data:
+	db	$06	; length of array
+	db	$2a, $b5, $60, $3f, $d1, $19
