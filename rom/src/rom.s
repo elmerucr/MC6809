@@ -42,5 +42,8 @@ vector_reset:
 	lbra	.1
 
 test:
-	tfr	x,y
+	ldd	#$7ffc
+	addd	data1
 	rts
+
+data1:	dw	$0004

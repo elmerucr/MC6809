@@ -18,32 +18,135 @@ void mc6809::ill(uint16_t ea)
 
 void mc6809::abx(uint16_t ea)
 {
-	//
+	xr += br;
 }
 
 void mc6809::adca(uint16_t ea)
 {
-	//
+	/*
+	 * See: Osborne, A. 1976. An introduction to microcomputers
+	 * Volume I Basic Concepts. SYBEX. pages 4-12 to 4-16.
+	 */
+
+	uint8_t old_carry = (is_c_flag_set() ? 1 : 0);
+
+	byte = (*read_8)(ea);
+
+	/*
+	 * Half carry
+	 */
+	if (((ac & 0x0f) + (byte & 0x0f) + old_carry) & 0b00010000) {
+		set_h_flag();
+	} else {
+		clear_h_flag();
+	}
+
+	bool bit_7_carry_in = (((ac & 0x7f) + (byte & 0x7f) + old_carry) & 0x80) ? true : false;
+
+	word = ac + byte + old_carry;
+	ac = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) set_c_flag(); else clear_c_flag();
+	test_nz_flags(ac);
 }
 
 void mc6809::adcb(uint16_t ea)
 {
-	//
+	uint8_t old_carry = (is_c_flag_set() ? 1 : 0);
+
+	byte = (*read_8)(ea);
+
+	/*
+	 * Half carry
+	 */
+	if (((br & 0x0f) + (byte & 0x0f) + old_carry) & 0b00010000) {
+		set_h_flag();
+	} else {
+		clear_h_flag();
+	}
+
+	bool bit_7_carry_in = (((br & 0x7f) + (byte & 0x7f) + old_carry) & 0x80) ? true : false;
+
+	word = br + byte + old_carry;
+	br = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) set_c_flag(); else clear_c_flag();
+	test_nz_flags(br);
 }
 
 void mc6809::adda(uint16_t ea)
 {
-	//
+	byte = (*read_8)(ea);
+
+	/*
+	 * Half carry
+	 */
+	if (((ac & 0x0f) + (byte & 0x0f)) & 0b00010000) {
+		set_h_flag();
+	} else {
+		clear_h_flag();
+	}
+
+	bool bit_7_carry_in = (((ac & 0x7f) + (byte & 0x7f)) & 0x80) ? true : false;
+
+	word = ac + byte;
+	ac = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) set_c_flag(); else clear_c_flag();
+	test_nz_flags(ac);
 }
 
 void mc6809::addb(uint16_t ea)
 {
-	//
+	byte = (*read_8)(ea);
+
+	/*
+	 * Half carry
+	 */
+	if (((br & 0x0f) + (byte & 0x0f)) & 0b00010000) {
+		set_h_flag();
+	} else {
+		clear_h_flag();
+	}
+
+	bool bit_7_carry_in = (((br & 0x7f) + (byte & 0x7f)) & 0x80) ? true : false;
+
+	word = br + byte;
+	br = word & 0x00ff;
+
+	bool carry = (word & 0x0100) ? true : false;
+
+	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
+	if (carry) set_c_flag(); else clear_c_flag();
+	test_nz_flags(br);
 }
 
 void mc6809::addd(uint16_t ea)
 {
-	//
+	word = ((*read_8)(ea++)) << 8;
+	word |= (*read_8)(ea);
+
+	/* no need for half-carry here */
+
+	bool bit_15_carry_in = (((dr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+
+	uint32_t dword = dr + word;
+	dr = dword & 0xffff;
+
+	bool carry = (dword & 0x00010000) ? true : false;
+
+	if(carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
+	if(carry) set_c_flag(); else clear_c_flag();
+	test_nz_flags_16(dr);
 }
 
 void mc6809::anda(uint16_t ea)
@@ -99,30 +202,38 @@ void mc6809::asrb(uint16_t ea)
 
 void mc6809::beq(uint16_t ea)
 {
-	if (is_z_flag_set()) {
-		// take branch
-		pc = ea;
-	}
+	if (is_z_flag_set()) pc = ea;
 }
 
 void mc6809::bge(uint16_t ea)
 {
-	//
+	// both n and v set  OR  both n and v clear
+	if ((is_n_flag_set() && is_v_flag_set()) || (is_n_flag_clear() && is_v_flag_clear())) {
+		pc = ea;
+	}
 }
 
 void mc6809::bgt(uint16_t ea)
 {
-	//
+	// (both n and v set  OR  both n and v clear)  AND  (z clear)
+	if (((is_n_flag_set() && is_v_flag_set()) || (is_n_flag_clear() && is_v_flag_clear())) && is_z_flag_clear()) {
+		pc = ea;
+	}
 }
 
 void mc6809::bhi(uint16_t ea)
 {
-	//
+	if (is_z_flag_clear() && is_c_flag_clear()) {
+		pc = ea;
+	}
 }
 
+// bcc
 void mc6809::bhs(uint16_t ea)
 {
-	//
+	if (is_c_flag_clear()) {
+		pc = ea;
+	}
 }
 
 void mc6809::bita(uint16_t ea)
@@ -137,37 +248,54 @@ void mc6809::bitb(uint16_t ea)
 
 void mc6809::ble(uint16_t ea)
 {
-	//
+	if (is_z_flag_set() || (is_n_flag_set() && is_v_flag_clear()) || (is_n_flag_clear() && is_v_flag_set())) {
+		pc = ea;
+	}
 }
 
+// bcs
 void mc6809::blo(uint16_t ea)
 {
-	//
+	if (is_c_flag_set()) {
+		pc = ea;
+	}
 }
 
+// CHECK
+//
 void mc6809::bls(uint16_t ea)
 {
-	//
+	if ((is_c_flag_set() && is_z_flag_clear()) || (is_c_flag_clear() && is_z_flag_set())) {
+		pc = ea;
+	}
 }
 
 void mc6809::blt(uint16_t ea)
 {
-	//
+	if ((is_n_flag_set() && is_v_flag_clear()) || (is_n_flag_clear() && is_v_flag_set())) {
+		pc = ea;
+	}
 }
 
 void mc6809::bmi(uint16_t ea)
 {
-	//
+	if (is_n_flag_set()) {
+		pc = ea;
+	}
 }
 
 void mc6809::bne(uint16_t ea)
 {
-	if (is_z_flag_clear()) pc = ea;
+	if (is_z_flag_clear()) {
+		pc = ea;
+	}
 }
 
 void mc6809::bpl(uint16_t ea)
 {
-	//
+	if (is_n_flag_clear()) {
+		pc = ea;
+	}
 }
 
 void mc6809::bra(uint16_t ea)
@@ -177,7 +305,7 @@ void mc6809::bra(uint16_t ea)
 
 void mc6809::brn(uint16_t ea)
 {
-	//
+	// does essentially nothing
 }
 
 void mc6809::bsr(uint16_t ea)
@@ -189,12 +317,16 @@ void mc6809::bsr(uint16_t ea)
 
 void mc6809::bvc(uint16_t ea)
 {
-	//
+	if (is_v_flag_clear()) {
+		pc = ea;
+	}
 }
 
 void mc6809::bvs(uint16_t ea)
 {
-	//
+	if (is_v_flag_set()) {
+		pc = ea;
+	}
 }
 
 void mc6809::clr(uint16_t ea)
@@ -423,62 +555,102 @@ void mc6809::jsr(uint16_t ea)
 
 void mc6809::lbeq(uint16_t ea)
 {
-	//
+	if (is_z_flag_set()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lbge(uint16_t ea)
 {
-	//
+	// both n and v set  OR  both n and v clear
+	if ((is_n_flag_set() && is_v_flag_set()) || (is_n_flag_clear() && is_v_flag_clear())) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lbgt(uint16_t ea)
 {
-	//
+	// (both n and v set  OR  both n and v clear)  AND  (z clear)
+	if (((is_n_flag_set() && is_v_flag_set()) || (is_n_flag_clear() && is_v_flag_clear())) && is_z_flag_clear()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lbhi(uint16_t ea)
 {
-	//
+	if (is_z_flag_clear() && is_c_flag_clear()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lbhs(uint16_t ea)
 {
-	//
+	if (is_c_flag_clear()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lble(uint16_t ea)
 {
-	//
+	if (is_z_flag_set() || (is_n_flag_set() && is_v_flag_clear()) || (is_n_flag_clear() && is_v_flag_set())) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lblo(uint16_t ea)
 {
-	//
+	if (is_c_flag_set()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
+// CHECK
+//
 void mc6809::lbls(uint16_t ea)
 {
-	//
+	if ((is_c_flag_set() && is_z_flag_clear()) || (is_c_flag_clear() && is_z_flag_set())) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lblt(uint16_t ea)
 {
-	//
+	if ((is_n_flag_set() && is_v_flag_clear()) || (is_n_flag_clear() && is_v_flag_set())) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lbmi(uint16_t ea)
 {
-	//
+	if (is_n_flag_set()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lbne(uint16_t ea)
 {
-	//
+	if (is_z_flag_clear()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lbpl(uint16_t ea)
 {
-	//
+	if (is_n_flag_clear()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lbra(uint16_t ea)
@@ -488,7 +660,7 @@ void mc6809::lbra(uint16_t ea)
 
 void mc6809::lbrn(uint16_t ea)
 {
-	//
+	// does essentially nothing
 }
 
 void mc6809::lbsr(uint16_t ea)
@@ -500,12 +672,18 @@ void mc6809::lbsr(uint16_t ea)
 
 void mc6809::lbvc(uint16_t ea)
 {
-	//
+	if (is_v_flag_clear()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lbvs(uint16_t ea)
 {
-	//
+	if (is_v_flag_set()) {
+		pc = ea;
+		cycles += 1;
+	}
 }
 
 void mc6809::lda(uint16_t ea)
