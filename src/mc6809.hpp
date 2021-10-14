@@ -42,12 +42,16 @@ public:
 	 */
 	mc6809(bus_read r, bus_write w);
 
+	~mc6809();
+
 	void assign_nmi_line(bool *line) { nmi_line = line; }
 	void assign_firq_line(bool *line) { firq_line = line; }
 	void assign_irq_line(bool *line) { irq_line = line; }
 
 	void reset();
-	bool run(uint16_t cycles_to_run);
+	//bool run(uint16_t cycles_to_run);
+	bool run(uint16_t instructions_to_run);  // for now
+
 	void status(char *text_buffer);
 	uint16_t disassemble_instruction(char *buffer, uint16_t address);
 	bool disassemble_successfull() { return disassemble_success; }
@@ -118,6 +122,10 @@ public:
 	uint8_t  get_cc()              { return cc; }
 	void     set_cc(uint8_t  byte) { cc = byte; }
 
+	bool *breakpoint;
+	void toggle_breakpoint(uint16_t address);
+	void clear_breakpoints();
+
 private:
 	uint16_t pc;	// program counter
 	uint8_t	 dp;	// direct page register
@@ -142,6 +150,7 @@ private:
 	bool *irq_line;
 	bool old_irq_line;
 
+	int32_t cycle_saldo;
 	uint32_t cycles;
 
 	typedef uint16_t (mc6809::*addressing_mode)(bool *legal);

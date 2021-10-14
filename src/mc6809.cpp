@@ -34,6 +34,15 @@ mc6809::mc6809(bus_read r, bus_write w) : ac(*(((uint8_t *)&dr)+1)), br(*((uint8
 	index_regs[0b01] = &yr;
 	index_regs[0b10] = &us;
 	index_regs[0b11] = &sp;
+
+	breakpoint = NULL;
+	breakpoint = new bool[65536];
+	clear_breakpoints();
+}
+
+mc6809::~mc6809()
+{
+	delete breakpoint;
 }
 
 void mc6809::reset()
@@ -62,7 +71,8 @@ void mc6809::reset()
 	pc |= (*read_8)(VECTOR_RESET+1);
 }
 
-bool mc6809::run(uint16_t cycles_to_run)
+// bool mc6809::run(uint16_t cycles_to_run)
+bool mc6809::run(uint16_t instructions_to_run)
 {
 	uint8_t opcode = (*read_8)(pc++);
 	cycles += cycles_page1[opcode];
@@ -99,4 +109,17 @@ void mc6809::status(char *text_buffer)
 			*nmi_line ? '1' : '0',
 			*firq_line ? '1' : '0',
 			*irq_line ? '1' : '0');
+}
+
+
+void mc6809::toggle_breakpoint(uint16_t address)
+{
+	breakpoint[address]  = !breakpoint[address];
+}
+
+void mc6809::clear_breakpoints()
+{
+	for (int i=0; i<65536; i++) {
+		breakpoint[i] = false;
+	}
 }

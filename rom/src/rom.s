@@ -34,13 +34,34 @@ vector_reset:
 	lds	#$1000
 	ldu	#$0800
 
-	ldb	data
-	ldx	#(data+1)
-	ldy	#$0042
+	ldb	#7
+	ldx	#data
+	ldy	#$0041
 .1	lda	,x+
 	sta	,y+
 	decb
 	bne	.1
+
+sort:	lda	#1
+	sta	$40
+	lda	$41
+	deca
+	ldx	#$42
+pass:	ldb	,x+	; is pair of elements in order
+	cmpb	,x
+	bhs	count
+	clr	$40
+	pshs	a
+	lda	,x
+	stb	,x
+	sta	-1,x
+	puls	a
+count:	deca
+	bne	pass
+	tst	$40
+	beq	sort
+	swi
+
 
 
 test:

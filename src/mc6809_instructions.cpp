@@ -1350,15 +1350,18 @@ void mc6809::tfr(uint16_t ea)
 
 void mc6809::tst(uint16_t ea)
 {
-	//
+	test_nz_flags((*read_8)(ea));
+	clear_v_flag();
 }
 
 void mc6809::tsta(uint16_t ea)
 {
-	//
+	test_nz_flags(ac);
+	clear_v_flag();
 }
 
 void mc6809::tstb(uint16_t ea)
 {
-	//
+	test_nz_flags(br);
+	clear_v_flag();
 }

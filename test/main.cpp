@@ -14,6 +14,8 @@
  * string. The caller needs to free allocated memory.
  */
 char *read_line(void);
+void memory_dump(uint16_t address, int rows);
+bool hex_string_to_int(const char *temp_string, uint16_t *return_value);
 
 char text_buffer[512];
 #define TEXT_BUFFER_SIZE 64
@@ -80,12 +82,55 @@ int main()
 			 */
 		} else if (strcmp(token0, "ac") == 0) {
 			printf("$%02x\n", cpu.get_ac());
+		} else if (strcmp(token0, "b") == 0) {
+			if (token1 == NULL) {
+				uint16_t count = 0;
+				for (int i=0; i< 65536; i++) {
+					if (cpu.breakpoint[i]) {
+						printf("%04x ", i);
+						count++;
+						if ((count % 4) == 0)
+							putchar('\n');
+					}
+				}
+				if (count == 0) {
+					puts("no breakpoints");
+				} else {
+					printf("\n");
+				}
+			} else {
+				uint16_t temp_16bit;
+				if (hex_string_to_int(token1, &temp_16bit)) {
+					temp_16bit &= 0xffff;
+					cpu.toggle_breakpoint(temp_16bit);
+					printf("breakpoint %s at $%04x\n",
+						cpu.breakpoint[temp_16bit] ? "set" : "cleared",
+						temp_16bit);
+				} else {
+					puts("error: invalid address\n");
+				}
+			}
 		} else if (strcmp(token0, "br") == 0) {
 			printf("$%02x\n", cpu.get_br());
 		} else if (strcmp(token0, "dr") == 0) {
 			printf("$%04x\n", cpu.get_dr());
 		} else if (strcmp(token0, "exit") == 0) {
 			finished = true;
+		} else if (strcmp(token0, "m") == 0) {
+			//memory_dump(cpu.get_pc(), 8);
+
+			uint16_t temp_pc = cpu.get_pc();
+
+			if (token1 == NULL) {
+				memory_dump(temp_pc, 4);
+			} else {
+				if (!hex_string_to_int(token1, &temp_pc)) {
+					putchar('\n');
+					puts("error: invalid address\n");
+				} else {
+					memory_dump(temp_pc, 4);
+				}
+			}
 		} else if (strcmp(token0, "n") == 0) {
 			cpu.run(0);
 			cpu.status(text_buffer);
@@ -156,4 +201,43 @@ char *read_line(void)
       			}
     		}
   	}
+}
+
+void memory_dump(uint16_t address, int rows)
+{
+	address = address & 0xffff;
+
+	for (int i=0; i<rows; i++ ) {
+		printf("\r:%04x", address);
+		for (int i=0; i<8; i++) {
+			printf(" %02x", read(address));
+			address++;
+			address &= 0xffff;
+		}
+		printf("\n");
+	}
+}
+
+bool hex_string_to_int(const char *temp_string, uint16_t *return_value)
+{
+	uint16_t val = 0;
+	while (*temp_string) {
+		/* Get current character then increment */
+		uint8_t byte = *temp_string++;
+		/* Transform hex character to the 4bit equivalent number */
+		if (byte >= '0' && byte <= '9') {
+			byte = byte - '0';
+		} else if (byte >= 'a' && byte <='f') {
+			byte = byte - 'a' + 10;
+		} else if (byte >= 'A' && byte <='F') {
+			byte = byte - 'A' + 10;
+		} else {
+			/* Problem, return false and do not write the return value */
+			return false;
+		}
+		/* Shift 4 to make space for new digit, and add the 4 bits of the new digit */
+		val = (val << 4) | (byte & 0xf);
+	}
+	*return_value = val;
+	return true;
 }
