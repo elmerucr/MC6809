@@ -571,7 +571,15 @@ void mc6809::cwai(uint16_t ea)
 
 void mc6809::daa(uint16_t ea)
 {
-	//
+	if (is_h_flag_set() || ((ac & 0x0f) > 9))
+		byte = 0x06; else byte = 0;
+	if (is_c_flag_set() || (((ac & 0xf0) >> 4) > 9) ||
+		((((ac & 0xf0) >> 4) > 8) && ((ac & 0x0f) > 9)))
+		byte |= 0x60;
+	word = ac + byte;
+	ac = word & 0xff;
+	if (word & 0x0100) set_c_flag(); else clear_c_flag();
+	test_nz_flags(ac);
 }
 
 void mc6809::dec(uint16_t ea)
@@ -1264,7 +1272,8 @@ void mc6809::sbcb(uint16_t ea)
 
 void mc6809::sex(uint16_t ea)
 {
-	//
+	if (br & 0x80) ac = 0xff; else ac = 0x00;
+	test_nz_flags(br);
 }
 
 void mc6809::sta(uint16_t ea)
