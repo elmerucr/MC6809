@@ -132,7 +132,21 @@ int main()
 				}
 			}
 		} else if (strcmp(token0, "n") == 0) {
-			cpu.run(0);
+			uint16_t to_run;
+
+			if (token1 == NULL) {
+				to_run = 0;
+			} else {
+				if (!hex_string_to_int(token1, &to_run)) {
+					putchar('\n');
+					puts("error: invalid number\n");
+					//to_run = 0;
+				}
+			}
+			int32_t cycles_done;
+			if (cpu.run(to_run, &cycles_done))
+				printf("reached breakpoint at: %04x\n", cpu.get_pc());
+			printf("last run took %i cycles\n\n", cycles_done);
 			cpu.status(text_buffer);
 			printf("%s\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();

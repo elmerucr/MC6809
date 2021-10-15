@@ -67,21 +67,43 @@ void mc6809::reset()
 	/*
 	 * Load program counter from vector
 	 */
+	pc = 0;
 	pc = ((*read_8)(VECTOR_RESET)) << 8;
 	pc |= (*read_8)(VECTOR_RESET+1);
 }
 
-// bool mc6809::run(uint16_t cycles_to_run)
-bool mc6809::run(uint16_t instructions_to_run)
+bool mc6809::run(int16_t desired_cycles, int32_t *consumed_cycles)
 {
-	uint8_t opcode = (*read_8)(pc++);
-	cycles += cycles_page1[opcode];
+	cycle_saldo += desired_cycles;
 
-	bool am_legal;
+	bool breakpoint_reached = false;
 
-	uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
-	(this->*opcodes_page1[opcode])(effective_address);
-	return false;
+	*consumed_cycles = 0;
+
+	/*
+	 * This loop runs always at least one instruction. If an irq or nmi is
+	 * triggered, that operation is run instead.
+	 */
+	do {
+		uint32_t old_cycles = cycles;
+
+		uint8_t opcode = (*read_8)(pc++);
+		cycles += cycles_page1[opcode];
+
+		bool am_legal;
+
+		uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
+		(this->*opcodes_page1[opcode])(effective_address);
+
+		*consumed_cycles += (cycles - old_cycles);
+		breakpoint_reached = breakpoint[pc];
+	} while ((!breakpoint_reached) && (*consumed_cycles < cycle_saldo));
+
+	old_nmi_line = *nmi_line;
+
+	cycle_saldo -= *consumed_cycles;
+
+	return breakpoint_reached;
 }
 
 /*

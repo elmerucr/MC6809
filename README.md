@@ -14,4 +14,6 @@ Motorola. 1981. MC6809-MC6809E 8-BIT Microprocessor Programming Manual. Motorola
 
 Motorola Semiconductors. 1983. MC6809 Datasheet.
 
+Osborne, Adam. 1976. An introduction to microcomputers - Volume I Basic Concepts. SYBEX.
+
 Zaks, Rodnay and William Labiak. 1982. Programming the 6809. SYBEX.

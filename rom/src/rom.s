@@ -26,6 +26,8 @@ vector_firq:
 vector_irq:
 
 vector_swi:
+	ldd	#$baab
+	rti
 
 vector_nmi:
 
@@ -34,41 +36,8 @@ vector_reset:
 	lds	#$1000
 	ldu	#$0800
 
-	ldb	#7
-	ldx	#data
-	ldy	#$0041
-.1	lda	,x+
-	sta	,y+
-	decb
-	bne	.1
-
-sort:	lda	#1
-	sta	$40
-	lda	$41
-	deca
-	ldx	#$42
-pass:	ldb	,x+	; is pair of elements in order
-	cmpb	,x
-	bhs	count
-	clr	$40
-	pshs	a
-	lda	,x
-	stb	,x
-	sta	-1,x
-	puls	a
-count:	deca
-	bne	pass
-	tst	$40
-	beq	sort
+	lda	#$ff
+	ldb	#$de
+	mul
+	std	$40
 	swi
-
-
-
-test:
-	ldd	#$ffff
-	cmpd	#$ffff
-	rts
-
-data:
-	db	$06	; length of array
-	db	$2a, $b5, $60, $3f, $d1, $19

@@ -49,8 +49,7 @@ public:
 	void assign_irq_line(bool *line) { irq_line = line; }
 
 	void reset();
-	//bool run(uint16_t cycles_to_run);
-	bool run(uint16_t instructions_to_run);  // for now
+	bool run(int16_t desired_cycles, int32_t *consumed_cycles);
 
 	void status(char *text_buffer);
 	uint16_t disassemble_instruction(char *buffer, uint16_t address);
