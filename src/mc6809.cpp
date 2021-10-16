@@ -62,7 +62,7 @@ void mc6809::reset()
 	 * After reset, nmi is fully disabled. Only after a first write
 	 * to the system stackpointer enabled.
 	 */
-	nmi_blocked = true;
+	nmi_enabled = false;
 
 	/*
 	 * Load program counter from vector

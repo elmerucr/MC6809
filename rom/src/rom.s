@@ -32,8 +32,7 @@ vector_reset:
 	lds	#$1000
 	ldu	#$0800
 
-	lda	#$7e
+	ldb	#$02
 	;andcc	#%11111110
-	orcc	#%00000000
-	sbca	#$ff
-	sta	$20
+	orcc	#%00000001
+	sbcb	#$01

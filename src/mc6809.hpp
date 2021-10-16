@@ -139,7 +139,7 @@ private:
 
 	uint16_t *index_regs[4];
 
-	bool nmi_blocked;
+	bool nmi_enabled;
 	bool default_pin;
 
 	bool *nmi_line;
