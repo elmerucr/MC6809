@@ -1262,12 +1262,30 @@ void mc6809::rts(uint16_t ea)
 
 void mc6809::sbca(uint16_t ea)
 {
-	//
+	/* code inspired by virtualc64 */
+	byte = (*read_8)(ea);
+	word = ac - byte - (is_c_flag_set() ? 1 : 0);
+
+	if (word > 255) set_c_flag(); else clear_c_flag();
+
+	if (((ac ^ word) & 0x80) && (ac ^ byte)) set_v_flag(); else clear_v_flag();
+
+	ac = word & 0xff;
+	test_nz_flags(ac);
 }
 
 void mc6809::sbcb(uint16_t ea)
 {
-	//
+	/* code inspired by virtualc64 */
+	byte = (*read_8)(ea);
+	word = br - byte - (is_c_flag_set() ? 1 : 0);
+
+	if (word > 255) set_c_flag(); else clear_c_flag();
+
+	if (((br ^ word) & 0x80) && (br ^ byte)) set_v_flag(); else clear_v_flag();
+
+	br = word & 0xff;
+	test_nz_flags(br);
 }
 
 void mc6809::sex(uint16_t ea)
