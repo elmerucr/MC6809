@@ -7,8 +7,9 @@
 #include "mc6809.hpp"
 #include <cstdio>
 
-uint8_t byte;
+uint8_t  byte;
 uint16_t word;
+uint32_t dword;
 
 void mc6809::ill(uint16_t ea)
 {
@@ -140,7 +141,7 @@ void mc6809::addd(uint16_t ea)
 
 	bool bit_15_carry_in = (((dr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
 
-	uint32_t dword = dr + word;
+	dword = dr + word;
 	dr = dword & 0xffff;
 
 	bool carry = (dword & 0x00010000) ? true : false;
@@ -418,123 +419,104 @@ void mc6809::clrb(uint16_t ea)
 
 void mc6809::cmpa(uint16_t ea)
 {
-	byte = (~(*read_8)(ea))+1;	// two's complement
+	/* code inspired by virtualc64 */
+	byte = (*read_8)(ea);
+	word = ac - byte;
 
-	bool bit_7_carry_in = (((ac & 0x7f) + (byte & 0x7f)) & 0x80) ? true : false;
+	if (word > 255) set_c_flag(); else clear_c_flag();
 
-	word = ac + byte;		// do an addition
-	byte = word & 0x00ff;
+	if (((ac ^ word) & 0x80) && ((ac ^ byte) & 0x80)) set_v_flag(); else clear_v_flag();
 
-	bool carry = (word & 0x0100) ? true : false;
-
-	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
-	if (carry) clear_c_flag(); else set_c_flag();	// final carry is a complement (borrow)
+	byte = word & 0xff;
 	test_nz_flags(byte);
 }
 
 void mc6809::cmpb(uint16_t ea)
 {
-	byte = (~(*read_8)(ea))+1;	// two's complement
+	/* code inspired by virtualc64 */
+	byte = (*read_8)(ea);
+	word = br - byte;
 
-	bool bit_7_carry_in = (((br & 0x7f) + (byte & 0x7f)) & 0x80) ? true : false;
+	if (word > 255) set_c_flag(); else clear_c_flag();
 
-	word = br + byte;		// do an addition
-	byte = word & 0x00ff;
+	if (((br ^ word) & 0x80) && ((br ^ byte) & 0x80)) set_v_flag(); else clear_v_flag();
 
-	bool carry = (word & 0x0100) ? true : false;
-
-	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
-	if (carry) clear_c_flag(); else set_c_flag();	// final carry is a complement (borrow)
+	byte = word & 0xff;
 	test_nz_flags(byte);
 }
 
 void mc6809::cmpd(uint16_t ea)
 {
+	/* code inspired by virtualc64 */
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
-	word = (~word) + 1;	// two's complement
+	dword = dr - word;
 
-	bool bit_15_carry_in = (((dr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
-	uint32_t dword = dr + word;
-	word = dword & 0x0000ffff;
+	if (((dr ^ dword) & 0x8000) && ((dr ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
 
-	bool carry = (dword & 0x00010000) ? true : false;
-
-	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
-	if (carry) clear_c_flag(); else set_c_flag();
+	word = dword & 0xffff;
 	test_nz_flags_16(word);
 }
 
 void mc6809::cmpu(uint16_t ea)
 {
+	/* code inspired by virtualc64 */
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
-	word = (~word) + 1;	// two's complement
+	dword = us - word;
 
-	bool bit_15_carry_in = (((us & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
-	uint32_t dword = us + word;
-	word = dword & 0x0000ffff;
+	if (((us ^ dword) & 0x8000) && ((us ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
 
-	bool carry = (dword & 0x00010000) ? true : false;
-
-	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
-	if (carry) clear_c_flag(); else set_c_flag();
+	word = dword & 0xffff;
 	test_nz_flags_16(word);
 }
 
 void mc6809::cmps(uint16_t ea)
 {
+	/* code inspired by virtualc64 */
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
-	word = (~word) + 1;	// two's complement
+	dword = sp - word;
 
-	bool bit_15_carry_in = (((sp & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
-	uint32_t dword = sp + word;
-	word = dword & 0x0000ffff;
+	if (((sp ^ dword) & 0x8000) && ((sp ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
 
-	bool carry = (dword & 0x00010000) ? true : false;
-
-	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
-	if (carry) clear_c_flag(); else set_c_flag();
+	word = dword & 0xffff;
 	test_nz_flags_16(word);
 }
 
 void mc6809::cmpx(uint16_t ea)
 {
+	/* code inspired by virtualc64 */
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
-	word = (~word) + 1;	// two's complement
+	dword = xr - word;
 
-	bool bit_15_carry_in = (((xr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
-	uint32_t dword = xr + word;
-	word = dword & 0x0000ffff;
+	if (((xr ^ dword) & 0x8000) && ((xr ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
 
-	bool carry = (dword & 0x00010000) ? true : false;
-
-	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
-	if (carry) clear_c_flag(); else set_c_flag();
+	word = dword & 0xffff;
 	test_nz_flags_16(word);
 }
 
 void mc6809::cmpy(uint16_t ea)
 {
+	/* code inspired by virtualc64 */
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
-	word = (~word) + 1;	// two's complement
+	dword = yr - word;
 
-	bool bit_15_carry_in = (((yr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
-	uint32_t dword = yr + word;
-	word = dword & 0x0000ffff;
+	if (((yr ^ dword) & 0x8000) && ((yr ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
 
-	bool carry = (dword & 0x00010000) ? true : false;
-
-	if (carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
-	if (carry) clear_c_flag(); else set_c_flag();
+	word = dword & 0xffff;
 	test_nz_flags_16(word);
 }
 
@@ -1045,6 +1027,8 @@ void mc6809::neg(uint16_t ea)
 	byte = (*read_8)(ea);
 	if (byte == 0x80) set_v_flag(); else clear_v_flag();
 	if (byte == 0x00) clear_c_flag(); else set_c_flag();
+	byte = ~byte;
+	byte++;
 	test_nz_flags(byte);
 	(*write_8)(ea, byte);
 }
@@ -1053,6 +1037,8 @@ void mc6809::nega(uint16_t ea)
 {
 	if (ac == 0x80) set_v_flag(); else clear_v_flag();
 	if (ac == 0x00) clear_c_flag(); else set_c_flag();
+	ac = ~ac;
+	ac++;
 	test_nz_flags(ac);
 }
 
@@ -1060,6 +1046,8 @@ void mc6809::negb(uint16_t ea)
 {
 	if (br == 0x80) set_v_flag(); else clear_v_flag();
 	if (br == 0x00) clear_c_flag(); else set_c_flag();
+	br = ~br;
+	br++;
 	test_nz_flags(br);
 }
 
@@ -1382,7 +1370,7 @@ void mc6809::subd(uint16_t ea)
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
 
-	uint32_t dword = dr - word;
+	dword = dr - word;
 
 	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
