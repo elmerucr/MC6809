@@ -19,18 +19,29 @@ vector_swi3:
 vector_swi2:
 
 vector_firq:
+	ldd	#$dead
+	ldd	#$beef
+	rti
 
 vector_irq:
+	ldd	#$dead
+	ldd	#$beef
+	rti
 
 vector_swi:
 	rti
 
 vector_nmi:
+	coma
+	rti
 
 vector_reset:
 	; set stackpointers
 	lds	#$1000
 	ldu	#$0800
+
+	; enable firq's
+	andcc	#%10101111
 
 	ldd	#$fffd
 .1	cmpd	#$0002

@@ -38,6 +38,10 @@ void write(uint16_t address, uint8_t byte)
 
 int main()
 {
+	bool nmi_pin = true;
+	bool firq_pin = true;
+	bool irq_pin = true;
+
 	memory[0x2000] = 0xb3;
 	memory[0x2001] = 0x23;
 	memory[0x2002] = 0xb3;
@@ -47,6 +51,9 @@ int main()
 	memory[0xb324] = 0xaa;
 
 	mc6809 cpu(read, write);
+	cpu.assign_nmi_line(&nmi_pin);
+	cpu.assign_firq_line(&firq_pin);
+	cpu.assign_irq_line(&irq_pin);
 
 	// reset system and put welcome message
 	printf("emulate_mc6809 (c)2021 elmerucr\n");
@@ -116,9 +123,13 @@ int main()
 			printf("$%04x\n", cpu.get_dr());
 		} else if (strcmp(token0, "exit") == 0) {
 			finished = true;
+		} else if (strcmp(token0, "firq") == 0) {
+			firq_pin = !firq_pin;
+			printf("changed status of firq to %c\n", firq_pin ? '1' : '0');
+		} else if (strcmp(token0, "irq") == 0) {
+			irq_pin = !irq_pin;
+			printf("changed status of irq to %c\n", irq_pin ? '1' : '0');
 		} else if (strcmp(token0, "m") == 0) {
-			//memory_dump(cpu.get_pc(), 8);
-
 			uint16_t temp_pc = cpu.get_pc();
 
 			if (token1 == NULL) {
@@ -147,6 +158,17 @@ int main()
 			if (cpu.run(to_run, &cycles_done))
 				printf("reached breakpoint at: %04x\n", cpu.get_pc());
 			printf("last run took %i cycles\n\n", cycles_done);
+			cpu.status(text_buffer);
+			printf("%s\n", text_buffer);
+			uint16_t temp_pc = cpu.get_pc();
+			for (int i=0; i<4; i++) {
+				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
+				printf("%s", text_buffer);
+			}
+		} else if (strcmp(token0, "nmi") == 0) {
+			nmi_pin = !nmi_pin;
+			printf("changed status of nmi to %c\n", nmi_pin ? '1' : '0');
+		} else if (strcmp(token0, "r") == 0) {
 			cpu.status(text_buffer);
 			printf("%s\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();

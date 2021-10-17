@@ -1235,6 +1235,8 @@ void mc6809::rti(uint16_t ea)
 		word = pull_sp() << 8;
 		word |= pull_sp();
 		us = word;
+
+		cycles += 9;
 	}
 	word = pull_sp() << 8;
 	word |= pull_sp();

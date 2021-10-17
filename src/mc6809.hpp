@@ -158,14 +158,24 @@ private:
 	bool disassemble_success;
 
 	/*
-	 * internal stackpointers funcitonality
+	 * exceptions
+	 */
+	void nmi();
+	void firq();
+	void irq();
+	void illegal_opcode();
+
+	/*
+	 * internal stackpointers functionality
 	 */
 	inline void    push_sp(uint8_t byte) { (*write_8)(--sp, byte); }
 	inline uint8_t pull_sp()             { return (*read_8)(sp++); }
 	inline void    push_us(uint8_t byte) { (*write_8)(--us, byte); }
 	inline uint8_t pull_us()             { return (*read_8)(us++); }
 
-	// addressing modes
+	/*
+	 * addressing modes
+	 */
 	uint16_t a_dir(bool *legal);	// direct page (base page)
 	uint16_t a_imb(bool *legal);	// immediate byte
 	uint16_t a_imw(bool *legal);	// immediate word

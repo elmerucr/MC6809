@@ -26,7 +26,6 @@ mc6809::mc6809(bus_read r, bus_write w) : ac(*(((uint8_t *)&dr)+1)), br(*((uint8
 	nmi_line = &default_pin;
 	firq_line = &default_pin;
 	irq_line = &default_pin;
-	old_nmi_line = true;
 
 	cycles = 0;
 
@@ -64,6 +63,9 @@ void mc6809::reset()
 	 */
 	nmi_enabled = false;
 
+
+	old_nmi_line = *nmi_line;
+
 	/*
 	 * Load program counter from vector
 	 */
@@ -87,14 +89,22 @@ bool mc6809::run(int16_t desired_cycles, int32_t *consumed_cycles)
 	do {
 		uint32_t old_cycles = cycles;
 
-		uint8_t opcode = (*read_8)(pc++);
-		cycles += cycles_page1[opcode];
-
-		bool am_legal;
-
-		uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
-		(this->*opcodes_page1[opcode])(effective_address);
-
+		if ((*nmi_line == false) && (old_nmi_line == true) && nmi_enabled) {
+			nmi();
+		} else if ((*firq_line == false) && is_f_flag_clear()) {
+			firq();
+		} else if ((*irq_line == false) && is_i_flag_clear()) {
+			irq();
+		} else {
+			uint8_t opcode = (*read_8)(pc++);
+			/*
+			 * TODO: check for illegal opcode and start exception
+			 */
+			cycles += cycles_page1[opcode];
+			bool am_legal;
+			uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
+			(this->*opcodes_page1[opcode])(effective_address);
+		}
 		*consumed_cycles += (cycles - old_cycles);
 		breakpoint_reached = breakpoint[pc];
 	} while ((!breakpoint_reached) && (*consumed_cycles < cycle_saldo));
@@ -144,4 +154,102 @@ void mc6809::clear_breakpoints()
 	for (int i=0; i<65536; i++) {
 		breakpoint[i] = false;
 	}
+}
+
+void mc6809::nmi()
+{
+	push_sp(pc & 0x00ff);
+	push_sp((pc & 0xff00) >> 8);
+	push_sp(us & 0x00ff);
+	push_sp((us & 0xff00) >> 8);
+	push_sp(yr & 0x00ff);
+	push_sp((yr & 0xff00) >> 8);
+	push_sp(xr & 0x00ff);
+	push_sp((xr & 0xff00) >> 8);
+	push_sp(dp);
+	push_sp(br);
+	push_sp(ac);
+	set_e_flag();
+	push_sp(cc);
+	set_i_flag();
+	set_f_flag();
+	pc = 0;
+	pc = ((*read_8)(VECTOR_NMI)) << 8;
+	pc |= (*read_8)(VECTOR_NMI+1);
+
+	/*
+	 * can't find this in the documentation
+	 */
+	cycles += 19;
+}
+
+void mc6809::firq()
+{
+	push_sp(pc & 0x00ff);
+	push_sp((pc & 0xff00) >> 8);
+	clear_e_flag();
+	push_sp(cc);
+	set_f_flag();
+	set_i_flag();
+	pc = 0;
+	pc = ((*read_8)(VECTOR_FIRQ)) << 8;
+	pc |= (*read_8)(VECTOR_FIRQ+1);
+
+	/*
+	 * can't find this in the documentation
+	 */
+	cycles += 10;
+}
+
+void mc6809::irq()
+{
+	push_sp(pc & 0x00ff);
+	push_sp((pc & 0xff00) >> 8);
+	push_sp(us & 0x00ff);
+	push_sp((us & 0xff00) >> 8);
+	push_sp(yr & 0x00ff);
+	push_sp((yr & 0xff00) >> 8);
+	push_sp(xr & 0x00ff);
+	push_sp((xr & 0xff00) >> 8);
+	push_sp(dp);
+	push_sp(br);
+	push_sp(ac);
+	set_e_flag();
+	push_sp(cc);
+	set_i_flag();
+	pc = 0;
+	pc = ((*read_8)(VECTOR_IRQ)) << 8;
+	pc |= (*read_8)(VECTOR_IRQ+1);
+
+	/*
+	 * can't find this in the documentation
+	 */
+	cycles += 19;
+}
+
+void mc6809::illegal_opcode()
+{
+	push_sp(pc & 0x00ff);
+	push_sp((pc & 0xff00) >> 8);
+	push_sp(us & 0x00ff);
+	push_sp((us & 0xff00) >> 8);
+	push_sp(yr & 0x00ff);
+	push_sp((yr & 0xff00) >> 8);
+	push_sp(xr & 0x00ff);
+	push_sp((xr & 0xff00) >> 8);
+	push_sp(dp);
+	push_sp(br);
+	push_sp(ac);
+	set_e_flag();
+	push_sp(cc);
+	set_i_flag();
+	set_f_flag();
+	pc = 0;
+	pc = ((*read_8)(VECTOR_ILL_OPC)) << 8;
+	pc |= (*read_8)(VECTOR_ILL_OPC+1);
+
+	/*
+	 * can't find this in the documentation
+	 */
+	cycles += 19;
 }
