@@ -187,15 +187,8 @@ int main()
 				printf("%s", text_buffer);
 			}
 		} else if (strcmp(token0, "s") == 0) {
-			// display last 8 values from both stacks
-			printf("   sp        us\n");
-			for (int i=0; i<8; i++) {
-				printf("%04x: %02x  %04x: %02x\n",
-					cpu.get_sp() + i,
-					cpu.read_8((uint16_t)(cpu.get_sp() + i)),
-					cpu.get_us() + i,
-					cpu.read_8((uint16_t)(cpu.get_us() + i)));
-			}
+			cpu.stacks(text_buffer, 8);
+			printf("%s", text_buffer);
 		} else {
 			printf("error: unknown command '%s'\n", input_string);
 		}

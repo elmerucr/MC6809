@@ -117,16 +117,18 @@ bool mc6809::run(int16_t desired_cycles, int32_t *consumed_cycles)
 }
 
 /*
- *  pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I
- * c000 00 01:ae 0000 d0d0 0000 0ffc -*-*---- 11 1 1
+ *  pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I  NMI enabled/blocked
+ * c000 00 01:ae 0000 d0d0 0000 0ffc -*-*---- 11 1 1  state normal/cwai/sync
  */
 void mc6809::status(char *text_buffer)
 {
-	sprintf(text_buffer, " pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I\n"
+	sprintf(text_buffer, " pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I  NMI %s\n"
 			"%04x %02x %02x:%02x "
 			"%04x %04x %04x %04x "
 			"%c%c%c%c%c%c%c%c "
-			"%c%c %c %c\n",
+			"%c%c %c %c  "
+			"state normal\n",
+			nmi_enabled ? "enabled" : "blocked",
 			pc, dp, ac, br,
 			xr, yr, us, sp,
 			cc & E_FLAG ? '*' : '-',
@@ -143,10 +145,22 @@ void mc6809::status(char *text_buffer)
 			*irq_line ? '1' : '0');
 }
 
+void mc6809::stacks(char *text_buffer, int no)
+{
+	// display top of both stacks as 8 and 16 bit values
+	printf("   us        sp\n");
+	for (int i=0; i<no; i++) {
+		text_buffer += sprintf(text_buffer, "%04x: %02x  %04x: %02x\n",
+			get_us() + i,
+			read_8((uint16_t)(get_us() + i)),
+			get_sp() + i,
+			read_8((uint16_t)(get_sp() + i)));
+	}
+}
 
 void mc6809::toggle_breakpoint(uint16_t address)
 {
-	breakpoint[address]  = !breakpoint[address];
+	breakpoint[address] = !breakpoint[address];
 }
 
 void mc6809::clear_breakpoints()

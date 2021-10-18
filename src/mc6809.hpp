@@ -52,6 +52,7 @@ public:
 	bool run(int16_t desired_cycles, int32_t *consumed_cycles);
 
 	void status(char *text_buffer);
+	void stacks(char *text_buffer, int no);
 	uint16_t disassemble_instruction(char *buffer, uint16_t address);
 	bool disassemble_successfull() { return disassemble_success; }
 
