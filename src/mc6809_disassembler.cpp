@@ -775,8 +775,6 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		break;
 	};
 
-	mne_buffer += sprintf(mne_buffer, "\n");
-
 	for (int i=0; i<(5 - bytes_printed); i++) {
 		buffer += sprintf(buffer, "  ");
 	}

@@ -1,6 +1,6 @@
 RAM1	equ	$2000
 
-	global	vector_illegal_opcode
+	global	vector_illop
 	global	vector_swi3
 	global	vector_swi2
 	global	vector_firq
@@ -11,7 +11,8 @@ RAM1	equ	$2000
 
 	section	TEXT
 
-vector_illegal_opcode:
+vector_illop:
+	rti
 
 vector_swi3:
 	rti

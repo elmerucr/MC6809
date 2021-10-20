@@ -126,6 +126,8 @@ public:
 	void toggle_breakpoint(uint16_t address);
 	void clear_breakpoints();
 
+	inline uint32_t clock_ticks() { return cycles; }
+
 private:
 	uint16_t pc;	// program counter
 	uint8_t	 dp;	// direct page register

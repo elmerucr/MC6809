@@ -83,7 +83,6 @@ uint16_t mc6809::a_idx(bool *legal)
 			 */
 			cycles += 1;
 
-			uint16_t offset;
 			if (postbyte & 0b00010000) {
 				offset = 0xffe0 | (postbyte & 0x1f);
 			} else {

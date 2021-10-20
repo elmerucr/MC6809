@@ -57,14 +57,14 @@ int main()
 
 	// reset system and put welcome message
 	printf("emulate_mc6809 (c)2021 elmerucr\n");
-	printf("resetting mc6809...\n\n");
+	printf("resetting mc6809...\n");
 	cpu.reset();
 	cpu.status(text_buffer);
-	printf("%s\n", text_buffer);
+	printf("%s\n\n", text_buffer);
 	uint16_t temp_pc = cpu.get_pc();
 	for (int i=0; i<4; i++) {
 		temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
-		printf("%s", text_buffer);
+		printf("%s\n", text_buffer);
 	}
 
 	// prepare repl
@@ -159,32 +159,32 @@ int main()
 				printf("reached breakpoint at: %04x\n", cpu.get_pc());
 			printf("last run took %i cycles\n\n", cycles_done);
 			cpu.status(text_buffer);
-			printf("%s\n", text_buffer);
+			printf("%s\n\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();
 			for (int i=0; i<4; i++) {
 				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
-				printf("%s", text_buffer);
+				printf("%s\n", text_buffer);
 			}
 		} else if (strcmp(token0, "nmi") == 0) {
 			nmi_pin = !nmi_pin;
 			printf("changed status of nmi to %c\n", nmi_pin ? '1' : '0');
 		} else if (strcmp(token0, "r") == 0) {
 			cpu.status(text_buffer);
-			printf("%s\n", text_buffer);
+			printf("%s\n\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();
 			for (int i=0; i<4; i++) {
 				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
-				printf("%s", text_buffer);
+				printf("%s\n", text_buffer);
 			}
 		} else if (strcmp(token0, "reset") == 0) {
 			printf("resetting mc6809...\n\n");
 			cpu.reset();
 			cpu.status(text_buffer);
-			printf("%s\n", text_buffer);
+			printf("%s\n\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();
 			for (int i=0; i<4; i++) {
 				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
-				printf("%s", text_buffer);
+				printf("%s\n", text_buffer);
 			}
 		} else if (strcmp(token0, "s") == 0) {
 			cpu.stacks(text_buffer, 8);
