@@ -106,7 +106,11 @@ bool mc6809::run(int16_t desired_cycles, int32_t *consumed_cycles)
 			(this->*opcodes_page1[opcode])(effective_address);
 		}
 		*consumed_cycles += (cycles - old_cycles);
-		breakpoint_reached = breakpoint[pc];
+		//breakpoint_reached = breakpoint[pc];
+		if (breakpoint[pc]) {
+			breakpoint_reached = true;
+			cycle_saldo = *consumed_cycles;
+		}
 	} while ((!breakpoint_reached) && (*consumed_cycles < cycle_saldo));
 
 	old_nmi_line = *nmi_line;
@@ -258,9 +262,9 @@ void mc6809::status(char *text_buffer)
 void mc6809::stacks(char *text_buffer, int no)
 {
 	// display top of both stacks as 8 and 16 bit values
-	printf("   us        sp\n");
+	text_buffer += sprintf(text_buffer, "   user stack    system stack\n");
 	for (int i=0; i<no; i++) {
-		text_buffer += sprintf(text_buffer, " %04x: %02x  %04x: %02x",
+		text_buffer += sprintf(text_buffer, "    %04x: %02x       %04x: %02x",
 			get_us() + i,
 			read_8((uint16_t)(get_us() + i)),
 			get_sp() + i,

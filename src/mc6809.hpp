@@ -9,6 +9,8 @@
 
 #include <cstdint>
 
+#define MC6809_VERSION	20211023
+
 #define	C_FLAG	0x01	// carry
 #define	V_FLAG	0x02	// overflow
 #define	Z_FLAG	0x04	// zero
@@ -125,7 +127,7 @@ public:
 	bool *breakpoint;
 	void toggle_breakpoint(uint16_t address);
 	void clear_breakpoints();
-
+	
 	inline uint32_t clock_ticks() { return cycles; }
 
 private:
