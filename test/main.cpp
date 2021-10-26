@@ -188,7 +188,7 @@ int main()
 			}
 		} else if (strcmp(token0, "s") == 0) {
 			cpu.stacks(text_buffer, 8);
-			printf("%s", text_buffer);
+			printf("%s\n", text_buffer);
 		} else {
 			printf("error: unknown command '%s'\n", input_string);
 		}

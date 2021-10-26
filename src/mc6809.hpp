@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-#define MC6809_VERSION	20211023
+#define MC6809_VERSION	20211025
 
 #define	C_FLAG	0x01	// carry
 #define	V_FLAG	0x02	// overflow

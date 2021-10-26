@@ -225,7 +225,7 @@ void mc6809::illegal_opcode()
 	pc |= (*read_8)(VECTOR_ILL_OPC+1);
 
 	/*
-	 * can't find this in the documentation
+	 * same as nmi number of cycles
 	 */
 	cycles += 19;
 }
@@ -262,9 +262,9 @@ void mc6809::status(char *text_buffer)
 void mc6809::stacks(char *text_buffer, int no)
 {
 	// display top of both stacks as 8 and 16 bit values
-	text_buffer += sprintf(text_buffer, "   user stack    system stack\n");
+	text_buffer += sprintf(text_buffer, "  usp      ssp\n");
 	for (int i=0; i<no; i++) {
-		text_buffer += sprintf(text_buffer, "    %04x: %02x       %04x: %02x",
+		text_buffer += sprintf(text_buffer, "%04x %02x  %04x %02x",
 			get_us() + i,
 			read_8((uint16_t)(get_us() + i)),
 			get_sp() + i,
