@@ -51,7 +51,7 @@ public:
 	void assign_irq_line(bool *line) { irq_line = line; }
 
 	void reset();
-	uint8_t execute(bool *breakpoint_reached);
+	uint8_t execute();
 
 	void status(char *text_buffer);
 	void stacks(char *text_buffer, int no);
@@ -124,7 +124,8 @@ public:
 	uint8_t  get_cc()              { return cc; }
 	void     set_cc(uint8_t  byte) { cc = byte; }
 
-	bool *breakpoint;
+	bool *breakpoint_array;
+	inline bool breakpoint() { return breakpoint_array[pc] ? true : false; }
 	void toggle_breakpoint(uint16_t address);
 	void clear_breakpoints();
 	

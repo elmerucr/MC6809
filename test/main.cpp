@@ -93,7 +93,7 @@ int main()
 			if (token1 == NULL) {
 				uint16_t count = 0;
 				for (int i=0; i< 65536; i++) {
-					if (cpu.breakpoint[i]) {
+					if (cpu.breakpoint_array[i]) {
 						printf("%04x ", i);
 						count++;
 						if ((count % 4) == 0)
@@ -111,7 +111,7 @@ int main()
 					temp_16bit &= 0xffff;
 					cpu.toggle_breakpoint(temp_16bit);
 					printf("breakpoint %s at $%04x\n",
-						cpu.breakpoint[temp_16bit] ? "set" : "cleared",
+						cpu.breakpoint_array[temp_16bit] ? "set" : "cleared",
 						temp_16bit);
 				} else {
 					puts("error: invalid address\n");
@@ -154,9 +154,9 @@ int main()
 					//to_run = 0;
 				}
 			}
-			bool breakpoint_reached;
-			int32_t cycles_done = cpu.execute(&breakpoint_reached);
-			if (breakpoint_reached)
+			//bool breakpoint_reached;
+			int32_t cycles_done = cpu.execute();
+			if (cpu.breakpoint())
 				printf("reached breakpoint at: %04x\n", cpu.get_pc());
 			printf("last run took %i cycles\n\n", cycles_done);
 			cpu.status(text_buffer);

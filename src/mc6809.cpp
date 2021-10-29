@@ -34,14 +34,14 @@ mc6809::mc6809(bus_read r, bus_write w) : ac(*(((uint8_t *)&dr)+1)), br(*((uint8
 	index_regs[0b10] = &us;
 	index_regs[0b11] = &sp;
 
-	breakpoint = NULL;
-	breakpoint = new bool[65536];
+	breakpoint_array = NULL;
+	breakpoint_array = new bool[65536];
 	clear_breakpoints();
 }
 
 mc6809::~mc6809()
 {
-	delete breakpoint;
+	delete breakpoint_array;
 }
 
 void mc6809::reset()
@@ -74,9 +74,8 @@ void mc6809::reset()
 	pc |= (*read_8)(VECTOR_RESET+1);
 }
 
-uint8_t mc6809::execute(bool *breakpoint_reached)
+uint8_t mc6809::execute()
 {
-	*breakpoint_reached = false;
 	uint32_t old_cycles = cycles;
 	
 	if ((*nmi_line == false) && (old_nmi_line == true) && nmi_enabled) {
@@ -96,21 +95,19 @@ uint8_t mc6809::execute(bool *breakpoint_reached)
 		(this->*opcodes_page1[opcode])(effective_address);
 	}
 	
-	if (breakpoint[pc]) *breakpoint_reached = true;
-	
 	old_nmi_line = *nmi_line;
 	return cycles - old_cycles;
 }
 
 void mc6809::toggle_breakpoint(uint16_t address)
 {
-	breakpoint[address] = !breakpoint[address];
+	breakpoint_array[address] = !breakpoint_array[address];
 }
 
 void mc6809::clear_breakpoints()
 {
 	for (int i=0; i<65536; i++) {
-		breakpoint[i] = false;
+		breakpoint_array[i] = false;
 	}
 }
 
