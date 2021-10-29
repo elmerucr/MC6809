@@ -154,8 +154,9 @@ int main()
 					//to_run = 0;
 				}
 			}
-			int32_t cycles_done;
-			if (cpu.run(to_run, &cycles_done))
+			bool breakpoint_reached;
+			int32_t cycles_done = cpu.execute(&breakpoint_reached);
+			if (breakpoint_reached)
 				printf("reached breakpoint at: %04x\n", cpu.get_pc());
 			printf("last run took %i cycles\n\n", cycles_done);
 			cpu.status(text_buffer);

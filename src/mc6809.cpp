@@ -74,50 +74,32 @@ void mc6809::reset()
 	pc |= (*read_8)(VECTOR_RESET+1);
 }
 
-bool mc6809::run(int16_t desired_cycles, int32_t *consumed_cycles)
+uint8_t mc6809::execute(bool *breakpoint_reached)
 {
-	cycle_saldo += desired_cycles;
-
-	bool breakpoint_reached = false;
-
-	*consumed_cycles = 0;
-
-	/*
-	 * This loop runs always at least one instruction. If an irq or nmi is
-	 * triggered, that operation is run instead.
-	 */
-	do {
-		uint32_t old_cycles = cycles;
-
-		if ((*nmi_line == false) && (old_nmi_line == true) && nmi_enabled) {
-			nmi();
-		} else if ((*firq_line == false) && is_f_flag_clear()) {
-			firq();
-		} else if ((*irq_line == false) && is_i_flag_clear()) {
-			irq();
-		} else {
-			uint8_t opcode = (*read_8)(pc++);
-			/*
-			 * TODO: check for illegal opcode and start exception
-			 */
-			cycles += cycles_page1[opcode];
-			bool am_legal;
-			uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
-			(this->*opcodes_page1[opcode])(effective_address);
-		}
-		*consumed_cycles += (cycles - old_cycles);
-		//breakpoint_reached = breakpoint[pc];
-		if (breakpoint[pc]) {
-			breakpoint_reached = true;
-			cycle_saldo = *consumed_cycles;
-		}
-	} while ((!breakpoint_reached) && (*consumed_cycles < cycle_saldo));
-
+	*breakpoint_reached = false;
+	uint32_t old_cycles = cycles;
+	
+	if ((*nmi_line == false) && (old_nmi_line == true) && nmi_enabled) {
+		nmi();
+	} else if ((*firq_line == false) && is_f_flag_clear()) {
+		firq();
+	} else if ((*irq_line == false) && is_i_flag_clear()) {
+		irq();
+	} else {
+		uint8_t opcode = (*read_8)(pc++);
+		/*
+		 * TODO: check for illegal opcode and start exception
+		 */
+		cycles += cycles_page1[opcode];
+		bool am_legal;
+		uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
+		(this->*opcodes_page1[opcode])(effective_address);
+	}
+	
+	if (breakpoint[pc]) *breakpoint_reached = true;
+	
 	old_nmi_line = *nmi_line;
-
-	cycle_saldo -= *consumed_cycles;
-
-	return breakpoint_reached;
+	return cycles - old_cycles;
 }
 
 void mc6809::toggle_breakpoint(uint16_t address)

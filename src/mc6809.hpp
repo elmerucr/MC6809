@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-#define MC6809_VERSION	20211025
+#define MC6809_VERSION	20211029
 
 #define	C_FLAG	0x01	// carry
 #define	V_FLAG	0x02	// overflow
@@ -51,7 +51,7 @@ public:
 	void assign_irq_line(bool *line) { irq_line = line; }
 
 	void reset();
-	bool run(int16_t desired_cycles, int32_t *consumed_cycles);
+	uint8_t execute(bool *breakpoint_reached);
 
 	void status(char *text_buffer);
 	void stacks(char *text_buffer, int no);
