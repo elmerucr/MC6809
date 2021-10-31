@@ -1,6 +1,6 @@
 # MC6809
 
-![MC6809](./doc/MC6809P.jpg)
+![MC6809](./docs/MC6809P.jpg)
 
 ## Introduction
 

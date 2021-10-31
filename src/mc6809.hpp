@@ -40,17 +40,31 @@ public:
 	bus_write write_8;
 
 	/*
-	 * constructor receives function pointers for memory calls
+	 * Constructor receives function pointers for memory calls
 	 */
 	mc6809(bus_read r, bus_write w);
 
 	~mc6809();
 
+	/*
+	 * Assignment of the different interrupt lines. The constructor of the
+	 * cpu class creates true values (level up) by default - so if none
+	 * is assigned, the cpu will still work.
+	 */
 	void assign_nmi_line(bool *line) { nmi_line = line; }
 	void assign_firq_line(bool *line) { firq_line = line; }
 	void assign_irq_line(bool *line) { irq_line = line; }
 
+	/*
+	 * Reset exception. Doesn't emulate the number of cycles taken.
+	 */
 	void reset();
+
+	/*
+	 * Main execute function. Runs one instruction, and returns the number
+	 * of cycles consumed. Checking for breakpoints must be done with the
+	 * breakpoint() member function that returns true or false.
+	 */
 	uint8_t execute();
 
 	void status(char *text_buffer);
@@ -128,7 +142,7 @@ public:
 	inline bool breakpoint() { return breakpoint_array[pc] ? true : false; }
 	void toggle_breakpoint(uint16_t address);
 	void clear_breakpoints();
-	
+
 	inline uint32_t clock_ticks() { return cycles; }
 
 private:
@@ -164,7 +178,9 @@ private:
 	bool disassemble_success;
 
 	/*
-	 * exceptions
+	 * Exception functions are private. Exceptions are triggered indirectly
+	 * by the execute() function that polls the different interrupt lines
+	 * or detects an illegal opcode.
 	 */
 	void nmi();
 	void firq();
@@ -172,7 +188,7 @@ private:
 	void illegal_opcode();
 
 	/*
-	 * internal stackpointers functionality
+	 * Internal stackpointer functionality
 	 */
 	inline void    push_sp(uint8_t byte) { (*write_8)(--sp, byte); }
 	inline uint8_t pull_sp()             { return (*read_8)(sp++); }

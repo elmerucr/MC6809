@@ -8,10 +8,13 @@
 #include <cstdio>
 
 /*
- * Constructor arranges references ar and br to right positions in
- * dr register. Currently assumes host system is LITTLE ENDIAN.
+ * Constructor arranges references ar and br to right positions in dr register.
  */
+#if HOST_LITTLE_ENDIAN
 mc6809::mc6809(bus_read r, bus_write w) : ac(*(((uint8_t *)&dr)+1)), br(*((uint8_t *)&dr))
+#else
+mc6809::mc6809(bus_read r, bus_write w) : br(*(((uint8_t *)&dr)+1)), ac(*((uint8_t *)&dr))
+#endif
 {
 	read_8 = (bus_read)r;
 	write_8 = (bus_write)w;
