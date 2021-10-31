@@ -6,7 +6,9 @@
 
 An emulation of the MC6809 cpu.
 
-## References and Links
+## Links
+
+## References
 
 Leventhal, Lance A. 1981. 6809 ASSEMBLY LANGUAGE PROGRAMMING. OSBORNE/McGraw-Hill.
 
