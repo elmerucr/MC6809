@@ -4,9 +4,20 @@
 
 ## Introduction
 
-An emulation of the MC6809 cpu.
+An emulation library for the MC6809 cpu forming the core of E64 (see links).
+
+## API
+
+to be done
 
 ## Links
+
+* [E64](https://github.com/elmerucr/E64) - A virtual computer system inspired by the Commodore 64 using an MC6809 cpu and implementing some Amiga 500 and Atari ST technology.
+* [lib65ce02](https://github.com/elmerucr/lib65ce02) - CSG65CE02 emulator written in C.
+* [Moira](https://github.com/dirkwhoffmann/Moira) - Motorola 68000 cpu emulator written in C++ by Dirk W. Hoffmann.
+* [vAmiga](https://dirkwhoffmann.github.io/vAmiga/) - An Amiga 500, 1000, or 2000 on your Apple Macintosh by Dirk W. Hoffmann.
+* [VICE](http://vice-emu.sourceforge.net) - The Versatile Commodore Emulator.
+* [VirtualC64](https://dirkwhoffmann.github.io/virtualc64/) - A Commodore 64 on your Apple Macintosh by Dirk W. Hoffmann.
 
 ## References
 
