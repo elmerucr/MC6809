@@ -11,6 +11,12 @@ uint8_t  byte;
 uint16_t word;
 uint32_t dword;
 
+/*
+ * <<dreg>> is a stand-in temporary variable to ease calculations
+ * during individual instructions that deal with the d register
+ */
+uint16_t dreg;
+
 void mc6809::ill(uint16_t ea)
 {
 	// TODO !!!!!
@@ -136,19 +142,23 @@ void mc6809::addd(uint16_t ea)
 {
 	word = ((*read_8)(ea++)) << 8;
 	word |= (*read_8)(ea);
+	
+	dreg = (ac << 8) | br;
 
 	/* no need for half-carry here */
 
-	bool bit_15_carry_in = (((dr & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+	bool bit_15_carry_in = (((dreg & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
 
-	dword = dr + word;
-	dr = dword & 0xffff;
+	dword = dreg + word;
+	dreg = dword & 0xffff;
+	ac = (dreg & 0xff00) >> 8;
+	br = dreg & 0xff;
 
 	bool carry = (dword & 0x00010000) ? true : false;
 
 	if(carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
 	if(carry) set_c_flag(); else clear_c_flag();
-	test_nz_flags_16(dr);
+	test_nz_flags_16(dreg);
 }
 
 void mc6809::anda(uint16_t ea)
@@ -450,11 +460,12 @@ void mc6809::cmpd(uint16_t ea)
 	/* code inspired by virtualc64 */
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
-	dword = dr - word;
+	dreg = (ac << 8) | br;
+	dword = dreg - word;
 
 	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
-	if (((dr ^ dword) & 0x8000) && ((dr ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
+	if (((dreg ^ dword) & 0x8000) && ((dreg ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
 
 	word = dword & 0xffff;
 	test_nz_flags_16(word);
@@ -632,41 +643,41 @@ void mc6809::exg(uint16_t ea)
 		 * exchange 16 bit registers
 		 */
 		//case 0b00000000: word = dr; dr = dr; dr = word; break;
-		case 0b00000001: word = xr; xr = dr; dr = word; break;
-		case 0b00000010: word = yr; yr = dr; dr = word; break;
-		case 0b00000011: word = us; us = dr; dr = word; break;
-		case 0b00000100: word = sp; sp = dr; dr = word; nmi_enabled = true; break;
-		case 0b00000101: word = pc; pc = dr; dr = word; break;
+		case 0b00000001: word = xr; xr = (ac << 8) | br; ac = (word & 0xff00) >> 8; br = word & 0xff; break;
+		case 0b00000010: word = yr; yr = (ac << 8) | br; ac = (word & 0xff00) >> 8; br = word & 0xff; break;
+		case 0b00000011: word = us; us = (ac << 8) | br; ac = (word & 0xff00) >> 8; br = word & 0xff; break;
+		case 0b00000100: word = sp; sp = (ac << 8) | br; ac = (word & 0xff00) >> 8; br = word & 0xff; nmi_enabled = true; break;
+		case 0b00000101: word = pc; pc = (ac << 8) | br; ac = (word & 0xff00) >> 8; br = word & 0xff; break;
 
-		case 0b00010000: word = dr; dr = xr; xr = word; break;
+		case 0b00010000: word = (ac << 8) | br; ac = (xr & 0xff00) >> 8; br = xr & 0xff; xr = word; break;
 		//case 0b00010001: word = xr; xr = xr; xr = word; break;
 		case 0b00010010: word = yr; yr = xr; xr = word; break;
 		case 0b00010011: word = us; us = xr; xr = word; break;
 		case 0b00010100: word = sp; sp = xr; xr = word; nmi_enabled = true; break;
 		case 0b00010101: word = pc; pc = xr; xr = word; break;
 
-		case 0b00100000: word = dr; dr = yr; yr = word; break;
+		case 0b00100000: word = (ac << 8) | br; ac = (yr & 0xff00) >> 8; br = yr & 0xff; yr = word; break;
 		case 0b00100001: word = xr; xr = yr; yr = word; break;
 		//case 0b00100010: word = yr; yr = yr; yr = word; break;
 		case 0b00100011: word = us; us = yr; yr = word; break;
 		case 0b00100100: word = sp; sp = yr; yr = word; nmi_enabled = true; break;
 		case 0b00100101: word = pc; pc = yr; yr = word; break;
 
-		case 0b00110000: word = dr; dr = us; us = word; break;
+		case 0b00110000: word = (ac << 8) | br; ac = (us & 0xff00) >> 8; br = us & 0xff; us = word; break;
 		case 0b00110001: word = xr; xr = us; us = word; break;
 		case 0b00110010: word = yr; yr = us; us = word; break;
 		//case 0b00110011: word = us; us = us; us = word; break;
 		case 0b00110100: word = sp; sp = us; us = word; nmi_enabled = true; break;
 		case 0b00110101: word = pc; pc = us; us = word; break;
 
-		case 0b01000000: word = dr; dr = sp; sp = word; nmi_enabled = true; break;
+		case 0b01000000: word = (ac << 8) | br; ac = (sp & 0xff00) >> 8; br = sp & 0xff; sp = word; nmi_enabled = true; break;
 		case 0b01000001: word = xr; xr = sp; sp = word; nmi_enabled = true; break;
 		case 0b01000010: word = yr; yr = sp; sp = word; nmi_enabled = true; break;
 		case 0b01000011: word = us; us = sp; sp = word; nmi_enabled = true; break;
 		//case 0b01000100: word = sp; sp = sp; sp = word; nmi_blocked = false; break;
 		case 0b01000101: word = pc; pc = sp; sp = word; nmi_enabled = true; break;
 
-		case 0b01010000: word = dr; dr = pc; pc = word; break;
+		case 0b01010000: word = (ac << 8) | br; ac = (pc & 0xff00) >> 8; br = pc & 0xff; pc = word; break;
 		case 0b01010001: word = xr; xr = pc; pc = word; break;
 		case 0b01010010: word = yr; yr = pc; pc = word; break;
 		case 0b01010011: word = us; us = pc; pc = word; break;
@@ -921,10 +932,11 @@ void mc6809::ldb(uint16_t ea)
 
 void mc6809::ldd(uint16_t ea)
 {
-	dr = (*read_8)(ea++) << 8;
-	dr |= (*read_8)((uint16_t)ea);
+	ac = (*read_8)(ea++);
+	br = (*read_8)((uint16_t)ea);
+	dreg = (ac << 8) | br;
 	clear_v_flag();
-	test_nz_flags_16(dr);
+	test_nz_flags_16(dreg);
 }
 
 void mc6809::lds(uint16_t ea)
@@ -1017,8 +1029,10 @@ void mc6809::lsrb(uint16_t ea)
 
 void mc6809::mul(uint16_t ea)
 {
-	dr = ac * br;
-	test_z_flag_16(dr);
+	dreg = ac * br;
+	test_z_flag_16(dreg);
+	ac = (dreg & 0xff00) >> 8;
+	br = dreg & 0xff;
 	if (br & 0x80) set_c_flag(); else clear_c_flag();
 }
 
@@ -1300,10 +1314,11 @@ void mc6809::stb(uint16_t ea)
 
 void mc6809::std(uint16_t ea)
 {
-	(*write_8)(ea++, dr >> 8);
-	(*write_8)(ea, dr & 0xff);
+	(*write_8)(ea++, ac);
+	(*write_8)(ea, br);
+	dreg = (ac << 8) | br;
 	clear_v_flag();
-	test_nz_flags_16(dr);
+	test_nz_flags_16(dreg);
 }
 
 void mc6809::stu(uint16_t ea)
@@ -1371,15 +1386,19 @@ void mc6809::subd(uint16_t ea)
 	/* code inspired by virtualc64 */
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
+	
+	dreg = (ac << 8) | br;
 
-	dword = dr - word;
+	dword = dreg - word;
 
 	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
-	if (((dr ^ dword) & 0x8000) && ((dr ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
+	if (((dreg ^ dword) & 0x8000) && ((dreg ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
 
-	dr = dword & 0xffff;
-	test_nz_flags_16(dr);
+	dreg = dword & 0xffff;
+	ac = (dreg & 0xff00) >> 8;
+	br = dreg & 0xff;
+	test_nz_flags_16(dreg);
 }
 
 void mc6809::swi(uint16_t ea)
@@ -1459,42 +1478,42 @@ void mc6809::tfr(uint16_t ea)
 		/*
 		 * transfer 16 bit registers
 		 */
-		//case 0b00000000: dr = dr; break;
-		case 0b00000001: xr = dr; break;
-		case 0b00000010: yr = dr; break;
-		case 0b00000011: us = dr; break;
-		case 0b00000100: sp = dr; nmi_enabled = true; break;
-		case 0b00000101: pc = dr; break;
+		//case 0b00000000: dr = (ac << 8) | br; break;
+		case 0b00000001: xr = (ac << 8) | br; break;
+		case 0b00000010: yr = (ac << 8) | br; break;
+		case 0b00000011: us = (ac << 8) | br; break;
+		case 0b00000100: sp = (ac << 8) | br; nmi_enabled = true; break;
+		case 0b00000101: pc = (ac << 8) | br; break;
 
-		case 0b00010000: dr = xr; break;
+		case 0b00010000: ac = (xr & 0xff00) >> 8; br = xr & 0xff; break;
 		//case 0b00010001: xr = xr; break;
 		case 0b00010010: yr = xr; break;
 		case 0b00010011: us = xr; break;
 		case 0b00010100: sp = xr; nmi_enabled = true; break;
 		case 0b00010101: pc = xr; break;
 
-		case 0b00100000: dr = yr; break;
+		case 0b00100000: ac = (yr & 0xff00) >> 8; br = yr & 0xff; break;
 		case 0b00100001: xr = yr; break;
 		//case 0b00100010: yr = yr; break;
 		case 0b00100011: us = yr; break;
 		case 0b00100100: sp = yr; nmi_enabled = true; break;
 		case 0b00100101: pc = yr; break;
 
-		case 0b00110000: dr = us; break;
+		case 0b00110000: ac = (us & 0xff00) >> 8; br = us & 0xff; break;
 		case 0b00110001: xr = us; break;
 		case 0b00110010: yr = us; break;
 		//case 0b00110011: us = us; break;
 		case 0b00110100: sp = us; nmi_enabled = true; break;
 		case 0b00110101: pc = us; break;
 
-		case 0b01000000: dr = sp; break;
+		case 0b01000000: ac = (sp & 0xff00) >> 8; br = sp & 0xff; break;
 		case 0b01000001: xr = sp; break;
 		case 0b01000010: yr = sp; break;
 		case 0b01000011: us = sp; break;
 		//case 0b01000100: sp = sp; nmi_blocked = false; break;
 		case 0b01000101: pc = sp; break;
 
-		case 0b01010000: dr = pc; break;
+		case 0b01010000: ac = (pc & 0xff00) >> 8; br = pc & 0xff; break;
 		case 0b01010001: xr = pc; break;
 		case 0b01010010: yr = pc; break;
 		case 0b01010011: us = pc; break;

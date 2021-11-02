@@ -7,14 +7,7 @@
 #include "mc6809.hpp"
 #include <cstdio>
 
-/*
- * Constructor arranges references ar and br to right positions in dr register.
- */
-#if HOST_LITTLE_ENDIAN
-mc6809::mc6809(bus_read r, bus_write w) : ac(*(((uint8_t *)&dr)+1)), br(*((uint8_t *)&dr))
-#else
-mc6809::mc6809(bus_read r, bus_write w) : br(*(((uint8_t *)&dr)+1)), ac(*((uint8_t *)&dr))
-#endif
+mc6809::mc6809(bus_read r, bus_write w)
 {
 	read_8 = (bus_read)r;
 	write_8 = (bus_write)w;
@@ -65,8 +58,6 @@ void mc6809::reset()
 	 * to the system stackpointer enabled.
 	 */
 	nmi_enabled = false;
-
-
 	old_nmi_line = *nmi_line;
 
 	/*

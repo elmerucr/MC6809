@@ -171,7 +171,7 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 4;
 
-					offset = dr;
+					offset = (ac << 8) | br;
 					address = *index_regs[(postbyte & 0b01100000) >> 5]
 						+ offset;
 					break;
@@ -326,7 +326,7 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 7;
 
-					offset = dr;
+					offset = (ac << 8) | br;
 					word = *index_regs[(postbyte & 0b01100000) >> 5]
 						+ offset;
 					address = (*read_8)(word++) << 8;

@@ -125,8 +125,8 @@ public:
 	void     set_ac(uint8_t  byte) { ac = byte; }
 	uint8_t  get_br()              { return br; }
 	void     set_br(uint8_t  byte) { br = byte; }
-	uint16_t get_dr()              { return dr; }
-	void     set_dr(uint16_t word) { br = word; }
+	uint16_t get_dr()              { return (ac << 8) | br; }
+	void     set_dr(uint16_t word) { ac = (word & 0xff00) >> 8; br = word & 0x00; }
 	uint16_t get_xr()              { return xr; }
 	void     set_xr(uint16_t word) { xr = word; }
 	uint16_t get_yr()              { return yr; }
@@ -148,9 +148,9 @@ public:
 private:
 	uint16_t pc;	// program counter
 	uint8_t	 dp;	// direct page register
-	uint8_t &ac;	// accumulator a, msb of d
-	uint8_t &br;	// accumulator b, lsb of d
-	uint16_t dr;	// 16bit accumulator d
+	uint8_t  ac;	// accumulator a, msb of d
+	uint8_t  br;	// accumulator b, lsb of d
+	// uint16_t dr;	// non-existing = virtual as a combi of ac and br
 	uint16_t xr;	// x index register
 	uint16_t yr;	// y index register
 	uint16_t us;	// user stack pointer
