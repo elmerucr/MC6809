@@ -1,7 +1,20 @@
 /*
  * mc6809.hpp  -  part of MC6809
  *
- * (c)2021 elmerucr
+ * (C)2021 elmerucr
+ */
+
+/*
+ * MC6809 version 0.9 - October 2021
+ *
+ * October 2021. Most functionality is in there. Currently missing:
+ * - CWAI instruction
+ * - SYNC instruction
+ * - illegal opcode exception implementation
+ *
+ * Note:
+ * Illegal opcode exception didn't exist in the real 6809. The idea is
+ * taken from the Hitachi 6309. Will use the reserved vector at $fff0.
  */
 
 #ifndef MC6809_HPP
@@ -9,7 +22,10 @@
 
 #include <cstdint>
 
-#define MC6809_VERSION	20211029
+#define MC6809_MAJOR_VERSION	0
+#define MC6809_MINOR_VERSION	9
+#define MC6809_BUILD		20211113
+#define MC6809_YEAR		2021
 
 #define	C_FLAG	0x01	// carry
 #define	V_FLAG	0x02	// overflow

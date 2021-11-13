@@ -1,7 +1,7 @@
 /*
  * mc6809.cpp  -  part of MC6809
  *
- * (c)2021 elmerucr
+ * (C)2021 elmerucr
  */
 
 #include "mc6809.hpp"
@@ -33,15 +33,23 @@ mc6809::mc6809(bus_read r, bus_write w)
 	breakpoint_array = NULL;
 	breakpoint_array = new bool[65536];
 	clear_breakpoints();
+	
+	printf("[MC6809] version %i.%i.%i (C)%i elmerucr\n",
+	       MC6809_MAJOR_VERSION,
+	       MC6809_MINOR_VERSION,
+	       MC6809_BUILD,
+	       MC6809_YEAR);
 }
 
 mc6809::~mc6809()
 {
+	printf("[MC6809] cleaning up\n");
 	delete breakpoint_array;
 }
 
 void mc6809::reset()
 {
+	printf("[MC6809] resetting cpu\n");
 	/*
 	 * For 6800 compatibility, direct page register defaults to
 	 * zero after a reset.

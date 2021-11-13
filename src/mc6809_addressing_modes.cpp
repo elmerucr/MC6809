@@ -1,7 +1,7 @@
 /*
  * mc6809_addressing_modes.cpp  -  part of MC6809
  *
- * (c)2021 elmerucr
+ * (C)2021 elmerucr
  */
 
 #include "mc6809.hpp"

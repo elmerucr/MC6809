@@ -1,7 +1,7 @@
 /*
  * mc6809_opcodes.cpp  -  part of MC6809
  *
- * (c)2021 elmerucr
+ * (C)2021 elmerucr
  */
 
 #include "mc6809.hpp"
@@ -12,10 +12,10 @@ uint16_t word;
 uint32_t dword;
 
 /*
- * <<dreg>> is a stand-in temporary variable to ease calculations
+ * d_reg is a stand-in temporary variable to ease calculations
  * during individual instructions that deal with the d register
  */
-uint16_t dreg;
+uint16_t d_reg;
 
 void mc6809::ill(uint16_t ea)
 {
@@ -143,22 +143,22 @@ void mc6809::addd(uint16_t ea)
 	word = ((*read_8)(ea++)) << 8;
 	word |= (*read_8)(ea);
 	
-	dreg = (ac << 8) | br;
+	d_reg = (ac << 8) | br;
 
 	/* no need for half-carry here */
 
-	bool bit_15_carry_in = (((dreg & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
+	bool bit_15_carry_in = (((d_reg & 0x7fff) + (word & 0x7fff)) & 0x8000) ? true : false;
 
-	dword = dreg + word;
-	dreg = dword & 0xffff;
-	ac = (dreg & 0xff00) >> 8;
-	br = dreg & 0xff;
+	dword = d_reg + word;
+	d_reg = dword & 0xffff;
+	ac = (d_reg & 0xff00) >> 8;
+	br = d_reg & 0xff;
 
 	bool carry = (dword & 0x00010000) ? true : false;
 
 	if(carry != bit_15_carry_in) set_v_flag(); else clear_v_flag();
 	if(carry) set_c_flag(); else clear_c_flag();
-	test_nz_flags_16(dreg);
+	test_nz_flags_16(d_reg);
 }
 
 void mc6809::anda(uint16_t ea)
@@ -460,12 +460,12 @@ void mc6809::cmpd(uint16_t ea)
 	/* code inspired by virtualc64 */
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
-	dreg = (ac << 8) | br;
-	dword = dreg - word;
+	d_reg = (ac << 8) | br;
+	dword = d_reg - word;
 
 	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
-	if (((dreg ^ dword) & 0x8000) && ((dreg ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
+	if (((d_reg ^ dword) & 0x8000) && ((d_reg ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
 
 	word = dword & 0xffff;
 	test_nz_flags_16(word);
@@ -934,9 +934,9 @@ void mc6809::ldd(uint16_t ea)
 {
 	ac = (*read_8)(ea++);
 	br = (*read_8)((uint16_t)ea);
-	dreg = (ac << 8) | br;
+	d_reg = (ac << 8) | br;
 	clear_v_flag();
-	test_nz_flags_16(dreg);
+	test_nz_flags_16(d_reg);
 }
 
 void mc6809::lds(uint16_t ea)
@@ -1029,10 +1029,10 @@ void mc6809::lsrb(uint16_t ea)
 
 void mc6809::mul(uint16_t ea)
 {
-	dreg = ac * br;
-	test_z_flag_16(dreg);
-	ac = (dreg & 0xff00) >> 8;
-	br = dreg & 0xff;
+	d_reg = ac * br;
+	test_z_flag_16(d_reg);
+	ac = (d_reg & 0xff00) >> 8;
+	br = d_reg & 0xff;
 	if (br & 0x80) set_c_flag(); else clear_c_flag();
 }
 
@@ -1316,9 +1316,9 @@ void mc6809::std(uint16_t ea)
 {
 	(*write_8)(ea++, ac);
 	(*write_8)(ea, br);
-	dreg = (ac << 8) | br;
+	d_reg = (ac << 8) | br;
 	clear_v_flag();
-	test_nz_flags_16(dreg);
+	test_nz_flags_16(d_reg);
 }
 
 void mc6809::stu(uint16_t ea)
@@ -1387,18 +1387,18 @@ void mc6809::subd(uint16_t ea)
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
 	
-	dreg = (ac << 8) | br;
+	d_reg = (ac << 8) | br;
 
-	dword = dreg - word;
+	dword = d_reg - word;
 
 	if (dword > 65535) set_c_flag(); else clear_c_flag();
 
-	if (((dreg ^ dword) & 0x8000) && ((dreg ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
+	if (((d_reg ^ dword) & 0x8000) && ((d_reg ^ word) & 0x8000)) set_v_flag(); else clear_v_flag();
 
-	dreg = dword & 0xffff;
-	ac = (dreg & 0xff00) >> 8;
-	br = dreg & 0xff;
-	test_nz_flags_16(dreg);
+	d_reg = dword & 0xffff;
+	ac = (d_reg & 0xff00) >> 8;
+	br = d_reg & 0xff;
+	test_nz_flags_16(d_reg);
 }
 
 void mc6809::swi(uint16_t ea)

@@ -56,8 +56,7 @@ int main()
 	cpu.assign_irq_line(&irq_pin);
 
 	// reset system and put welcome message
-	printf("emulate_mc6809 (c)2021 elmerucr\n");
-	printf("resetting mc6809...\n");
+	printf("emulate_MC6809 (C)2021 elmerucr\n");
 	cpu.reset();
 	cpu.status(text_buffer);
 	printf("%s\n\n", text_buffer);

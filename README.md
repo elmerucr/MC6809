@@ -4,7 +4,7 @@
 
 ## Introduction
 
-An emulation library for the MC6809 cpu forming the core of E64 (see links).
+An emulation library for the MC6809 cpu written in C++. This forms the core of [E64](https://github.com/elmerucr/E64).
 
 ## API
 
