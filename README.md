@@ -14,7 +14,7 @@ An emulation library for the MC6809 cpu written in C++. This software forms the 
 mc6809::mc6809(bus_read r, bus_write w)
 ```
 
-The constructor takes two function pointers that either read and write one byte to memory. The prototypes are as follows:
+The constructor takes two function pointers that respectively read and write one byte to memory. The prototypes are as follows:
 
 ```cpp
 uint8_t read(uint16_t address);
