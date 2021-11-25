@@ -6,6 +6,11 @@
 
 A library written in C++ that emulates the MC6809 cpu. This software forms the core of [E64](https://github.com/elmerucr/E64), a virtual computer system. To use this library, copy the five source files in ```./src/``` to your project. Using a standard cmake procedure, a small test program will be built.
 
+At this very moment, three things still need to be implemented:
+* CWAI opcode
+* SYNC opcode
+* illegal opcode exceptions (vector at $fff0)
+
 ## API
 
 ### Constructor
@@ -56,7 +61,7 @@ void mc6809::reset()
 uint8_t mc6809::execute()
 ```
 
-Main execute function. Runs only one instruction, and returns the number of cycles consumed. Checking for breakpoints must be done with the ```mc6809::breakpoint()``` member function inbetween calls to the ```mc6809::execute()``` function.
+Main execute function. Runs only one instruction, and returns the number of cycles consumed. Checking for breakpoints must be done with the ```mc6809::breakpoint()``` member function inbetween calls to the ```mc6809::execute()``` function. In the broadest sense, one instruction also means starting an exception (be it nmi/firq/irq).
 
 Running more that one instruction (e.g. the ability to run ```N``` cycles) has been considered, but in most use cases we want to do nmi/firq/irq things immediately after each instruction anyway. Also checking for breakpoints becomes simpler this way.
 
