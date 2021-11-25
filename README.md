@@ -4,7 +4,7 @@
 
 ## Introduction
 
-An emulation library for the MC6809 cpu written in C++. This software forms the core of [E64](https://github.com/elmerucr/E64), a virtual computer system. To use this library, copy the five source files in ```./src/``` to your project. This source with some test programs can also be built directly using a standard cmake procedure.
+A library written in C++ that emulates the MC6809 cpu. This software forms the core of [E64](https://github.com/elmerucr/E64), a virtual computer system. To use this library, copy the five source files in ```./src/``` to your project. Using a standard cmake procedure, a small test program will be built.
 
 ## API
 
@@ -18,7 +18,9 @@ The constructor takes two function pointers that respectively read and write one
 
 ```cpp
 uint8_t read(uint16_t address)
+```
 
+```cpp
 void write(uint16_t address, uint8_t byte)
 ```
 
@@ -26,23 +28,37 @@ Make sure the connected memory has a functioning ROM and vector table from $fff0
 
 ### NMI / FIRQ / IRQ
 
-When not assigned by the hosting software, the pin states will default to high (1) internally, effectively meaning no exceptions of the above three types will happen. It is up to the programmer to supply a connection:
+When not assigned by the hosting software, the pin states will default to high (1) internally, effectively meaning no exceptions of the above three types will happen. It is up to the programmer to supply connections:
 
 ```cpp
 void mc6809::assign_nmi_line(bool *line)
+```
 
+```cpp
 void mc6809::assign_firq_line(bool *line)
+```
 
+```cpp
 void mc6809::assign_irq_line(bool *line)
 ```
 
-These functions take a pointer to a boolean value (the line/value that represent interrupt states from the connected devices). If more devices are to be connected to one line, this must be separately programmed (see [E64](https://github.com/elmerucr/E64) source code for examples).
+These functions take a pointer to a boolean value (the actual line/value that represent interrupt states from the connected devices). If more devices are to be connected to one line, this must be separately programmed (see [E64](https://github.com/elmerucr/E64) source code for examples).
 
 ### Reset
 
 ```cpp
 void mc6809::reset()
 ```
+
+### Execute
+
+```cpp
+uint8_t mc6809::execute()
+```
+
+Main execute function. Runs only one instruction, and returns the number of cycles consumed. Checking for breakpoints must be done with the ```mc6809::breakpoint()``` member function inbetween calls to the ```mc6809::execute()``` function.
+
+Running more that one instruction (e.g. the ability to run ```N``` cycles) has been considered, but in most use cases we want to do nmi/firq/irq things immediately after each instruction anyway. Also checking for breakpoints becomes simpler this way.
 
 ## Links
 
