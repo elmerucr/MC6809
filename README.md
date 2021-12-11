@@ -4,7 +4,7 @@
 
 ## Introduction
 
-A library written in C++ that emulates the MC6809 cpu. This software forms the core of [E64](https://github.com/elmerucr/E64), a virtual computer system. To use this library, copy the five source files in ```./src/``` to your project. Using a standard cmake procedure, a small test program will be built.
+A library written in C++ that emulates the MC6809 cpu. This software forms the core of [E64](https://github.com/elmerucr/E64), a virtual computer system. To use this library, copy the five source files in ```./src/``` to your project. The enclosed ```CMakeLists.txt``` file (standard cmake procedure) will build the library and a small test application.
 
 At this very moment, three things still need to be implemented:
 * CWAI opcode
@@ -19,7 +19,7 @@ At this very moment, three things still need to be implemented:
 mc6809::mc6809(bus_read r, bus_write w)
 ```
 
-The constructor takes two function pointers that respectively read and write one byte to memory. The prototypes are as follows:
+The constructor takes two function pointers that respectively read and write one byte to memory. The function prototypes are as follows:
 
 ```cpp
 uint8_t read(uint16_t address)
@@ -29,11 +29,11 @@ uint8_t read(uint16_t address)
 void write(uint16_t address, uint8_t byte)
 ```
 
-Make sure the connected memory has a functioning ROM and vector table from $fff0 to $ffff. Please note that an extra vector at $fff0 (originally reserved by Motorola) has been added that enables handling of illegal opcodes (a feature from the Hitachi 6309).
+Make sure the connected memory has a functioning ROM and vector table from ```$fff0``` to ```$ffff```. Please note that an extra vector at ```$fff0``` (originally reserved by Motorola) has been added that enables handling of illegal opcodes (a feature borrowed from the Hitachi 6309).
 
 ### NMI / FIRQ / IRQ
 
-When not assigned by the hosting software, the pin states will default to high (1) internally, effectively meaning no exceptions of the above three types will happen. It is up to the programmer to supply connections:
+When nothing is assigned by the hosting software, the pin states will default to high (```1``` or ```true```) internally, effectively meaning no exceptions of the above three types will happen. It is up to the programmer to supply proper connections:
 
 ```cpp
 void mc6809::assign_nmi_line(bool *line)
@@ -47,7 +47,7 @@ void mc6809::assign_firq_line(bool *line)
 void mc6809::assign_irq_line(bool *line)
 ```
 
-These functions take a pointer to a boolean value (the actual line/value that represent interrupt states from the connected devices). If more devices are to be connected to one line, this must be separately programmed (see [E64](https://github.com/elmerucr/E64) source code for examples).
+These functions take a pointer to a boolean value (the actual line/value that represent interrupt states from the connected devices). If more devices are to be connected to one line, this must be separately programmed (see [E64](https://github.com/elmerucr/E64) source code for an example, ```exceptions_ic``` class).
 
 ### Reset
 
