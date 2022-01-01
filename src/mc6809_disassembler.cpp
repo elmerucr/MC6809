@@ -1,7 +1,7 @@
 /*
  * mc6809_disassembler.cpp  -  part of MC6809
  *
- * (C)2021 elmerucr
+ * (C)2021-2022 elmerucr
  *
  * Code is inspired by dasm09 which can be found at:
  * http://koti.mbnet.fi/~atjs/mc6809/Disassembler/dasm09.TGZ

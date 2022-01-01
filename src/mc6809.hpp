@@ -1,7 +1,7 @@
 /*
  * mc6809.hpp  -  part of MC6809
  *
- * (C)2021 elmerucr
+ * (C)2021-2022 elmerucr
  */
 
 /*
