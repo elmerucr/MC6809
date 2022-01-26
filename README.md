@@ -4,7 +4,7 @@
 
 ## Introduction
 
-A library written in C++ that emulates the MC6809 cpu. This software forms the core of [E64](https://github.com/elmerucr/E64), a virtual computer system. To use this library, copy the five source files from ```./src/``` to your project. The enclosed ```CMakeLists.txt``` file (standard cmake procedure) will build the library and a small test application.
+A library written in C++ that emulates the MC6809 cpu. This software forms the core of [E64](https://github.com/elmerucr/E64), a virtual computer system. The enclosed ```CMakeLists.txt``` file (standard cmake procedure) will build the library and a small test application. To use this library yourself, copy the five source files from ```./src/``` to your project.
 
 At this very moment, three things still need to be implemented:
 * CWAI opcode
