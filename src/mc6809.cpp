@@ -33,7 +33,7 @@ mc6809::mc6809(bus_read r, bus_write w)
 	breakpoint_array = NULL;
 	breakpoint_array = new bool[65536];
 	clear_breakpoints();
-	
+
 	printf("[MC6809] version %i.%i.%i (C)%i elmerucr\n",
 	       MC6809_MAJOR_VERSION,
 	       MC6809_MINOR_VERSION,
@@ -79,7 +79,7 @@ void mc6809::reset()
 uint8_t mc6809::execute()
 {
 	uint32_t old_cycles = cycles;
-	
+
 	if ((*nmi_line == false) && (old_nmi_line == true) && nmi_enabled) {
 		nmi();
 	} else if ((*firq_line == false) && is_f_flag_clear()) {
@@ -96,7 +96,7 @@ uint8_t mc6809::execute()
 		uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
 		(this->*opcodes_page1[opcode])(effective_address);
 	}
-	
+
 	old_nmi_line = *nmi_line;
 	return cycles - old_cycles;
 }
@@ -215,9 +215,12 @@ void mc6809::illegal_opcode()
  *  pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I  NMI enabled/blocked
  * c000 00 01:ae 0000 d0d0 0000 0ffc -*-*---- 11 1 1  state normal/cwai/sync
  */
-void mc6809::status(char *text_buffer)
+/*
+ * TODO: "state normal" --> make it real after implementation of cwai/sync
+ */
+void mc6809::status(char *text_buffer, int n)
 {
-	sprintf(text_buffer, " pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I  NMI %s\n"
+	snprintf(text_buffer, n, " pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I  NMI %s\n"
 			"%04x %02x %02x:%02x "
 			"%04x %04x %04x %04x "
 			"%c%c%c%c%c%c%c%c "
@@ -240,18 +243,24 @@ void mc6809::status(char *text_buffer)
 			*irq_line ? '1' : '0');
 }
 
-void mc6809::stacks(char *text_buffer, int no)
+void mc6809::stacks(char *text_buffer, int n, int no)
 {
 	// display top of both stacks as 8 and 16 bit values
-	text_buffer += sprintf(text_buffer, "  usp      ssp\n");
+	int bytes = snprintf(text_buffer, n, "  usp      ssp\n");
+	text_buffer += bytes;
+	n -= bytes;
 	for (int i=0; i<no; i++) {
-		text_buffer += sprintf(text_buffer, "%04x %02x  %04x %02x",
+		bytes = snprintf(text_buffer, n, "%04x %02x  %04x %02x",
 			get_us() + i,
 			read_8((uint16_t)(get_us() + i)),
 			get_sp() + i,
 			read_8((uint16_t)(get_sp() + i)));
+		text_buffer += bytes;
+		n -= bytes;
 		if (i < no-1) {
-			text_buffer += sprintf(text_buffer, "\n");
+			bytes = snprintf(text_buffer, n, "\n");
+			text_buffer += bytes;
+			n -= bytes;
 		}
 	}
 }

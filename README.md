@@ -4,9 +4,9 @@
 
 ## Introduction
 
-A library written in C++ that emulates the MC6809 cpu. This software formed the core of the [E64](https://github.com/elmerucr/E64) computer system before it started to be M68K based. The enclosed ```CMakeLists.txt``` file (standard cmake procedure) will build the library and a small test application. To use this library yourself, copy the five source files from ```./src/``` to your project.
+A library written in C++ that emulates the MC6809 cpu. The enclosed ```CMakeLists.txt``` file (standard cmake procedure) will build the library and a small test application. To use this library in your project, copy the five source files from ```./src/``` into your source tree.
 
-At this very moment, the following is not implemented:
+At this very moment, the following things are not implemented:
 * CWAI opcode
 * SYNC opcode
 * illegal opcode exceptions (vector at $fff0)
@@ -63,7 +63,7 @@ uint8_t mc6809::execute()
 
 Main execute function. Runs only one instruction, and returns the number of cycles consumed. Checking for breakpoints must be done with the ```mc6809::breakpoint()``` member function inbetween calls to the ```mc6809::execute()``` function. In the broadest sense, one instruction also means starting an exception (be it nmi/firq/irq).
 
-Running more that one instruction (e.g. the ability to run ```N``` cycles) has been considered, but in most use cases we want to do nmi/firq/irq things immediately after each instruction anyway. Also checking for breakpoints becomes simpler this way.
+Running more that one instruction or the ability to run ```N``` cycles has been considered but is not implemented. In most use cases we want to do nmi/firq/irq things immediately after each instruction anyway. Also checking for breakpoints becomes simpler this way.
 
 ## Links
 

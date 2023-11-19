@@ -58,7 +58,7 @@ int main()
 	// reset system and put welcome message
 	printf("emulate_MC6809 (C)2021 elmerucr\n");
 	cpu.reset();
-	cpu.status(text_buffer);
+	cpu.status(text_buffer, 512);
 	printf("%s\n\n", text_buffer);
 	uint16_t temp_pc = cpu.get_pc();
 	for (int i=0; i<4; i++) {
@@ -158,7 +158,7 @@ int main()
 			if (cpu.breakpoint())
 				printf("reached breakpoint at: %04x\n", cpu.get_pc());
 			printf("last run took %i cycles\n\n", cycles_done);
-			cpu.status(text_buffer);
+			cpu.status(text_buffer, 512);
 			printf("%s\n\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();
 			for (int i=0; i<4; i++) {
@@ -169,7 +169,7 @@ int main()
 			nmi_pin = !nmi_pin;
 			printf("changed status of nmi to %c\n", nmi_pin ? '1' : '0');
 		} else if (strcmp(token0, "r") == 0) {
-			cpu.status(text_buffer);
+			cpu.status(text_buffer, 512);
 			printf("%s\n\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();
 			for (int i=0; i<4; i++) {
@@ -179,7 +179,7 @@ int main()
 		} else if (strcmp(token0, "reset") == 0) {
 			printf("resetting mc6809...\n\n");
 			cpu.reset();
-			cpu.status(text_buffer);
+			cpu.status(text_buffer, 512);
 			printf("%s\n\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();
 			for (int i=0; i<4; i++) {
@@ -187,7 +187,7 @@ int main()
 				printf("%s\n", text_buffer);
 			}
 		} else if (strcmp(token0, "s") == 0) {
-			cpu.stacks(text_buffer, 8);
+			cpu.stacks(text_buffer, 512, 8);
 			printf("%s\n", text_buffer);
 		} else {
 			printf("error: unknown command '%s'\n", input_string);

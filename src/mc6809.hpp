@@ -83,8 +83,8 @@ public:
 	 */
 	uint8_t execute();
 
-	void status(char *text_buffer);
-	void stacks(char *text_buffer, int no);
+	void status(char *text_buffer, int n);
+	void stacks(char *text_buffer, int n, int no);
 	uint16_t disassemble_instruction(char *buffer, uint16_t address);
 	bool disassemble_successfull() { return disassemble_success; }
 
