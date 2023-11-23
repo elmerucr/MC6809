@@ -9,7 +9,7 @@
 uint16_t mc6809::a_dir(bool *legal)
 {
 	*legal = true;
-	return (dp << 8) | (*read_8)(pc++);
+	return (dp << 8) | read8(pc++);
 }
 
 uint16_t mc6809::a_ih(bool *legal)
@@ -36,15 +36,15 @@ uint16_t mc6809::a_imw(bool *legal)
 uint16_t mc6809::a_reb(bool *legal)
 {
 	// sign extend the 8 bit value
-	uint16_t offset = (uint16_t)((int8_t)(*read_8)(pc++));
+	uint16_t offset = (uint16_t)((int8_t)read8(pc++));
 	*legal = true;
 	return (uint16_t)(pc + offset);
 }
 
 uint16_t mc6809::a_rew(bool *legal)
 {
-	uint16_t offset = (*read_8)(pc++);
-	offset = (offset << 8) | (*read_8)(pc++);
+	uint16_t offset = read8(pc++);
+	offset = (offset << 8) | read8(pc++);
 	*legal = true;
 	return pc + offset;
 }
@@ -63,7 +63,7 @@ uint16_t mc6809::a_idx(bool *legal)
 	uint16_t word;
 
 	// read postbyte
-	uint8_t postbyte = (*read_8)(pc++);
+	uint8_t postbyte = read8(pc++);
 
 	if (postbyte == 0b10011111) {
 		/*
@@ -71,10 +71,10 @@ uint16_t mc6809::a_idx(bool *legal)
 		 */
 		cycles += 5;
 
-		word = (*read_8)(pc++) << 8;
-		word |= (*read_8)(pc++);
-		address = (*read_8)(word++) << 8;
-		address |= (*read_8)(word);
+		word = read8(pc++) << 8;
+		word |= read8(pc++);
+		address = read8(word++) << 8;
+		address |= read8(word);
 	} else {
 		switch (postbyte & 0b10000000) {
 		case 0b00000000:
@@ -117,7 +117,7 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 1;
 
-					byte = (*read_8)(pc++);
+					byte = read8(pc++);
 					if (byte & 0b10000000) {
 						offset = 0xff00 | byte;
 					} else {
@@ -132,8 +132,8 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 4;
 
-					offset = (*read_8)(pc++) << 8;
-					offset |= (*read_8)(pc++);
+					offset = read8(pc++) << 8;
+					offset |= read8(pc++);
 					address = *index_regs[(postbyte & 0b01100000) >> 5]
 						+ offset;
 					break;
@@ -217,7 +217,7 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 1;
 
-					byte = (*read_8)(pc++);
+					byte = read8(pc++);
 					if (byte & 0b10000000) {
 						offset = 0xff00 | byte;
 					} else {
@@ -231,8 +231,8 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 5;
 
-					offset = (*read_8)(pc++) << 8;
-					offset |= (*read_8)(pc++);
+					offset = read8(pc++) << 8;
+					offset |= read8(pc++);
 					address = pc + offset;
 					break;
 				default:
@@ -255,8 +255,8 @@ uint16_t mc6809::a_idx(bool *legal)
 					cycles += 3;
 
 					word = *index_regs[(postbyte & 0b01100000) >> 5];
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				case 0b1000:
 					/*
@@ -264,7 +264,7 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 4;
 
-					byte = (*read_8)(pc++);
+					byte = read8(pc++);
 					if (byte & 0b10000000) {
 						offset = 0xff00 | byte;
 					} else {
@@ -272,8 +272,8 @@ uint16_t mc6809::a_idx(bool *legal)
 					}
 					word = *index_regs[(postbyte & 0b01100000) >> 5]
 						+ offset;
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				case 0b1001:
 					/*
@@ -281,12 +281,12 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 7;
 
-					offset = (*read_8)(pc++) << 8;
-					offset |= (*read_8)(pc++);
+					offset = read8(pc++) << 8;
+					offset |= read8(pc++);
 					word = *index_regs[(postbyte & 0b01100000) >> 5]
 						+ offset;
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				case 0b0110:
 					/*
@@ -301,8 +301,8 @@ uint16_t mc6809::a_idx(bool *legal)
 					}
 					word = *index_regs[(postbyte & 0b01100000) >> 5]
 						+ offset;
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				case 0b0101:
 					/*
@@ -317,8 +317,8 @@ uint16_t mc6809::a_idx(bool *legal)
 					}
 					word = *index_regs[(postbyte & 0b01100000) >> 5]
 						+ offset;
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				case 0b1011:
 					/*
@@ -329,8 +329,8 @@ uint16_t mc6809::a_idx(bool *legal)
 					offset = (ac << 8) | br;
 					word = *index_regs[(postbyte & 0b01100000) >> 5]
 						+ offset;
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				case 0b0001:
 					/*
@@ -340,8 +340,8 @@ uint16_t mc6809::a_idx(bool *legal)
 
 					word = *index_regs[(postbyte & 0b01100000) >> 5];
 					(*index_regs[(postbyte & 0b01100000) >> 5]) += 2;
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				case 0b0011:
 					/*
@@ -351,8 +351,8 @@ uint16_t mc6809::a_idx(bool *legal)
 
 					(*index_regs[(postbyte & 0b01100000) >> 5]) -= 2;
 					word = *index_regs[(postbyte & 0b01100000) >> 5];
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				case 0b1100:
 					/*
@@ -360,15 +360,15 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 4;
 
-					byte = (*read_8)(pc++);
+					byte = read8(pc++);
 					if (byte & 0b10000000) {
 						offset = 0xff00 | byte;
 					} else {
 						offset = byte;
 					}
 					word = pc + offset;
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				case 0b1101:
 					/*
@@ -376,11 +376,11 @@ uint16_t mc6809::a_idx(bool *legal)
 					 */
 					cycles += 8;
 
-					offset = (*read_8)(pc++) << 8;
-					offset |= (*read_8)(pc++);
+					offset = read8(pc++) << 8;
+					offset |= read8(pc++);
 					word = pc + offset;
-					address = (*read_8)(word++) << 8;
-					address |= (*read_8)(word);
+					address = read8(word++) << 8;
+					address |= read8(word);
 					break;
 				default:
 					// TODO
@@ -398,8 +398,8 @@ uint16_t mc6809::a_idx(bool *legal)
 
 uint16_t mc6809::a_ext(bool *legal)
 {
-	uint16_t word = ((*read_8)(pc++)) << 8;
-	word |= (*read_8)(pc++);
+	uint16_t word = (read8(pc++)) << 8;
+	word |= read8(pc++);
 	*legal = true;
 	return word;
 }

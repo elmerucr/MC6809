@@ -16,18 +16,12 @@ At this very moment, the following things are not implemented:
 ### Constructor
 
 ```cpp
-mc6809::mc6809(bus_read r, bus_write w)
+mc6809::mc6809()
 ```
 
-The constructor takes two function pointers that respectively read and write one byte to memory. The function prototypes are as follows:
+### Read and Write to Memory
 
-```cpp
-uint8_t read(uint16_t address)
-```
-
-```cpp
-void write(uint16_t address, uint8_t byte)
-```
+Abstract class, read8 and write8 must be implemented in your subclass.
 
 Make sure the connected memory has a functioning ROM and vector table from ```$fff0``` to ```$ffff```. Please note that an extra vector at ```$fff0``` (originally reserved by Motorola) has been added that enables handling of illegal opcodes (a feature borrowed from the Hitachi 6309).
 

@@ -367,7 +367,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 
 	enum addr_mode_index mode;
 
-	uint8_t byte = (*read_8)(address++);
+	uint8_t byte = read8(address++);
 	uint8_t byte2 = 0;
 	uint16_t word = 0;
 	buffer += sprintf(buffer, ",%04x %02x", start_address, byte);
@@ -375,7 +375,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 
 	if (byte == 0x10) {
 		// page 2
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		mne_buffer += sprintf(mne_buffer, "%s ",
@@ -383,7 +383,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		mode = addr_mode_page_2[byte];
 	} else if (byte == 0x11) {
 		// page 3
-		byte = read_8(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		mne_buffer += sprintf(mne_buffer, "%s ",
@@ -400,14 +400,14 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 
 	switch (mode) {
 	case __DIR_:
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		mne_buffer += sprintf(mne_buffer,
 			"$%02x", byte);
 		break;
 	case __REB_:
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		mne_buffer += sprintf(mne_buffer, "$%04x",
@@ -415,11 +415,11 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			(uint16_t)((int8_t)byte)));
 		break;
 	case __REW_:
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		word = byte << 8;
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		word |= byte;
@@ -427,26 +427,26 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			(uint16_t)(address + word));
 		break;
 	case __IMB_:
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		mne_buffer += sprintf(mne_buffer,
 			"#$%02x", byte);
 		break;
 	case __IMW_:
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		mne_buffer += sprintf(mne_buffer,
 			"#$%02x", byte);
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		mne_buffer += sprintf(mne_buffer,
 			"%02x", byte);
 		break;
 	case __IBB_:
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		mne_buffer += sprintf(mne_buffer,
@@ -461,11 +461,11 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 			byte & 0x01 ? '1' : '0');
 		break;
 	case __EXT_:
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		word = byte << 8;
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		word |= byte;
@@ -474,17 +474,17 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		break;
 	case __IDX_:
 		// read postbyte
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		if (byte == 0b10011111) {
 			// indirect extended
 			mne_buffer += sprintf(mne_buffer, "[");
-			byte = (*read_8)(address++);
+			byte = read8(address++);
 			buffer += sprintf(buffer, "%02x", byte);
 			bytes_printed++;
 			word = byte << 8;
-			byte = (*read_8)(address++);
+			byte = read8(address++);
 			buffer += sprintf(buffer, "%02x", byte);
 			bytes_printed++;
 			word |= byte;
@@ -504,7 +504,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					case 0b1000:
 						// 8 bit offset
-						byte2 = (*read_8)(address++);
+						byte2 = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte2);
 						bytes_printed++;
 						mne_buffer += sprintf(mne_buffer,
@@ -514,11 +514,11 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					case 0b1001:
 						// 16 bit offset
-						byte2 = (*read_8)(address++);
+						byte2 = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte2);
 						bytes_printed++;
 						word = byte2 << 8;
-						byte2 = (*read_8)(address++);
+						byte2 = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte2);
 						bytes_printed++;
 						word |= byte2;
@@ -571,7 +571,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					case 0b1100:
 						// const offset pc 8bit, read extra byte
-						byte = (*read_8)(address++);
+						byte = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte);
 						bytes_printed++;
 						mne_buffer += sprintf(mne_buffer,
@@ -580,11 +580,11 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					case 0b1101:
 						// const offs pc 16 bit, read 2 extr bytes
-						byte = (*read_8)(address++);
+						byte = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte);
 						bytes_printed++;
 						word = byte << 8;
-						byte = (*read_8)(address++);
+						byte = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte);
 						bytes_printed++;
 						word |= byte;
@@ -611,7 +611,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					case 0b1000:
 						// indirect 8 bit offset
-						byte2 = (*read_8)(address++);
+						byte2 = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte2);
 						bytes_printed++;
 						mne_buffer += sprintf(mne_buffer,
@@ -621,11 +621,11 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					case 0b1001:
 						// indirect 16 bit offset
-						byte2 = (*read_8)(address++);
+						byte2 = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte2);
 						bytes_printed++;
 						word = byte2 << 8;
-						byte2 = (*read_8)(address++);
+						byte2 = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte2);
 						bytes_printed++;
 						word |= byte2;
@@ -666,7 +666,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					case 0b1100:
 						// indirect const offset pc 8bit, read extra byte
-						byte = (*read_8)(address++);
+						byte = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte);
 						bytes_printed++;
 						mne_buffer += sprintf(mne_buffer,
@@ -675,11 +675,11 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 						break;
 					case 0b1101:
 						// indirect const offs pc 16 bit, read 2 extr bytes
-						byte = (*read_8)(address++);
+						byte = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte);
 						bytes_printed++;
 						word = byte << 8;
-						byte = (*read_8)(address++);
+						byte = read8(address++);
 						buffer += sprintf(buffer, "%02x", byte);
 						bytes_printed++;
 						word |= byte;
@@ -710,7 +710,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		}
 		break;
 	case __R1_:
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		if (((exg_tfr_operands[byte >> 4].illegal) || (exg_tfr_operands[byte & 0x0f].illegal)) ||
@@ -725,7 +725,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		break;
 	case __R2_:
 		// pul/psh system
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		if (byte == 0x00) {
@@ -747,7 +747,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, uint16_t address)
 		break;
 	case __R3_:
 		// pul/psh user
-		byte = (*read_8)(address++);
+		byte = read8(address++);
 		buffer += sprintf(buffer, "%02x", byte);
 		bytes_printed++;
 		if (byte == 0x00) {

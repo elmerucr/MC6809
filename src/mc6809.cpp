@@ -7,11 +7,8 @@
 #include "mc6809.hpp"
 #include <cstdio>
 
-mc6809::mc6809(bus_read r, bus_write w)
+mc6809::mc6809()
 {
-	read_8 = (bus_read)r;
-	write_8 = (bus_write)w;
-
 	cc = 0b00000000;
 
 	/*
@@ -72,8 +69,8 @@ void mc6809::reset()
 	 * Load program counter from vector
 	 */
 	pc = 0;
-	pc = ((*read_8)(VECTOR_RESET)) << 8;
-	pc |= (*read_8)(VECTOR_RESET+1);
+	pc = read8(VECTOR_RESET) << 8;
+	pc |= read8(VECTOR_RESET+1);
 }
 
 uint8_t mc6809::execute()
@@ -87,7 +84,7 @@ uint8_t mc6809::execute()
 	} else if ((*irq_line == false) && is_i_flag_clear()) {
 		irq();
 	} else {
-		uint8_t opcode = (*read_8)(pc++);
+		uint8_t opcode = read8(pc++);
 		/*
 		 * TODO: check for illegal opcode and start exception
 		 */
@@ -131,11 +128,11 @@ void mc6809::nmi()
 	set_i_flag();
 	set_f_flag();
 	pc = 0;
-	pc = ((*read_8)(VECTOR_NMI)) << 8;
-	pc |= (*read_8)(VECTOR_NMI+1);
+	pc = read8(VECTOR_NMI) << 8;
+	pc |= read8(VECTOR_NMI+1);
 
 	/*
-	 * can't find this in the documentation
+	 * TODO: Can't find this in the documentation
 	 */
 	cycles += 19;
 }
@@ -149,8 +146,8 @@ void mc6809::firq()
 	set_f_flag();
 	set_i_flag();
 	pc = 0;
-	pc = ((*read_8)(VECTOR_FIRQ)) << 8;
-	pc |= (*read_8)(VECTOR_FIRQ+1);
+	pc = read8(VECTOR_FIRQ) << 8;
+	pc |= read8(VECTOR_FIRQ+1);
 
 	/*
 	 * can't find this in the documentation
@@ -175,8 +172,8 @@ void mc6809::irq()
 	push_sp(cc);
 	set_i_flag();
 	pc = 0;
-	pc = ((*read_8)(VECTOR_IRQ)) << 8;
-	pc |= (*read_8)(VECTOR_IRQ+1);
+	pc = read8(VECTOR_IRQ) << 8;
+	pc |= read8(VECTOR_IRQ+1);
 
 	/*
 	 * can't find this in the documentation
@@ -202,8 +199,8 @@ void mc6809::illegal_opcode()
 	set_i_flag();
 	set_f_flag();
 	pc = 0;
-	pc = ((*read_8)(VECTOR_ILL_OPC)) << 8;
-	pc |= (*read_8)(VECTOR_ILL_OPC+1);
+	pc = read8(VECTOR_ILL_OPC) << 8;
+	pc |= read8(VECTOR_ILL_OPC+1);
 
 	/*
 	 * same as nmi number of cycles
@@ -252,9 +249,9 @@ void mc6809::stacks(char *text_buffer, int n, int no)
 	for (int i=0; i<no; i++) {
 		bytes = snprintf(text_buffer, n, "%04x %02x  %04x %02x",
 			get_us() + i,
-			read_8((uint16_t)(get_us() + i)),
+			read8((uint16_t)(get_us() + i)),
 			get_sp() + i,
-			read_8((uint16_t)(get_sp() + i)));
+			read8((uint16_t)(get_sp() + i)));
 		text_buffer += bytes;
 		n -= bytes;
 		if (i < no-1) {

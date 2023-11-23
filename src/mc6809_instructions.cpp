@@ -38,7 +38,7 @@ void mc6809::adca(uint16_t ea)
 
 	uint8_t old_carry = (is_c_flag_set() ? 1 : 0);
 
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	/*
 	 * Half carry
@@ -65,7 +65,7 @@ void mc6809::adcb(uint16_t ea)
 {
 	uint8_t old_carry = (is_c_flag_set() ? 1 : 0);
 
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	/*
 	 * Half carry
@@ -90,7 +90,7 @@ void mc6809::adcb(uint16_t ea)
 
 void mc6809::adda(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	/*
 	 * Half carry
@@ -115,7 +115,7 @@ void mc6809::adda(uint16_t ea)
 
 void mc6809::addb(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	/*
 	 * Half carry
@@ -140,8 +140,8 @@ void mc6809::addb(uint16_t ea)
 
 void mc6809::addd(uint16_t ea)
 {
-	word = ((*read_8)(ea++)) << 8;
-	word |= (*read_8)(ea);
+	word = (read8(ea++)) << 8;
+	word |= read8(ea);
 
 	d_reg = (ac << 8) | br;
 
@@ -163,7 +163,7 @@ void mc6809::addd(uint16_t ea)
 
 void mc6809::anda(uint16_t ea)
 {
-	byte = ac & (*read_8)(ea);
+	byte = ac & read8(ea);
 	clear_v_flag();
 	test_nz_flags(byte);
 	ac = byte;
@@ -171,7 +171,7 @@ void mc6809::anda(uint16_t ea)
 
 void mc6809::andb(uint16_t ea)
 {
-	byte = br & (*read_8)(ea);
+	byte = br & read8(ea);
 	clear_v_flag();
 	test_nz_flags(byte);
 	br = byte;
@@ -179,12 +179,12 @@ void mc6809::andb(uint16_t ea)
 
 void mc6809::andcc(uint16_t ea)
 {
-	cc &= (*read_8)(ea);
+	cc &= read8(ea);
 }
 
 void mc6809::asl(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	if (byte & 0x80) set_c_flag(); else clear_c_flag();
 	if (((byte & 0xc0) == 0x80) || ((byte & 0xc0) == 0x40))
@@ -193,7 +193,7 @@ void mc6809::asl(uint16_t ea)
 	byte <<= 1;
 
 	test_nz_flags(byte);
-	(*write_8)(ea, byte);
+	write8(ea, byte);
 }
 
 void mc6809::asla(uint16_t ea)
@@ -220,7 +220,7 @@ void mc6809::aslb(uint16_t ea)
 
 void mc6809::asr(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	if (byte & 0x01) set_c_flag(); else clear_c_flag();
 	bool bit7 = (byte & 0x80) ? true : false;
@@ -229,7 +229,7 @@ void mc6809::asr(uint16_t ea)
 	if (bit7) byte |= 0x80; else byte &= 0x7f;
 
 	test_nz_flags(byte);
-	(*write_8)(ea, byte);
+	write8(ea, byte);
 }
 
 void mc6809::asra(uint16_t ea)
@@ -298,14 +298,14 @@ void mc6809::bhs(uint16_t ea)
 
 void mc6809::bita(uint16_t ea)
 {
-	byte = ac & (*read_8)(ea);
+	byte = ac & read8(ea);
 	clear_v_flag();
 	test_nz_flags(byte);
 }
 
 void mc6809::bitb(uint16_t ea)
 {
-	byte = br & (*read_8)(ea);
+	byte = br & read8(ea);
 	clear_v_flag();
 	test_nz_flags(byte);
 }
@@ -402,7 +402,7 @@ void mc6809::bvs(uint16_t ea)
 
 void mc6809::clr(uint16_t ea)
 {
-	(*write_8)(ea, 0x00);
+	write8(ea, 0x00);
 	clear_n_flag();
 	set_z_flag();
 	clear_v_flag();
@@ -430,7 +430,7 @@ void mc6809::clrb(uint16_t ea)
 void mc6809::cmpa(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	word = ac - byte;
 
 	if (word > 255) set_c_flag(); else clear_c_flag();
@@ -444,7 +444,7 @@ void mc6809::cmpa(uint16_t ea)
 void mc6809::cmpb(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	word = br - byte;
 
 	if (word > 255) set_c_flag(); else clear_c_flag();
@@ -458,8 +458,8 @@ void mc6809::cmpb(uint16_t ea)
 void mc6809::cmpd(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	word = read8(ea++) << 8;
+	word |= read8((uint16_t)ea);
 	d_reg = (ac << 8) | br;
 	dword = d_reg - word;
 
@@ -474,8 +474,8 @@ void mc6809::cmpd(uint16_t ea)
 void mc6809::cmpu(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	word = read8(ea++) << 8;
+	word |= read8((uint16_t)ea);
 	dword = us - word;
 
 	if (dword > 65535) set_c_flag(); else clear_c_flag();
@@ -489,8 +489,8 @@ void mc6809::cmpu(uint16_t ea)
 void mc6809::cmps(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	word = read8(ea++) << 8;
+	word |= read8((uint16_t)ea);
 	dword = sp - word;
 
 	if (dword > 65535) set_c_flag(); else clear_c_flag();
@@ -504,8 +504,8 @@ void mc6809::cmps(uint16_t ea)
 void mc6809::cmpx(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	word = read8(ea++) << 8;
+	word |= read8((uint16_t)ea);
 	dword = xr - word;
 
 	if (dword > 65535) set_c_flag(); else clear_c_flag();
@@ -519,8 +519,8 @@ void mc6809::cmpx(uint16_t ea)
 void mc6809::cmpy(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	word = read8(ea++) << 8;
+	word |= read8((uint16_t)ea);
 	dword = yr - word;
 
 	if (dword > 65535) set_c_flag(); else clear_c_flag();
@@ -533,9 +533,9 @@ void mc6809::cmpy(uint16_t ea)
 
 void mc6809::com(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	byte = ~byte;
-	(*write_8)(ea, byte);
+	write8(ea, byte);
 	test_nz_flags(byte);
 	clear_v_flag();
 	set_c_flag();
@@ -577,7 +577,7 @@ void mc6809::daa(uint16_t ea)
 
 void mc6809::dec(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	bool bit_7_carry_in = (((byte & 0x7f) + 0x7f) & 0x80) ? true : false;
 
@@ -589,7 +589,7 @@ void mc6809::dec(uint16_t ea)
 	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
 	test_nz_flags(byte);
 
-	(*write_8)(ea, byte);
+	write8(ea, byte);
 }
 
 void mc6809::deca(uint16_t ea)
@@ -620,14 +620,14 @@ void mc6809::decb(uint16_t ea)
 
 void mc6809::eora(uint16_t ea)
 {
-	ac ^= (*read_8)(ea);
+	ac ^= read8(ea);
 	clear_v_flag();
 	test_nz_flags(ac);
 }
 
 void mc6809::eorb(uint16_t ea)
 {
-	br ^= (*read_8)(ea);
+	br ^= read8(ea);
 	clear_v_flag();
 	test_nz_flags(br);
 }
@@ -638,7 +638,7 @@ void mc6809::exg(uint16_t ea)
 
 	/* when the sp is written to, it enables nmi's */
 
-	switch ((*read_8)(ea)) {
+	switch (read8(ea)) {
 		/*
 		 * exchange 16 bit registers
 		 */
@@ -715,7 +715,7 @@ void mc6809::exg(uint16_t ea)
 
 void mc6809::inc(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	bool bit_7_carry_in = (((byte & 0x7f) + 0x01) & 0x80) ? true : false;
 
@@ -727,7 +727,7 @@ void mc6809::inc(uint16_t ea)
 	if (carry != bit_7_carry_in) set_v_flag(); else clear_v_flag();
 	test_nz_flags(byte);
 
-	(*write_8)(ea, byte);
+	write8(ea, byte);
 }
 
 void mc6809::inca(uint16_t ea)
@@ -918,22 +918,22 @@ void mc6809::lbvs(uint16_t ea)
 
 void mc6809::lda(uint16_t ea)
 {
-	ac = (*read_8)(ea);
+	ac = read8(ea);
 	clear_v_flag();
 	test_nz_flags(ac);
 }
 
 void mc6809::ldb(uint16_t ea)
 {
-	br = (*read_8)(ea);
+	br = read8(ea);
 	clear_v_flag();
 	test_nz_flags(br);
 }
 
 void mc6809::ldd(uint16_t ea)
 {
-	ac = (*read_8)(ea++);
-	br = (*read_8)((uint16_t)ea);
+	ac = read8(ea++);
+	br = read8((uint16_t)ea);
 	d_reg = (ac << 8) | br;
 	clear_v_flag();
 	test_nz_flags_16(d_reg);
@@ -941,8 +941,8 @@ void mc6809::ldd(uint16_t ea)
 
 void mc6809::lds(uint16_t ea)
 {
-	sp = (*read_8)(ea++) << 8;
-	sp |= (*read_8)((uint16_t)ea);
+	sp = read8(ea++) << 8;
+	sp |= read8((uint16_t)ea);
 	clear_v_flag();
 	test_nz_flags_16(sp);
 
@@ -952,24 +952,24 @@ void mc6809::lds(uint16_t ea)
 
 void mc6809::ldu(uint16_t ea)
 {
-	us = (*read_8)(ea++) << 8;
-	us |= (*read_8)((uint16_t)ea);
+	us = read8(ea++) << 8;
+	us |= read8((uint16_t)ea);
 	clear_v_flag();
 	test_nz_flags_16(us);
 }
 
 void mc6809::ldx(uint16_t ea)
 {
-	xr = (*read_8)(ea++) << 8;
-	xr |= (*read_8)((uint16_t)ea);
+	xr = read8(ea++) << 8;
+	xr |= read8((uint16_t)ea);
 	clear_v_flag();
 	test_nz_flags_16(xr);
 }
 
 void mc6809::ldy(uint16_t ea)
 {
-	yr = (*read_8)(ea++) << 8;
-	yr |= (*read_8)((uint16_t)ea);
+	yr = read8(ea++) << 8;
+	yr |= read8((uint16_t)ea);
 	clear_v_flag();
 	test_nz_flags_16(yr);
 }
@@ -1003,12 +1003,12 @@ void mc6809::leau(uint16_t ea)
 
 void mc6809::lsr(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	if (byte & 0x01) set_c_flag(); else clear_c_flag();
 	byte >>= 1;
 	test_z_flag(byte);
 	clear_n_flag();
-	(*write_8)(ea, byte);
+	write8(ea, byte);
 }
 
 void mc6809::lsra(uint16_t ea)
@@ -1038,13 +1038,13 @@ void mc6809::mul(uint16_t ea)
 
 void mc6809::neg(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	if (byte == 0x80) set_v_flag(); else clear_v_flag();
 	if (byte == 0x00) clear_c_flag(); else set_c_flag();
 	byte = ~byte;
 	byte++;
 	test_nz_flags(byte);
-	(*write_8)(ea, byte);
+	write8(ea, byte);
 }
 
 void mc6809::nega(uint16_t ea)
@@ -1072,7 +1072,7 @@ void mc6809::nop(uint16_t ea)
 
 void mc6809::ora(uint16_t ea)
 {
-	byte = ac | (*read_8)(ea);
+	byte = ac | read8(ea);
 	clear_v_flag();
 	test_nz_flags(byte);
 	ac = byte;
@@ -1080,7 +1080,7 @@ void mc6809::ora(uint16_t ea)
 
 void mc6809::orb(uint16_t ea)
 {
-	byte = br | (*read_8)(ea);
+	byte = br | read8(ea);
 	clear_v_flag();
 	test_nz_flags(byte);
 	br = byte;
@@ -1088,12 +1088,12 @@ void mc6809::orb(uint16_t ea)
 
 void mc6809::orcc(uint16_t ea)
 {
-	cc |= (*read_8)(ea);
+	cc |= read8(ea);
 }
 
 void mc6809::page2(uint16_t ea)
 {
-	uint8_t opcode = (*read_8)(pc++);
+	uint8_t opcode = read8(pc++);
 	cycles += cycles_page2[opcode];
 
 	bool am_legal;
@@ -1104,7 +1104,7 @@ void mc6809::page2(uint16_t ea)
 
 void mc6809::page3(uint16_t ea)
 {
-	uint8_t opcode = (*read_8)(pc++);
+	uint8_t opcode = read8(pc++);
 	cycles += cycles_page3[opcode];
 
 	bool am_legal;
@@ -1115,7 +1115,7 @@ void mc6809::page3(uint16_t ea)
 
 void mc6809::pshs(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	if (byte & 0x80) { push_sp(pc & 0x00ff); push_sp((pc & 0xff00) >> 8); cycles += 2; }
 	if (byte & 0x40) { push_sp(us & 0x00ff); push_sp((us & 0xff00) >> 8); cycles += 2; }
@@ -1129,7 +1129,7 @@ void mc6809::pshs(uint16_t ea)
 
 void mc6809::pshu(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	if (byte & 0x80) { push_us(pc & 0x00ff); push_us((pc & 0xff00) >> 8); cycles += 2; }
 	if (byte & 0x40) { push_us(sp & 0x00ff); push_us((sp & 0xff00) >> 8); cycles += 2; }
@@ -1143,7 +1143,7 @@ void mc6809::pshu(uint16_t ea)
 
 void mc6809::puls(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	if (byte & 0x01) { cc   = pull_sp();                                    cycles += 1; }
 	if (byte & 0x02) { ac   = pull_sp();                                    cycles += 1; }
@@ -1157,7 +1157,7 @@ void mc6809::puls(uint16_t ea)
 
 void mc6809::pulu(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 
 	if (byte & 0x01) { cc   = pull_us();                                    cycles += 1; }
 	if (byte & 0x02) { ac   = pull_us();                                    cycles += 1; }
@@ -1171,7 +1171,7 @@ void mc6809::pulu(uint16_t ea)
 
 void mc6809::rol(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	uint8_t old_carry = cc & C_FLAG;
 	if (((byte & 0b11000000) == 0b01000000) || ((byte & 0b11000000) == 0b10000000))
 		set_v_flag(); else clear_v_flag();
@@ -1179,7 +1179,7 @@ void mc6809::rol(uint16_t ea)
 	byte <<= 1;
 	byte |= old_carry;
 	test_nz_flags(byte);
-	(*write_8)(ea, byte);
+	write8(ea, byte);
 }
 
 void mc6809::rola(uint16_t ea)
@@ -1206,13 +1206,13 @@ void mc6809::rolb(uint16_t ea)
 
 void mc6809::ror(uint16_t ea)
 {
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	bool old_carry = is_c_flag_set();
 	if (byte & 0x01) set_c_flag(); else clear_c_flag();
 	byte >>= 1;
 	if (old_carry) byte |= 0x80;
 	test_nz_flags(byte);
-	(*write_8)(ea, byte);
+	write8(ea, byte);
 }
 
 void mc6809::rora(uint16_t ea)
@@ -1267,7 +1267,7 @@ void mc6809::rts(uint16_t ea)
 void mc6809::sbca(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	word = ac - byte - (is_c_flag_set() ? 1 : 0);
 
 	if (word > 255) set_c_flag(); else clear_c_flag();
@@ -1281,7 +1281,7 @@ void mc6809::sbca(uint16_t ea)
 void mc6809::sbcb(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	word = br - byte - (is_c_flag_set() ? 1 : 0);
 
 	if (word > 255) set_c_flag(); else clear_c_flag();
@@ -1300,22 +1300,22 @@ void mc6809::sex(uint16_t ea)
 
 void mc6809::sta(uint16_t ea)
 {
-	(*write_8)(ea, ac);
+	write8(ea, ac);
 	clear_v_flag();
 	test_nz_flags(ac);
 }
 
 void mc6809::stb(uint16_t ea)
 {
-	(*write_8)(ea, br);
+	write8(ea, br);
 	clear_v_flag();
 	test_nz_flags(br);
 }
 
 void mc6809::std(uint16_t ea)
 {
-	(*write_8)(ea++, ac);
-	(*write_8)(ea, br);
+	write8(ea++, ac);
+	write8(ea, br);
 	d_reg = (ac << 8) | br;
 	clear_v_flag();
 	test_nz_flags_16(d_reg);
@@ -1323,32 +1323,32 @@ void mc6809::std(uint16_t ea)
 
 void mc6809::stu(uint16_t ea)
 {
-	(*write_8)(ea++, us >> 8);
-	(*write_8)(ea, us & 0xff);
+	write8(ea++, us >> 8);
+	write8(ea, us & 0xff);
 	clear_v_flag();
 	test_nz_flags_16(us);
 }
 
 void mc6809::sts(uint16_t ea)
 {
-	(*write_8)(ea++, sp >> 8);
-	(*write_8)(ea, sp & 0xff);
+	write8(ea++, sp >> 8);
+	write8(ea, sp & 0xff);
 	clear_v_flag();
 	test_nz_flags_16(sp);
 }
 
 void mc6809::stx(uint16_t ea)
 {
-	(*write_8)(ea++, xr >> 8);
-	(*write_8)(ea, xr & 0xff);
+	write8(ea++, xr >> 8);
+	write8(ea, xr & 0xff);
 	clear_v_flag();
 	test_nz_flags_16(xr);
 }
 
 void mc6809::sty(uint16_t ea)
 {
-	(*write_8)(ea++, yr >> 8);
-	(*write_8)(ea, yr & 0xff);
+	write8(ea++, yr >> 8);
+	write8(ea, yr & 0xff);
 	clear_v_flag();
 	test_nz_flags_16(yr);
 }
@@ -1356,7 +1356,7 @@ void mc6809::sty(uint16_t ea)
 void mc6809::suba(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	word = ac - byte;
 
 	if (word > 255) set_c_flag(); else clear_c_flag();
@@ -1370,7 +1370,7 @@ void mc6809::suba(uint16_t ea)
 void mc6809::subb(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	byte = (*read_8)(ea);
+	byte = read8(ea);
 	word = br - byte;
 
 	if (word > 255) set_c_flag(); else clear_c_flag();
@@ -1384,8 +1384,8 @@ void mc6809::subb(uint16_t ea)
 void mc6809::subd(uint16_t ea)
 {
 	/* code inspired by virtualc64 */
-	word = (*read_8)(ea++) << 8;
-	word |= (*read_8)((uint16_t)ea);
+	word = read8(ea++) << 8;
+	word |= read8((uint16_t)ea);
 
 	d_reg = (ac << 8) | br;
 
@@ -1419,8 +1419,8 @@ void mc6809::swi(uint16_t ea)
 	set_i_flag();
 	set_f_flag();
 	pc = 0;
-	pc = ((*read_8)(VECTOR_SWI)) << 8;
-	pc |= (*read_8)(VECTOR_SWI+1);
+	pc = (read8(VECTOR_SWI)) << 8;
+	pc |= read8(VECTOR_SWI+1);
 }
 
 void mc6809::swi2(uint16_t ea)
@@ -1439,8 +1439,8 @@ void mc6809::swi2(uint16_t ea)
 	push_sp(ac);
 	push_sp(cc);
 	pc = 0;
-	pc = ((*read_8)(VECTOR_SWI2)) << 8;
-	pc |= (*read_8)(VECTOR_SWI2+1);
+	pc = (read8(VECTOR_SWI2)) << 8;
+	pc |= read8(VECTOR_SWI2+1);
 }
 
 void mc6809::swi3(uint16_t ea)
@@ -1459,8 +1459,8 @@ void mc6809::swi3(uint16_t ea)
 	push_sp(ac);
 	push_sp(cc);
 	pc = 0;
-	pc = ((*read_8)(VECTOR_SWI3)) << 8;
-	pc |= (*read_8)(VECTOR_SWI3+1);
+	pc = (read8(VECTOR_SWI3)) << 8;
+	pc |= read8(VECTOR_SWI3+1);
 }
 
 void mc6809::sync(uint16_t ea)
@@ -1474,7 +1474,7 @@ void mc6809::tfr(uint16_t ea)
 
 	/* when sp is written to, nmi's are enabled */
 
-	switch ((*read_8)(ea)) {
+	switch (read8(ea)) {
 		/*
 		 * transfer 16 bit registers
 		 */
@@ -1551,7 +1551,7 @@ void mc6809::tfr(uint16_t ea)
 
 void mc6809::tst(uint16_t ea)
 {
-	test_nz_flags((*read_8)(ea));
+	test_nz_flags(read8(ea));
 	clear_v_flag();
 }
 

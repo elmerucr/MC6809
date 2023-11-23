@@ -9,32 +9,33 @@
 #include <cstring>
 #include <cstdlib>
 
+uint8_t memory[65536];
+extern uint8_t rom[];
+
+class cpu_t : public mc6809 {
+public:
+	uint8_t read8(uint16_t address) const {
+		if ((address & 0xe000) == 0xe000) {
+			return rom[address & 0x1fff];
+		} else {
+			return memory[address];
+		}
+	}
+	void write8(uint16_t address, uint8_t value) const {
+		memory[address] = value;
+	}
+};
+
 /*
  * This function reads a line from stdin, and returns a pointer to a
  * string. The caller needs to free allocated memory.
  */
 char *read_line(void);
-void memory_dump(uint16_t address, int rows);
+void memory_dump(cpu_t *c, uint16_t address, int rows);
 bool hex_string_to_int(const char *temp_string, uint16_t *return_value);
 
 char text_buffer[512];
 #define TEXT_BUFFER_SIZE 64
-uint8_t memory[65536];
-extern uint8_t rom[];
-
-uint8_t read(uint16_t address)
-{
-	if ((address & 0xe000) == 0xe000) {
-		return rom[address & 0x1fff];
-	} else {
-		return memory[address];
-	}
-}
-
-void write(uint16_t address, uint8_t byte)
-{
-	memory[address] = byte;
-}
 
 int main()
 {
@@ -50,7 +51,7 @@ int main()
 	memory[0xb323] = 0xf1;
 	memory[0xb324] = 0xaa;
 
-	mc6809 cpu(read, write);
+	cpu_t cpu;
 	cpu.assign_nmi_line(&nmi_pin);
 	cpu.assign_firq_line(&firq_pin);
 	cpu.assign_irq_line(&irq_pin);
@@ -132,13 +133,13 @@ int main()
 			uint16_t temp_pc = cpu.get_pc();
 
 			if (token1 == NULL) {
-				memory_dump(temp_pc, 4);
+				memory_dump(&cpu, temp_pc, 4);
 			} else {
 				if (!hex_string_to_int(token1, &temp_pc)) {
 					putchar('\n');
 					puts("error: invalid address\n");
 				} else {
-					memory_dump(temp_pc, 4);
+					memory_dump(&cpu, temp_pc, 4);
 				}
 			}
 		} else if (strcmp(token0, "n") == 0) {
@@ -232,14 +233,14 @@ char *read_line(void)
   	}
 }
 
-void memory_dump(uint16_t address, int rows)
+void memory_dump(cpu_t *c, uint16_t address, int rows)
 {
 	address = address & 0xffff;
 
 	for (int i=0; i<rows; i++ ) {
 		printf("\r:%04x", address);
 		for (int i=0; i<8; i++) {
-			printf(" %02x", read(address));
+			printf(" %02x", c->read8(address));
 			address++;
 			address &= 0xffff;
 		}
