@@ -1,7 +1,7 @@
 /*
  * mc6809.hpp  -  part of MC6809
  *
- * (C)2021-2022 elmerucr
+ * (C)2021-2023 elmerucr
  */
 
 /*
@@ -23,9 +23,9 @@
 #include <cstdint>
 
 #define MC6809_MAJOR_VERSION	0
-#define MC6809_MINOR_VERSION	9
-#define MC6809_BUILD		20211113
-#define MC6809_YEAR		2021
+#define MC6809_MINOR_VERSION	10
+#define MC6809_BUILD		20231119
+#define MC6809_YEAR		2023
 
 #define	C_FLAG	0x01	// carry
 #define	V_FLAG	0x02	// overflow

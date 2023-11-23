@@ -1,7 +1,7 @@
 /*
  * mc6809_opcodes.cpp  -  part of MC6809
  *
- * (C)2021-2022 elmerucr
+ * (C)2021-2023 elmerucr
  */
 
 #include "mc6809.hpp"
@@ -142,7 +142,7 @@ void mc6809::addd(uint16_t ea)
 {
 	word = ((*read_8)(ea++)) << 8;
 	word |= (*read_8)(ea);
-	
+
 	d_reg = (ac << 8) | br;
 
 	/* no need for half-carry here */
@@ -1386,7 +1386,7 @@ void mc6809::subd(uint16_t ea)
 	/* code inspired by virtualc64 */
 	word = (*read_8)(ea++) << 8;
 	word |= (*read_8)((uint16_t)ea);
-	
+
 	d_reg = (ac << 8) | br;
 
 	dword = d_reg - word;
