@@ -48,7 +48,7 @@
 class mc6809 {
 public:
 	mc6809();
-	~mc6809();
+	virtual ~mc6809();
 
 	virtual uint8_t read8(uint16_t address) const = 0;
 	virtual void write8(uint16_t address, uint8_t value) const = 0;
