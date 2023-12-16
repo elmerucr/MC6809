@@ -23,8 +23,8 @@
 #include <cstdint>
 
 #define MC6809_MAJOR_VERSION	0
-#define MC6809_MINOR_VERSION	11
-#define MC6809_BUILD		20231123
+#define MC6809_MINOR_VERSION	12
+#define MC6809_BUILD		20231216
 #define MC6809_YEAR		2023
 
 #define	C_FLAG	0x01	// carry
