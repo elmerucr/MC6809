@@ -1,7 +1,7 @@
 /*
  * main.cpp  -  part of MC6809
  *
- * (c)2021 elmerucr
+ * (c)2021-2024 elmerucr
  */
 
 #include "mc6809.hpp"
@@ -63,7 +63,7 @@ int main()
 	printf("%s\n\n", text_buffer);
 	uint16_t temp_pc = cpu.get_pc();
 	for (int i=0; i<4; i++) {
-		temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
+		temp_pc += cpu.disassemble_instruction(text_buffer, TEXT_BUFFER_SIZE, temp_pc);
 		printf("%s\n", text_buffer);
 	}
 
@@ -163,7 +163,7 @@ int main()
 			printf("%s\n\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();
 			for (int i=0; i<4; i++) {
-				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
+				temp_pc += cpu.disassemble_instruction(text_buffer, TEXT_BUFFER_SIZE, temp_pc);
 				printf("%s\n", text_buffer);
 			}
 		} else if (strcmp(token0, "nmi") == 0) {
@@ -174,7 +174,7 @@ int main()
 			printf("%s\n\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();
 			for (int i=0; i<4; i++) {
-				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
+				temp_pc += cpu.disassemble_instruction(text_buffer, TEXT_BUFFER_SIZE, temp_pc);
 				printf("%s\n", text_buffer);
 			}
 		} else if (strcmp(token0, "reset") == 0) {
@@ -184,7 +184,7 @@ int main()
 			printf("%s\n\n", text_buffer);
 			uint16_t temp_pc = cpu.get_pc();
 			for (int i=0; i<4; i++) {
-				temp_pc += cpu.disassemble_instruction(text_buffer, temp_pc);
+				temp_pc += cpu.disassemble_instruction(text_buffer, TEXT_BUFFER_SIZE, temp_pc);
 				printf("%s\n", text_buffer);
 			}
 		} else if (strcmp(token0, "s") == 0) {

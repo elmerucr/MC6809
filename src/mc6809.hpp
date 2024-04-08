@@ -1,7 +1,12 @@
 /*
  * mc6809.hpp  -  part of MC6809
  *
- * (C)2021-2023 elmerucr
+ * (C)2021-2024 elmerucr
+ */
+
+/*
+ * Version 0.13 - April 2024
+ * Moving from sprintf to snprintf
  */
 
 /*
@@ -21,11 +26,12 @@
 #define MC6809_HPP
 
 #include <cstdint>
+#include <cstddef>
 
 #define MC6809_MAJOR_VERSION	0
-#define MC6809_MINOR_VERSION	12
-#define MC6809_BUILD		20231216
-#define MC6809_YEAR		2023
+#define MC6809_MINOR_VERSION	13
+#define MC6809_BUILD		20240408
+#define MC6809_YEAR		2024
 
 #define	C_FLAG	0x01	// carry
 #define	V_FLAG	0x02	// overflow
@@ -77,7 +83,7 @@ public:
 
 	void status(char *text_buffer, int n);
 	void stacks(char *text_buffer, int n, int no);
-	uint16_t disassemble_instruction(char *buffer, uint16_t address);
+	uint16_t disassemble_instruction(char *buffer, size_t n, uint16_t address);
 	bool disassemble_successfull() { return disassemble_success; }
 
 	inline bool is_e_flag_set()   { return (cc & E_FLAG) ? true  : false; }

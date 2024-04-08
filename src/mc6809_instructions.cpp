@@ -1,7 +1,7 @@
 /*
  * mc6809_opcodes.cpp  -  part of MC6809
  *
- * (C)2021-2023 elmerucr
+ * (C)2021-2024 elmerucr
  */
 
 #include "mc6809.hpp"
