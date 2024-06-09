@@ -5,6 +5,13 @@
  */
 
 /*
+ * MC6809 version 0.14 - June 2024
+ *
+ * Implementation of the SYNC instruction
+ * Missing: CWAI and illegal opcode exception implementation
+ */
+
+/*
  * Version 0.13 - April 2024
  * Moving from sprintf to snprintf
  */
@@ -29,8 +36,8 @@
 #include <cstddef>
 
 #define MC6809_MAJOR_VERSION	0
-#define MC6809_MINOR_VERSION	13
-#define MC6809_BUILD		20240408
+#define MC6809_MINOR_VERSION	14
+#define MC6809_BUILD		20240609
 #define MC6809_YEAR		2024
 
 #define	C_FLAG	0x01	// carry
@@ -50,6 +57,18 @@
 #define	VECTOR_SWI	0xfffa
 #define	VECTOR_NMI	0xfffc
 #define	VECTOR_RESET	0xfffe
+
+enum cpu_status_t {
+	CPU_NORMAL = 0,
+	CPU_CWAI,
+	CPU_SYNC
+};
+
+const char cpu_status_description[3][7] = {
+	"NORMAL",
+	"CWAI",
+	"SYNC"
+};
 
 class mc6809 {
 public:
@@ -170,6 +189,8 @@ private:
 	uint16_t us;	// user stack pointer
 	uint16_t sp;	// hardware stack pointer
 	uint8_t  cc;	// condition code register
+
+	enum cpu_status_t cpu_status;
 
 	uint16_t *index_regs[4];
 

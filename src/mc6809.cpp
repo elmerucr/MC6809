@@ -66,6 +66,11 @@ void mc6809::reset()
 	old_nmi_line = *nmi_line;
 
 	/*
+	 * set cpu status
+	 */
+	cpu_status = CPU_NORMAL;
+
+	/*
 	 * Load program counter from vector
 	 */
 	pc = 0;
@@ -78,20 +83,31 @@ uint8_t mc6809::execute()
 	uint32_t old_cycles = cycles;
 
 	if ((*nmi_line == false) && (old_nmi_line == true) && nmi_enabled) {
+		cpu_status = CPU_NORMAL;
 		nmi();
 	} else if ((*firq_line == false) && is_f_flag_clear()) {
+		cpu_status = CPU_NORMAL;
 		firq();
 	} else if ((*irq_line == false) && is_i_flag_clear()) {
+		cpu_status = CPU_NORMAL;
 		irq();
 	} else {
-		uint8_t opcode = read8(pc++);
-		/*
-		 * TODO: check for illegal opcode and start exception
-		 */
-		cycles += cycles_page1[opcode];
-		bool am_legal;
-		uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
-		(this->*opcodes_page1[opcode])(effective_address);
+		if (cpu_status == CPU_NORMAL) {
+			uint8_t opcode = read8(pc++);
+			/*
+			* TODO: check for illegal opcode and start exception
+			*/
+			cycles += cycles_page1[opcode];
+			bool am_legal;
+			uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
+			(this->*opcodes_page1[opcode])(effective_address);
+		} else if (cpu_status == CPU_SYNC) {
+			cycles += 1;
+		} else {
+			// TODO: fixme
+			// for status CWAI????
+			cycles += 1;
+		}
 	}
 
 	old_nmi_line = *nmi_line;
@@ -222,7 +238,7 @@ void mc6809::status(char *text_buffer, int n)
 			"%04x %04x %04x %04x "
 			"%c%c%c%c%c%c%c%c "
 			"%c%c %c %c  "
-			"state normal",
+			"cpu %s",
 			nmi_enabled ? "enabled" : "blocked",
 			pc, dp, ac, br,
 			xr, yr, us, sp,
@@ -237,7 +253,8 @@ void mc6809::status(char *text_buffer, int n)
 			old_nmi_line ? '1' : '0',
 			*nmi_line ? '1' : '0',
 			*firq_line ? '1' : '0',
-			*irq_line ? '1' : '0');
+			*irq_line ? '1' : '0',
+			cpu_status_description[cpu_status]);
 }
 
 void mc6809::stacks(char *text_buffer, int n, int no)

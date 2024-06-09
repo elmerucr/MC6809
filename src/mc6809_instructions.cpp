@@ -1465,7 +1465,7 @@ void mc6809::swi3(uint16_t ea)
 
 void mc6809::sync(uint16_t ea)
 {
-	//
+	cpu_status = CPU_SYNC;
 }
 
 void mc6809::tfr(uint16_t ea)

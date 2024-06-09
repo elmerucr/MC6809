@@ -121,8 +121,6 @@ int main()
 			printf("$%02x\n", cpu.get_br());
 		} else if (strcmp(token0, "dr") == 0) {
 			printf("$%04x\n", cpu.get_dr());
-		} else if (strcmp(token0, "exit") == 0) {
-			finished = true;
 		} else if (strcmp(token0, "firq") == 0) {
 			firq_pin = !firq_pin;
 			printf("changed status of firq to %c\n", firq_pin ? '1' : '0');
@@ -190,6 +188,8 @@ int main()
 		} else if (strcmp(token0, "s") == 0) {
 			cpu.stacks(text_buffer, 512, 8);
 			printf("%s\n", text_buffer);
+		} else if (strcmp(token0, "x") == 0) {
+			finished = true;
 		} else {
 			printf("error: unknown command '%s'\n", input_string);
 		}

@@ -8,7 +8,6 @@ A library written in C++ that emulates the MC6809 cpu. The enclosed ```CMakeList
 
 At this very moment, the following things are not implemented:
 * CWAI opcode
-* SYNC opcode
 * illegal opcode exceptions (vector at $fff0)
 
 ## API
