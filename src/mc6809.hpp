@@ -37,7 +37,7 @@
 
 #define MC6809_MAJOR_VERSION	0
 #define MC6809_MINOR_VERSION	14
-#define MC6809_BUILD		20240609
+#define MC6809_BUILD		20240610
 #define MC6809_YEAR		2024
 
 #define	C_FLAG	0x01	// carry
@@ -57,6 +57,9 @@
 #define	VECTOR_SWI	0xfffa
 #define	VECTOR_NMI	0xfffc
 #define	VECTOR_RESET	0xfffe
+
+#define SYNC_CYCLES	1000
+#define CWAI_CYCLES	1000
 
 enum cpu_status_t {
 	CPU_NORMAL = 0,
@@ -98,7 +101,7 @@ public:
 	 * of cycles consumed. Checking for breakpoints must be done with the
 	 * breakpoint() member function that returns true or false.
 	 */
-	uint8_t execute();
+	uint16_t execute();
 
 	void status(char *text_buffer, int n);
 	void stacks(char *text_buffer, int n, int no);

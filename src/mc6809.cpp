@@ -78,7 +78,7 @@ void mc6809::reset()
 	pc |= read8(VECTOR_RESET+1);
 }
 
-uint8_t mc6809::execute()
+uint16_t mc6809::execute()
 {
 	uint32_t old_cycles = cycles;
 
@@ -102,11 +102,11 @@ uint8_t mc6809::execute()
 			uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
 			(this->*opcodes_page1[opcode])(effective_address);
 		} else if (cpu_status == CPU_SYNC) {
-			cycles += 1;
+			cycles += SYNC_CYCLES;
 		} else {
 			// TODO: fixme
 			// for status CWAI????
-			cycles += 1;
+			cycles += CWAI_CYCLES;
 		}
 	}
 
