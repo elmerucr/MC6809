@@ -37,7 +37,7 @@
 
 #define MC6809_MAJOR_VERSION	0
 #define MC6809_MINOR_VERSION	14
-#define MC6809_BUILD		20240610
+#define MC6809_BUILD		20240611
 #define MC6809_YEAR		2024
 
 #define	C_FLAG	0x01	// carry
@@ -67,10 +67,10 @@ enum cpu_status_t {
 	CPU_SYNC
 };
 
-const char cpu_status_description[3][7] = {
-	"NORMAL",
-	"CWAI",
-	"SYNC"
+const char cpu_status_description[3][8] = {
+	"running",
+	"halted",
+	"halted"
 };
 
 class mc6809 {
