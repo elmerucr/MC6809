@@ -6,7 +6,7 @@
 
 A library written in C++ that emulates the MC6809 cpu. The enclosed ```CMakeLists.txt``` file (standard cmake procedure) will build the library and a small test application. To use this library in your project, copy the five source files from ```./src/``` into your source tree.
 
-At this very moment, the following things are not implemented:
+At this very moment, the following is not yet implemented:
 * CWAI opcode
 * illegal opcode exceptions (vector at $fff0)
 
@@ -51,7 +51,7 @@ void mc6809::reset()
 ### Execute
 
 ```cpp
-uint8_t mc6809::execute()
+uint16_t mc6809::execute()
 ```
 
 Main execute function. Runs only one instruction, and returns the number of cycles consumed. Checking for breakpoints must be done with the ```mc6809::breakpoint()``` member function inbetween calls to the ```mc6809::execute()``` function. In the broadest sense, one instruction also means starting an exception (be it nmi/firq/irq).

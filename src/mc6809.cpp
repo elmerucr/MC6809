@@ -68,7 +68,7 @@ void mc6809::reset()
 	/*
 	 * set cpu status
 	 */
-	cpu_status = CPU_NORMAL;
+	cpu_state = CPU_NORMAL;
 
 	/*
 	 * Load program counter from vector
@@ -83,16 +83,16 @@ uint16_t mc6809::execute()
 	uint32_t old_cycles = cycles;
 
 	if ((*nmi_line == false) && (old_nmi_line == true) && nmi_enabled) {
-		cpu_status = CPU_NORMAL;
+		cpu_state = CPU_NORMAL;
 		nmi();
 	} else if ((*firq_line == false) && is_f_flag_clear()) {
-		cpu_status = CPU_NORMAL;
+		cpu_state = CPU_NORMAL;
 		firq();
 	} else if ((*irq_line == false) && is_i_flag_clear()) {
-		cpu_status = CPU_NORMAL;
+		cpu_state = CPU_NORMAL;
 		irq();
 	} else {
-		if (cpu_status == CPU_NORMAL) {
+		if (cpu_state == CPU_NORMAL) {
 			uint8_t opcode = read8(pc++);
 			/*
 			* TODO: check for illegal opcode and start exception
@@ -101,7 +101,7 @@ uint16_t mc6809::execute()
 			bool am_legal;
 			uint16_t effective_address = (this->*addressing_modes_page1[opcode])(&am_legal);
 			(this->*opcodes_page1[opcode])(effective_address);
-		} else if (cpu_status == CPU_SYNC) {
+		} else if (cpu_state == CPU_SYNC) {
 			cycles += SYNC_CYCLES;
 		} else {
 			// TODO: fixme
@@ -254,7 +254,7 @@ void mc6809::status(char *text_buffer, int n)
 			*nmi_line ? '1' : '0',
 			*firq_line ? '1' : '0',
 			*irq_line ? '1' : '0',
-			cpu_status_description[cpu_status]);
+			cpu_state_description[cpu_state]);
 }
 
 void mc6809::stacks(char *text_buffer, int n, int no)

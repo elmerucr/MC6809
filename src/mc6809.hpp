@@ -37,7 +37,7 @@
 
 #define MC6809_MAJOR_VERSION	0
 #define MC6809_MINOR_VERSION	14
-#define MC6809_BUILD		20240611
+#define MC6809_BUILD		20240618
 #define MC6809_YEAR		2024
 
 #define	C_FLAG	0x01	// carry
@@ -58,16 +58,16 @@
 #define	VECTOR_NMI	0xfffc
 #define	VECTOR_RESET	0xfffe
 
-#define SYNC_CYCLES	1000
-#define CWAI_CYCLES	1000
+#define SYNC_CYCLES	100
+#define CWAI_CYCLES	100
 
-enum cpu_status_t {
+enum cpu_state_t {
 	CPU_NORMAL = 0,
 	CPU_CWAI,
 	CPU_SYNC
 };
 
-const char cpu_status_description[3][8] = {
+const char cpu_state_description[3][8] = {
 	"running",
 	"halted",
 	"halted"
@@ -193,7 +193,7 @@ private:
 	uint16_t sp;	// hardware stack pointer
 	uint8_t  cc;	// condition code register
 
-	enum cpu_status_t cpu_status;
+	enum cpu_state_t cpu_state;
 
 	uint16_t *index_regs[4];
 
