@@ -1,7 +1,7 @@
 /*
  * mc6809.cpp  -  part of MC6809
  *
- * (C)2021-2024 elmerucr
+ * (C)2021-2025 elmerucr
  */
 
 #include "mc6809.hpp"
@@ -233,13 +233,12 @@ void mc6809::illegal_opcode()
  */
 void mc6809::status(char *text_buffer, int n)
 {
-	snprintf(text_buffer, n, " pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I  NMI %s\n"
+	snprintf(text_buffer, n, " pc  dp ac br  xr   yr   us   sp  efhinzvc  N F I  cpu\n"
 			"%04x %02x %02x:%02x "
 			"%04x %04x %04x %04x "
 			"%c%c%c%c%c%c%c%c "
 			"%c%c %c %c  "
-			"cpu %s",
-			nmi_enabled ? "enabled" : "blocked",
+			"%s",
 			pc, dp, ac, br,
 			xr, yr, us, sp,
 			cc & E_FLAG ? '*' : '-',
@@ -250,8 +249,8 @@ void mc6809::status(char *text_buffer, int n)
 			cc & Z_FLAG ? '*' : '-',
 			cc & V_FLAG ? '*' : '-',
 			cc & C_FLAG ? '*' : '-',
-			old_nmi_line ? '1' : '0',
-			*nmi_line ? '1' : '0',
+			nmi_enabled ? old_nmi_line ? '1' : '0' : '-',
+			nmi_enabled ? *nmi_line ? '1' : '0' : '-',
 			*firq_line ? '1' : '0',
 			*irq_line ? '1' : '0',
 			cpu_state_description[cpu_state]);

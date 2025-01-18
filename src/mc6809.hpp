@@ -1,7 +1,14 @@
 /*
  * mc6809.hpp  -  part of MC6809
  *
- * (C)2021-2024 elmerucr
+ * (C)2021-2025 elmerucr
+ */
+
+/*
+ * MC6809 version 0.15 - 20250118
+ *
+ * Update to status function output
+ * inactive NMI (after reset) displayed with '--' then with '0', '1', ...
  */
 
 /*
@@ -36,9 +43,9 @@
 #include <cstddef>
 
 #define MC6809_MAJOR_VERSION	0
-#define MC6809_MINOR_VERSION	14
-#define MC6809_BUILD		20240618
-#define MC6809_YEAR		2024
+#define MC6809_MINOR_VERSION	15
+#define MC6809_BUILD		20250118
+#define MC6809_YEAR		2025
 
 #define	C_FLAG	0x01	// carry
 #define	V_FLAG	0x02	// overflow
@@ -58,8 +65,8 @@
 #define	VECTOR_NMI	0xfffc
 #define	VECTOR_RESET	0xfffe
 
-#define SYNC_CYCLES	100
-#define CWAI_CYCLES	100
+#define SYNC_CYCLES	50
+#define CWAI_CYCLES	50
 
 enum cpu_state_t {
 	CPU_NORMAL = 0,
@@ -67,10 +74,10 @@ enum cpu_state_t {
 	CPU_SYNC
 };
 
-const char cpu_state_description[3][8] = {
-	"running",
-	"halted",
-	"halted"
+const char cpu_state_description[3][5] = {
+	"run",
+	"halt",
+	"halt"
 };
 
 class mc6809 {
