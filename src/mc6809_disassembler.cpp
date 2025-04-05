@@ -350,7 +350,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, size_t n, uint16_t addres
 	 * mnemonics buffer = starting point of the mnemonic in the
 	 * disassembler output.
 	 */
-	char *mne_buffer = &buffer[17];
+	char *mne_buffer = &buffer[16];
 
 	/*
 	 * Any instruction has a maximum of 5 bytes - keep track of
@@ -370,7 +370,7 @@ uint16_t mc6809::disassemble_instruction(char *buffer, size_t n, uint16_t addres
 	uint8_t byte = read8(address++);
 	uint8_t byte2 = 0;
 	uint16_t word = 0;
-	buffer += snprintf(buffer, n, ",%04x %02x", start_address, byte);
+	buffer += snprintf(buffer, n, "%04x %02x", start_address, byte);
 	bytes_printed++;
 
 	if (byte == 0x10) {
@@ -781,6 +781,15 @@ uint16_t mc6809::disassemble_instruction(char *buffer, size_t n, uint16_t addres
 	for (int i=0; i<(5 - bytes_printed); i++) {
 		buffer += snprintf(buffer, n, "  ");
 	}
-	original_buffer[16] = ' ';
+
+	original_buffer[15] = ' ';
+
+	for (size_t i=(size_t)mne_buffer; i < (size_t)(original_buffer + 40); i++) {
+		*mne_buffer = ' ';
+		mne_buffer++;
+	}
+
+	*mne_buffer = '\0';
+
 	return address - start_address;
 }

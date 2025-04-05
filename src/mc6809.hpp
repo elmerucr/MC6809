@@ -4,6 +4,12 @@
  * (C)2021-2025 elmerucr
  */
 
+ /*
+ * MC6809 version 0.16 - 20250405
+ *
+ * Disassembler output includes spaces at the end of row + ',' removed at beginning
+ */
+
 /*
  * MC6809 version 0.15 - 20250118
  *
