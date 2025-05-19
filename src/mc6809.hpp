@@ -88,8 +88,8 @@ enum cpu_state_t {
 
 const char cpu_state_description[3][5] = {
 	"run",
-	"halt",
-	"halt"
+	"hlt",
+	"hlt"
 };
 
 class mc6809 {
