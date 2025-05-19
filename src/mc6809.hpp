@@ -4,6 +4,12 @@
  * (C)2021-2025 elmerucr
  */
 
+  /*
+ * MC6809 version 0.17 - 20250519
+ *
+ * Status compacter
+ */
+
  /*
  * MC6809 version 0.16 - 20250405
  *
@@ -49,8 +55,8 @@
 #include <cstddef>
 
 #define MC6809_MAJOR_VERSION	0
-#define MC6809_MINOR_VERSION	16
-#define MC6809_BUILD		20250405
+#define MC6809_MINOR_VERSION	17
+#define MC6809_BUILD		20250519
 #define MC6809_YEAR		2025
 
 #define	C_FLAG	0x01	// carry
